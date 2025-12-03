@@ -451,12 +451,13 @@ input:focus, textarea:focus {
         header.className = "item-title";
         header.style.cursor = "pointer";
         header.textContent = `📅 ${date} ▸`;
+        const body = document.createElement("div");
         header.onclick = () => {
           body.style.display = body.style.display === "none" ? "block" : "none";
           header.textContent = body.style.display === "none" ? `📅 ${date} ▸` : `📅 ${date} ▼`;
         };
   
-        const body = document.createElement("div");
+
         body.style.display = "none";
   
         grouped[date].forEach(entry => {
