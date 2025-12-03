@@ -226,8 +226,8 @@ input:focus, textarea:focus {
         <ul class="simple">
           <li><b>📌 기본 업무 / FAQ</b> 탭: “이거 뭐 하는 거지?” 싶은 업무 내용을 정리</li>
           <li><b>😵 시련 공유</b> 탭: 인간관계, 출근, 용어 지옥 같은 멘붕 포인트 기록</li>
-          <li><b>😵 부서장님 백문백답</b> 탭: 너무 멀게만 보이는 부서장님의 이야기들</li>
-          <li><b>😵 맛집 공유</b> 탭: 울산 내 맛집에 대한 정보들!</li>
+          <li><b>😎 부서장님 백문백답</b> 탭: 너무 멀게만 보이는 부서장님의 이야기들</li>
+          <li><b>🍜 맛집 공유</b> 탭: 울산 내 맛집에 대한 정보들!</li>
 
       </section>
 
@@ -282,6 +282,68 @@ input:focus, textarea:focus {
 
         <div id="struggle-list" class="list"></div>
       </section>
+      
+      <!-- 부서장님 백문백답 -->
+      <section id="boss">
+        <h2>😎 부서장님 백문백답</h2>
+        <p class="subtitle">
+          부서장님께 들은 명언, 인사이트, 업무 방향성, 꿀팁 등을 저장하는 공간.
+          나중에 면접에서 "제가 들은 말씀 중 가장 기억에 남는 건..." 할 때 쓰기 좋음.
+        </p>
+      
+        <form id="boss-form">
+          <div>
+            <label for="boss-title">질문 또는 주제</label>
+            <input id="boss-title" type="text" placeholder="예: '업무에서 가장 중요한 태도'" required />
+          </div>
+          <div>
+            <label for="boss-body">부서장님의 답변 / 내 해석</label>
+            <textarea id="boss-body" placeholder="예: '모르는 걸 두려워하지 말고 질문해라' 라고 하심. → 확실히 질문 문화 중요." required></textarea>
+          </div>
+          <div class="btn-row">
+            <button type="button" class="btn btn-secondary" id="boss-clear">전체 삭제</button>
+            <button type="submit" class="btn btn-primary">기록 저장</button>
+          </div>
+        </form>
+      
+        <div id="boss-list" class="list"></div>
+      </section>
+      
+      
+      
+      <!-- 맛집 공유 -->
+      <section id="food">
+        <h2>🍜 맛집 공유</h2>
+        <p class="subtitle">
+          울산엔 생각보다 숨은 맛집이 많다. 점심 메뉴 고민하지 않도록 기록해두자.
+        </p>
+      
+        <form id="food-form">
+          <div>
+            <label for="food-title">가게 이름</label>
+            <input id="food-title" type="text" placeholder="예: 삼산역 냉면" required />
+          </div>
+          <div>
+            <label for="food-menu">추천 메뉴</label>
+            <input id="food-menu" type="text" placeholder="예: 물냉면 + 만두" />
+          </div>
+          <div>
+            <label for="food-rating">평가 (0~5점)</label>
+            <input id="food-rating" type="text" placeholder="예: ⭐⭐⭐⭐☆ / 4.5점" />
+          </div>
+          <div>
+            <label for="food-body">코멘트</label>
+            <textarea id="food-body" placeholder="예: 점심에 가면 줄 섬. 직원들 친절. 냉면 국물 깔끔함."></textarea>
+          </div>
+          <div class="btn-row">
+            <button type="button" class="btn btn-secondary" id="food-clear">전체 삭제</button>
+            <button type="submit" class="btn btn-primary">맛집 추가</button>
+          </div>
+        </form>
+      
+        <div id="food-list" class="list"></div>
+      </section>
+
     </main>
 
     <footer>
