@@ -270,6 +270,33 @@ input:focus, textarea:focus {
           z-index: -1;
           pointer-events: none;
         }
+  .dept-select {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  
+  .dept {
+    padding: 6px 14px;
+    border: 1px solid #004867;
+    color: var(--text-sub);
+    background: #022c43;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 13px;
+    transition: 0.15s;
+  }
+  
+  .dept.active {
+    background: var(--primary);
+    color: #002b45;
+    font-weight: bold;
+    border-color: var(--primary);
+  }
+  
+  .dept:hover:not(.active) {
+    background: #034861;
+  }
 
   </style>
 </head>
@@ -313,7 +340,12 @@ input:focus, textarea:focus {
           “이 업무가 정확히 뭘 의미하는지” 정리해 두는 공간.
           예) 힘센엔진의 4행정 stroke 구조
         </p>
-
+        <div class="dept-select">
+          <button data-dept="조선" class="dept active">조선</button>
+          <button data-dept="특수선" class="dept">특수선</button>
+          <button data-dept="엔진기계" class="dept">엔진기계</button>
+          <button data-dept="해양에너지" class="dept">해양에너지</button>
+        </div>
         <form id="daily-form">
         <div>
           <label for="daily-body">오늘 기록</label>
@@ -485,6 +517,104 @@ input:focus, textarea:focus {
 })();
 
    /* ---------- Daily 기록 (날짜별 그룹) ---------- */
+  (function () {
+  let currentDept = "조선"; // 기본값
+
+  const KEY = "intern_daily_by_dept_v1";
+  const form = document.getElementById("daily-form");
+  const listEl = document.getElementById("faq-list");
+  const clearBtn = document.getElementById("daily-clear");
+
+  const deptButtons = document.querySelectorAll(".dept");
+  deptButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      deptButtons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentDept = btn.dataset.dept;
+      render();
+    });
+  });
+
+  function today() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  }
+
+  function render() {
+    const store = loadArray(KEY);
+    const logs = store[currentDept] || [];
+
+    if (!logs.length) {
+      listEl.innerHTML = `<div class="empty">${currentDept} 사업부 기록 없음</div>`;
+      return;
+    }
+
+    const grouped = logs.reverse().reduce((acc, item) => {
+      (acc[item.date] = acc[item.date] || []).push(item);
+      return acc;
+    }, {});
+
+    listEl.innerHTML = "";
+
+    Object.keys(grouped).forEach(date => {
+      const container = document.createElement("div");
+      container.className = "item";
+
+      const header = document.createElement("div");
+      header.className = "item-title";
+      header.style.cursor = "pointer";
+      header.textContent = `📅 ${date} ▸`;
+
+      const body = document.createElement("div");
+      body.style.display = "none";
+
+      header.onclick = () => {
+        body.style.display = body.style.display === "none" ? "block" : "none";
+        header.textContent = body.style.display === "none" ? `📅 ${date} ▸` : `📅 ${date} ▼`;
+      };
+
+      grouped[date].forEach(entry => {
+        const content = document.createElement("div");
+        content.className = "item-body";
+        content.style.borderTop = "1px dashed #1f2937";
+        content.style.padding = "6px 0";
+        content.textContent = `• ${entry.text}`;
+        body.appendChild(content);
+      });
+
+      container.appendChild(header);
+      container.appendChild(body);
+      listEl.appendChild(container);
+    });
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const bodyInput = document.getElementById("daily-body");
+    const text = bodyInput.value.trim();
+    if (!text) return;
+
+    const store = loadArray(KEY);
+    store[currentDept] = store[currentDept] || [];
+    store[currentDept].push({ id: Date.now(), text, date: today() });
+    saveArray(KEY, store);
+
+    bodyInput.value = "";
+    render();
+  });
+
+  clearBtn.addEventListener("click", function () {
+    if (confirm(`${currentDept} 사업부 기록 전부 삭제?`)) {
+      const store = loadArray(KEY);
+      store[currentDept] = [];
+      saveArray(KEY, store);
+      render();
+    }
+  });
+
+  render();
+})();
+
   (function () {
     const KEY = "intern_daily_log_v1";
     const form = document.getElementById("daily-form");
