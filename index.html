@@ -266,88 +266,10 @@ input:focus, textarea:focus {
           z-index: -1;
           pointer-events: none;
         }
-    
-    /* === HD Hyundai Direction Stripe Background === */
-    .hd-stripes {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: -1;
-      opacity: 0.22;
-    }
-    
-    .hd-stripes::before,
-    .hd-stripes::after {
-      content: "";
-      position: absolute;
-      border-top: 2px solid #6FDB29;
-      width: 90vw;
-      transform: rotate(12deg);
-    }
-
-    /* === 하단 라인 2개 (반대 방향) === */
-    .bottom-line-1,
-    .bottom-line-2 {
-      position: fixed;
-      border-top: 2px solid #6FDB29;
-      width: 85vw;
-      pointer-events: none;
-      z-index: -1;
-      opacity: 0.22;
-      transform: rotate(-12deg);
-    }
-    
-    /* 첫 번째 아래 라인 */
-    .bottom-line-1 {
-      bottom: 170px;
-      right: -350px;
-    }
-    
-    /* 두 번째 아래 라인 */
-    .bottom-line-2 {
-      bottom: 60px;
-      right: -280px;
-    }
-
-    
-    /* 첫 번째 (위) */
-    .hd-stripes::before {
-      top: 10px;
-      left: -350px;
-    }
-    
-    /* 두 번째 (조금 아래) */
-    .hd-stripes::after {
-      top: 240px;
-      left: -280px;
-    }
-    
-    /* === 하단 라인 2개 (↗ 반대 방향) */
-    .hd-stripes::after,
-    .hd-stripes::before {}
-    
-    /* 새 라인 2개 추가 */
-    .hd-stripes::after,
-    .hd-stripes::before {}
-    
-    .hd-stripes::before,
-    .hd-stripes::after {}
-    
-    /* 묶어서 별도 추가 */
-    .hd-stripes::before,
-    .hd-stripes::after {}
-    
-    .hd-stripes::before,
-    .hd-stripes::after {}
-
-    
 
   </style>
 </head>
-<body>
-  <div class="hd-stripes"></div>
-   <div class="bottom-line-1"></div>
-   <div class="bottom-line-2"></div> 
+
   </div>
   <div class="wrap">
 
