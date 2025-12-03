@@ -5,183 +5,201 @@
   <title>인턴 생존 가이드</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #0f172a;
-      color: #e5e7eb;
-    }
-    .wrap {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 16px;
-    }
-    header {
-      margin-bottom: 16px;
-      padding: 12px 16px;
-      border-radius: 12px;
-      background: #111827;
-      border: 1px solid #1f2937;
-    }
-    h1 {
-      margin: 0 0 4px;
-      font-size: 22px;
-    }
-    header p {
-      margin: 0;
-      font-size: 13px;
-      color: #9ca3af;
-    }
+ :root {
+  --primary: #6FDB29; /* HD Hyundai Green */
+  --primary-light: #97ff54;
+  --bg: #002B45; 
+  --card: #013958;
+  --border: #0a4a70;
+  --text: #ffffff;
+  --text-sub: #bcd1dd;
+}
 
-    nav {
-      display: flex;
-      gap: 8px;
-      margin: 16px 0;
-      flex-wrap: wrap;
-    }
-    nav button {
-      border: none;
-      border-radius: 999px;
-      padding: 8px 14px;
-      font-size: 13px;
-      cursor: pointer;
-      background: #111827;
-      color: #9ca3af;
-    }
-    nav button.active {
-      background: #38bdf8;
-      color: #0b1120;
-      font-weight: 600;
-    }
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Roboto, Pretendard, sans-serif;
+}
 
-    main section {
-      display: none;
-      background: #111827;
-      border-radius: 12px;
-      padding: 12px 14px 16px;
-      border: 1px solid #1f2937;
-    }
-    main section.active {
-      display: block;
-    }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
 
-    h2 {
-      margin: 0 0 8px;
-      font-size: 18px;
-    }
-    .subtitle {
-      margin: 0 0 12px;
-      font-size: 13px;
-      color: #9ca3af;
-    }
+.wrap {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
 
-    form {
-      margin-bottom: 12px;
-      padding: 10px;
-      border-radius: 8px;
-      background: #020617;
-      border: 1px solid #1f2937;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    label {
-      font-size: 12px;
-      color: #9ca3af;
-    }
-    input[type="text"], textarea {
-      width: 100%;
-      padding: 6px 8px;
-      border-radius: 6px;
-      border: 1px solid #374151;
-      background: #020617;
-      color: #e5e7eb;
-      font-size: 13px;
-      resize: vertical;
-      min-height: 32px;
-    }
-    textarea {
-      min-height: 60px;
-    }
-    input:focus, textarea:focus {
-      outline: none;
-      border-color: #38bdf8;
-    }
-    .btn-row {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-    .btn {
-      border-radius: 6px;
-      border: none;
-      padding: 6px 12px;
-      font-size: 13px;
-      cursor: pointer;
-    }
-    .btn-primary {
-      background: #38bdf8;
-      color: #0b1120;
-      font-weight: 600;
-    }
-    .btn-secondary {
-      background: #111827;
-      color: #e5e7eb;
-      border: 1px solid #374151;
-    }
+/* HEADER */
+header {
+  padding: 20px;
+  background: var(--card);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
 
-    .list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      max-height: 260px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-    .empty {
-      font-size: 12px;
-      color: #9ca3af;
-      border-radius: 8px;
-      padding: 8px;
-      background: #020617;
-      border: 1px dashed #374151;
-    }
-    .item {
-      padding: 8px;
-      border-radius: 8px;
-      background: #020617;
-      border: 1px solid #1f2937;
-      font-size: 13px;
-    }
-    .item-title {
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    .item-meta {
-      font-size: 11px;
-      color: #9ca3af;
-      margin-bottom: 4px;
-    }
-    .item-body {
-      font-size: 13px;
-      white-space: pre-wrap;
-    }
+h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
 
-    ul.simple {
-      margin: 0 0 8px 18px;
-      padding: 0;
-      font-size: 13px;
-      color: #d1d5db;
-    }
+header p {
+  font-size: 14px;
+  color: var(--text-sub);
+}
 
-    footer {
-      margin-top: 16px;
-      padding: 12px;
-      font-size: 11px;
-      text-align: center;
-      color: #6b7280;
-    }
+/* NAVIGATION */
+nav {
+  display: flex;
+  gap: 8px;
+  margin: 18px 0;
+  flex-wrap: wrap;
+}
+
+nav button {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-sub);
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.15s;
+}
+
+nav button.active {
+  background: var(--primary);
+  color: #002b45;
+  font-weight: bold;
+}
+
+nav button:hover:not(.active) {
+  background: #024d72;
+}
+
+/* CONTENT SECTIONS */
+section {
+  display: none;
+  background: var(--card);
+  border-radius: 10px;
+  padding: 16px;
+  border: 1px solid var(--border);
+}
+
+section.active {
+  display: block;
+}
+
+/* TITLES */
+h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--text-sub);
+  margin-bottom: 14px;
+}
+
+/* FORM */
+form {
+  background: #022c43;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+label {
+  font-size: 13px;
+  color: var(--text-sub);
+}
+
+input[type="text"], textarea {
+  background: #011d2e;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px;
+  color: var(--text);
+  font-size: 14px;
+  resize: vertical;
+  transition: 0.15s;
+}
+
+input:focus, textarea:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+/* BUTTONS */
+.btn-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn {
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #002b45;
+  font-weight: bold;
+}
+
+.btn-secondary {
+  background: #033651;
+  color: var(--text-sub);
+  border: 1px solid var(--border);
+}
+
+.btn:hover {
+  opacity: 0.8;
+}
+
+/* RECORD LIST */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item {
+  padding: 12px;
+  background: #022b42;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.item-title {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.item-meta {
+  font-size: 11px;
+  color: var(--primary-light);
+  margin-bottom: 6px;
+}
+
+.item-body {
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+
   </style>
 </head>
 <body>
