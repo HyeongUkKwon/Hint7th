@@ -20,11 +20,76 @@
   font-family: 'Segoe UI', Roboto, Pretendard, sans-serif;
 }
 
+/* ===== HD Hyundai Background Pattern ===== */
 body {
   margin: 0;
-  background: var(--bg);
+  background: radial-gradient(circle at top right, #0D1F33, #001A28);
   color: var(--text);
+  position: relative;
+  overflow-x: hidden;
 }
+
+/* Green line pattern (top right) */
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 400px;
+  height: 400px;
+  background: transparent;
+  border: 2px solid #6FDB29;
+  border-radius: 40% 5% 60% 10%;
+  transform: rotate(25deg);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Green line pattern (bottom left) */
+body::after {
+  content: "";
+  position: absolute;
+  bottom: -60px;
+  left: -40px;
+  width: 350px;
+  height: 350px;
+  background: transparent;
+  border: 2px solid #6FDB29;
+  border-radius: 10% 50% 20% 70%;
+  transform: rotate(-15deg);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Card redesign (white modern tile like poster) */
+section {
+  background: #ffffff10;
+  backdrop-filter: blur(6px);
+  border: 1px solid #004867;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+/* Buttons modern style */
+nav button {
+  border-radius: 4px;
+  border: 1px solid #004867;
+  padding: 10px 18px;
+  letter-spacing: 0.3px;
+}
+
+nav button.active {
+  background: #6FDB29;
+  color: #00243a;
+  border-color: #6FDB29;
+}
+
+/* Inputs refined */
+input:focus, textarea:focus {
+  outline: none;
+  border: 2px solid #6FDB29;
+  background: #00263A;
+}
+
 
 .wrap {
   max-width: 900px;
