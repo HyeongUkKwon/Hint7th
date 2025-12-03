@@ -461,13 +461,62 @@ input:focus, textarea:focus {
         body.style.display = "none";
   
         grouped[date].forEach(entry => {
-          const content = document.createElement("div");
-          content.className = "item-body";
-          content.style.borderTop = "1px dashed #1f2937";
-          content.style.padding = "6px 0";
-          content.textContent = `• ${entry.text}`;
-          body.appendChild(content);
-        });
+        const content = document.createElement("div");
+        content.className = "item-body";
+        content.style.borderTop = "1px dashed #1f2937";
+        content.style.padding = "6px 0";
+      
+        const textSpan = document.createElement("span");
+        textSpan.textContent = `• ${entry.text}`;
+      
+        // 수정 버튼
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "✏ 수정";
+        editBtn.style.marginLeft = "8px";
+        editBtn.style.fontSize = "12px";
+        editBtn.style.cursor = "pointer";
+        editBtn.style.background = "transparent";
+        editBtn.style.border = "1px solid var(--primary)";
+        editBtn.style.color = "var(--primary-light)";
+        editBtn.style.padding = "2px 6px";
+        editBtn.style.borderRadius = "4px";
+      
+        editBtn.onclick = () => {
+          const newText = prompt("수정할 내용을 입력하세요:", entry.text);
+          if (newText && newText.trim() !== "") {
+            entry.text = newText.trim();
+            logs = logs.map(i => i.id === entry.id ? entry : i);
+            saveArray(KEY, logs);
+            render();
+          }
+        };
+
+  // 삭제 버튼
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "🗑 삭제";
+  deleteBtn.style.marginLeft = "6px";
+  deleteBtn.style.fontSize = "12px";
+  deleteBtn.style.cursor = "pointer";
+  deleteBtn.style.background = "transparent";
+  deleteBtn.style.border = "1px solid #ff4c4c";
+  deleteBtn.style.color = "#ffaaaa";
+  deleteBtn.style.padding = "2px 6px";
+  deleteBtn.style.borderRadius = "4px";
+
+  deleteBtn.onclick = () => {
+    if (confirm("정말 삭제할까요?")) {
+      logs = logs.filter(i => i.id !== entry.id);
+      saveArray(KEY, logs);
+      render();
+    }
+  };
+
+  content.appendChild(textSpan);
+  content.appendChild(editBtn);
+  content.appendChild(deleteBtn);
+  body.appendChild(content);
+});
+
   
         container.appendChild(header);
         container.appendChild(body);
