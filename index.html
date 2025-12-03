@@ -241,20 +241,16 @@ input:focus, textarea:focus {
           예) IFW 라이선스, LOP, Modbus RTU/TCP 차이 등
         </p>
 
-        <form id="faq-form">
-          <div>
-            <label for="faq-title">업무 / 질문 제목</label>
-            <input id="faq-title" type="text" placeholder="예: IFW 라이선스가 뭔지" required />
-          </div>
-          <div>
-            <label for="faq-body">설명 / 메모</label>
-            <textarea id="faq-body" placeholder="누가 어떻게 설명해줬는지, 내가 이해한 방식으로 정리" required></textarea>
-          </div>
-          <div class="btn-row">
-            <button type="button" class="btn btn-secondary" id="faq-clear">전체 삭제</button>
-            <button type="submit" class="btn btn-primary">기록 추가</button>
-          </div>
-        </form>
+        <form id="daily-form">
+        <div>
+          <label for="daily-body">오늘 기록</label>
+          <textarea id="daily-body" placeholder="오늘 배운 업무 내용을 적어보세요." required></textarea>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn btn-secondary" id="daily-clear">전체 삭제</button>
+          <button type="submit" class="btn btn-primary">기록 추가</button>
+        </div>
+      </form>
 
         <div id="faq-list" class="list"></div>
       </section>
@@ -351,126 +347,94 @@ input:focus, textarea:focus {
   </div>
 
   <script>
-    // ---------- 탭 전환 ----------
-    (function() {
-      var navButtons = document.querySelectorAll("nav button");
-      var sections = document.querySelectorAll("main section");
-
-      function showSection(id) {
-        sections.forEach(function(sec) {
-          if (sec.id === id) sec.classList.add("active");
-          else sec.classList.remove("active");
-        });
+   /* ---------- Daily 기록 (날짜별 그룹) ---------- */
+  (function () {
+    const KEY = "intern_daily_log_v1";
+    const form = document.getElementById("daily-form");
+    const listEl = document.getElementById("daily-list");
+    const clearBtn = document.getElementById("daily-clear");
+  
+    function today() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+        d.getDate()
+      ).padStart(2, "0")}`;
+    }
+  
+    function render() {
+      let logs = loadArray(KEY);
+  
+      if (!logs.length) {
+        listEl.innerHTML = `<div class="empty">아직 기록이 없습니다. 오늘 한 줄만 적어볼까?</div>`;
+        return;
       }
-
-      navButtons.forEach(function(btn) {
-        btn.addEventListener("click", function() {
-          navButtons.forEach(function(b) { b.classList.remove("active"); });
-          btn.classList.add("active");
-          var target = btn.getAttribute("data-target");
-          showSection(target);
+  
+      // 날짜별 정리
+      const grouped = logs.reduce((acc, item) => {
+        (acc[item.date] = acc[item.date] || []).push(item);
+        return acc;
+      }, {});
+  
+      const sortedDates = Object.keys(grouped).sort().reverse();
+      listEl.innerHTML = "";
+  
+      sortedDates.forEach(date => {
+        const container = document.createElement("div");
+        container.className = "item";
+  
+        // 제목 + 펼치기 기능
+        const header = document.createElement("div");
+        header.className = "item-title";
+        header.style.cursor = "pointer";
+        header.textContent = `📅 ${date} ▸`;
+        header.onclick = () => {
+          body.style.display = body.style.display === "none" ? "block" : "none";
+          header.textContent = body.style.display === "none" ? `📅 ${date} ▸` : `📅 ${date} ▼`;
+        };
+  
+        const body = document.createElement("div");
+        body.style.display = "none";
+  
+        grouped[date].forEach(entry => {
+          const content = document.createElement("div");
+          content.className = "item-body";
+          content.style.borderTop = "1px dashed #1f2937";
+          content.style.padding = "6px 0";
+          content.textContent = `• ${entry.text}`;
+          body.appendChild(content);
         });
+  
+        container.appendChild(header);
+        container.appendChild(body);
+        listEl.appendChild(container);
       });
-    })();
-
-    // ---------- localStorage 유틸 ----------
-    function loadArray(key) {
-      try {
-        var raw = localStorage.getItem(key);
-        if (!raw) return [];
-        var parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) return parsed;
-        return [];
-      } catch (e) {
-        console.log("localStorage load error:", e);
-        return [];
-      }
     }
-
-    function saveArray(key, arr) {
-      try {
-        localStorage.setItem(key, JSON.stringify(arr));
-      } catch (e) {
-        console.log("localStorage save error:", e);
-      }
-    }
-
-    function nowString() {
-      var d = new Date();
-      var y = String(d.getFullYear()).slice(2);
-      var m = String(d.getMonth() + 1).padStart(2, "0");
-      var day = String(d.getDate()).padStart(2, "0");
-      var hh = String(d.getHours()).padStart(2, "0");
-      var mm = String(d.getMinutes()).padStart(2, "0");
-      return y + "-" + m + "-" + day + " " + hh + ":" + mm;
-    }
-
-    function escapeHtml(str) {
-      if (!str) return "";
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    // ---------- FAQ ----------
-    (function() {
-      var KEY = "intern_faq_list_v1";
-      var form = document.getElementById("faq-form");
-      var listEl = document.getElementById("faq-list");
-      var clearBtn = document.getElementById("faq-clear");
-
-      function render() {
-        var items = loadArray(KEY);
-        if (!items.length) {
-          listEl.innerHTML = '<div class="empty">아직 정리된 업무 내용이 없습니다. 오늘 배운 업무 하나만이라도 적어둘까?</div>';
-          return;
-        }
-        listEl.innerHTML = "";
-        // 최신이 위로 오도록 뒤집기
-        items.slice().reverse().forEach(function(item) {
-          var div = document.createElement("div");
-          div.className = "item";
-          div.innerHTML =
-            '<div class="item-title">' + escapeHtml(item.title) + '</div>' +
-            '<div class="item-meta">' + escapeHtml(item.time) + '</div>' +
-            '<div class="item-body">' + escapeHtml(item.body) + '</div>';
-          listEl.appendChild(div);
-        });
-      }
-
-      form.addEventListener("submit", function(e) {
-        e.preventDefault();
-        var titleInput = document.getElementById("faq-title");
-        var bodyInput = document.getElementById("faq-body");
-        var title = titleInput.value.trim();
-        var body = bodyInput.value.trim();
-        if (!title || !body) return;
-
-        var items = loadArray(KEY);
-        items.push({
-          id: Date.now(),
-          title: title,
-          body: body,
-          time: nowString()
-        });
-        saveArray(KEY, items);
-        titleInput.value = "";
-        bodyInput.value = "";
-        render();
-      });
-
-      clearBtn.addEventListener("click", function() {
-        var ok = confirm("정말 FAQ 내용을 모두 삭제할까요?");
-        if (!ok) return;
+  
+    // submit
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const bodyInput = document.getElementById("daily-body");
+      const text = bodyInput.value.trim();
+      if (!text) return;
+  
+      let logs = loadArray(KEY);
+      logs.push({ id: Date.now(), text, date: today() });
+      saveArray(KEY, logs);
+  
+      bodyInput.value = "";
+      render();
+    });
+  
+    // 전체 삭제
+    clearBtn.addEventListener("click", function () {
+      if (confirm("정말 모든 기록을 삭제할까요?")) {
         saveArray(KEY, []);
         render();
-      });
-
-      render();
-    })();
+      }
+    });
+  
+    render();
+  })();
 
     // ---------- 시련 공유 ----------
     (function() {
