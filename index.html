@@ -307,6 +307,10 @@ input:focus, textarea:focus {
     <header>
       <h1>인턴 생존 가이드</h1>
       <p>H-int 생활하면서 힘든 점을 공유하는 H-int 대나무숲</p>
+      <!-- 🔥 익명 사용자 표시 UI -->
+      <p style="margin-top:10px; color:#97ff54; font-size:14px; font-weight:bold;">
+      익명 ID : <span id="userNick"></span>
+  </p>
     </header>
 
     <nav>
@@ -452,7 +456,29 @@ input:focus, textarea:focus {
   </div>
 
   <script>
-      // ---------- 공통 함수 (삭제되면 전체 기능 멈춤) ----------
+  const animals = [
+    "참새","호랑이","고래","고양이","두루미","돌고래","비둘기",
+    "부엉이","말미잘","기린","북극곰","판다","치타","늑대","토끼"
+  ];
+
+  function generateRandomNickname() {
+    const animal = animals[Math.floor(Math.random() * animals.length)];
+    const num = Math.floor(1000 + Math.random() * 9000);
+    return `${animal}_${num}`;
+  }
+
+  function loadUserNickname() {
+    let stored = localStorage.getItem("intern_user_nickname");
+    if (!stored) {
+      stored = generateRandomNickname();
+      localStorage.setItem("intern_user_nickname", stored);
+    }
+    return stored;
+  }
+
+  window.USER_NICKNAME = loadUserNickname();
+    
+    // ---------- 공통 함수 (삭제되면 전체 기능 멈춤) ----------
   function loadArray(key) {
     try {
       var raw = localStorage.getItem(key);
@@ -771,9 +797,10 @@ input:focus, textarea:focus {
           var div = document.createElement("div");
           div.className = "item";
           div.innerHTML =
-            '<div class="item-title">' + escapeHtml(item.title) + '</div>' +
-            '<div class="item-meta">' + escapeHtml(item.time) + '</div>' +
-            '<div class="item-body">' + escapeHtml(item.body || "") + '</div>';
+          `<div class="item-title">${escapeHtml(item.title)}</div>` +
+          `<div class="item-meta">${escapeHtml(item.time)} · 👤 ${escapeHtml(item.user || "익명")}</div>` +
+          `<div class="item-body">${escapeHtml(item.body || "")}</div>`;
+
           listEl.appendChild(div);
         });
       }
@@ -792,6 +819,7 @@ input:focus, textarea:focus {
           title: title,
           body: body,
           time: nowString()
+          user: USER_NICKNAME  // ⭐ 사용자 닉네임 저장
         });
         saveArray(KEY, items);
         titleInput.value = "";
@@ -826,9 +854,9 @@ input:focus, textarea:focus {
           var div = document.createElement("div");
           div.className = "item";
           div.innerHTML =
-            `<div class="item-title">${escapeHtml(item.title)}</div>` +
-            `<div class="item-meta">${escapeHtml(item.time)}</div>` +
-            `<div class="item-body">${escapeHtml(item.body)}</div>`;
+          `<div class="item-title">${escapeHtml(item.title)}</div>` +
+          `<div class="item-meta">${escapeHtml(item.time)} · 👤 ${escapeHtml(item.user || "익명")}</div>` +
+          `<div class="item-body">${escapeHtml(item.body)}</div>`;
           listEl.appendChild(div);
         });
       }
@@ -840,7 +868,7 @@ input:focus, textarea:focus {
         if (!title || !body) return;
     
         var items = loadArray(KEY);
-        items.push({ id: Date.now(), title, body, time: nowString() });
+        items.push({ id: Date.now(), title, body, time: nowString(), user: USER_NICKNAME });
         saveArray(KEY, items);
     
         form.reset();
@@ -912,6 +940,7 @@ input:focus, textarea:focus {
       render();
     })();
 
+  document.getElementById("userNick").textContent = USER_NICKNAME;
   </script>
 </body>
 </html>
