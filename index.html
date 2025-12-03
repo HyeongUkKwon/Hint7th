@@ -347,6 +347,48 @@ input:focus, textarea:focus {
   </div>
 
   <script>
+      // ---------- 공통 함수 (삭제되면 전체 기능 멈춤) ----------
+  function loadArray(key) {
+    try {
+      var raw = localStorage.getItem(key);
+      if (!raw) return [];
+      var parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+      return [];
+    } catch (e) {
+      console.log("localStorage load error:", e);
+      return [];
+    }
+  }
+  
+  function saveArray(key, arr) {
+    try {
+      localStorage.setItem(key, JSON.stringify(arr));
+    } catch (e) {
+      console.log("localStorage save error:", e);
+    }
+  }
+  
+  function nowString() {
+    var d = new Date();
+    var y = String(d.getFullYear()).slice(2);
+    var m = String(d.getMonth() + 1).padStart(2, "0");
+    var day = String(d.getDate()).padStart(2, "0");
+    var hh = String(d.getHours()).padStart(2, "0");
+    var mm = String(d.getMinutes()).padStart(2, "0");
+    return y + "-" + m + "-" + day + " " + hh + ":" + mm;
+  }
+  
+  function escapeHtml(str) {
+    if (!str) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
   // ---------- 탭 전환 ----------
 (function() {
   var navButtons = document.querySelectorAll("nav button");
