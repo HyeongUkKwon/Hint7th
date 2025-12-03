@@ -2,332 +2,136 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
+  <title>인턴 생존 가이드</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>H-INT Survival Guide</title>
   <style>
-    :root {
-      --bg: #0f172a;
-      --bg-soft: #111827;
-      --card: #1f2937;
-      --accent: #38bdf8;
-      --accent-soft: rgba(56, 189, 248, 0.15);
-      --text: #e5e7eb;
-      --text-soft: #9ca3af;
-      --danger: #f97373;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
-      background: radial-gradient(circle at top, #1e293b 0, #020617 55%);
-      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
     }
-
-    .app-shell {
-      max-width: 1100px;
+    .wrap {
+      max-width: 960px;
       margin: 0 auto;
-      padding: 24px 16px 40px;
+      padding: 16px;
     }
-
     header {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: #111827;
+      border: 1px solid #1f2937;
     }
-
-    .logo-area {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo-mark {
-      width: 36px;
-      height: 36px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #38bdf8, #22c55e);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 18px;
-      color: #0b1120;
-      box-shadow: 0 0 25px rgba(56, 189, 248, 0.6);
-    }
-
     h1 {
+      margin: 0 0 4px;
       font-size: 22px;
+    }
+    header p {
       margin: 0;
-    }
-
-    h1 span {
-      font-weight: 400;
-      font-size: 14px;
-      color: var(--text-soft);
-      display: block;
-      margin-top: 4px;
-    }
-
-    .tagline {
       font-size: 13px;
-      color: var(--text-soft);
-      text-align: right;
+      color: #9ca3af;
     }
 
-    .tabs {
+    nav {
       display: flex;
-      flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 18px;
-      border-bottom: 1px solid #1f2937;
-      padding-bottom: 4px;
+      margin: 16px 0;
+      flex-wrap: wrap;
     }
-
-    .tab-btn {
+    nav button {
       border: none;
-      background: transparent;
-      color: var(--text-soft);
-      padding: 8px 12px;
       border-radius: 999px;
+      padding: 8px 14px;
       font-size: 13px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.15s, color 0.15s, transform 0.05s;
+      background: #111827;
+      color: #9ca3af;
     }
-
-    .tab-btn span.emoji {
-      font-size: 15px;
-    }
-
-    .tab-btn.active {
-      background: var(--accent-soft);
-      color: var(--accent);
-    }
-
-    .tab-btn:hover {
-      background: rgba(148, 163, 184, 0.12);
-      transform: translateY(-1px);
-    }
-
-    main {
-      display: grid;
-      grid-template-columns: minmax(0, 3fr) minmax(250px, 1.1fr);
-      gap: 18px;
-    }
-
-    @media (max-width: 800px) {
-      main {
-        grid-template-columns: minmax(0, 1fr);
-      }
-      .tagline {
-        text-align: left;
-      }
-    }
-
-    .card {
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), #020617);
-      border-radius: 18px;
-      padding: 16px 16px 18px;
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      gap: 8px;
-    }
-
-    .card-title {
-      font-size: 15px;
+    nav button.active {
+      background: #38bdf8;
+      color: #0b1120;
       font-weight: 600;
     }
 
-    .card-subtitle {
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
-    .chip {
-      font-size: 11px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      color: var(--text-soft);
-      white-space: nowrap;
-    }
-
-    .section {
+    main section {
       display: none;
-      gap: 10px;
-    }
-
-    .section.active {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.8);
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      color: var(--text-soft);
-      margin-bottom: 6px;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      padding: 2px 7px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      color: var(--text-soft);
-    }
-
-    .home-highlight {
-      display: grid;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 1.5fr);
-      gap: 16px;
-      margin-top: 6px;
-    }
-
-    @media (max-width: 900px) {
-      .home-highlight {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .stat-grid {
-      display: grid;
-      gap: 8px;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .stat {
-      background: rgba(15, 23, 42, 0.9);
+      background: #111827;
       border-radius: 12px;
-      padding: 8px 10px;
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      font-size: 11px;
+      padding: 12px 14px 16px;
+      border: 1px solid #1f2937;
+    }
+    main section.active {
+      display: block;
     }
 
-    .stat-label {
-      color: var(--text-soft);
-      margin-bottom: 4px;
+    h2 {
+      margin: 0 0 8px;
+      font-size: 18px;
     }
-
-    .stat-value {
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .hint-list {
-      margin: 6px 0 0;
-      padding-left: 18px;
+    .subtitle {
+      margin: 0 0 12px;
       font-size: 13px;
-      color: var(--text-soft);
+      color: #9ca3af;
     }
 
     form {
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #020617;
+      border: 1px solid #1f2937;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      margin-bottom: 10px;
     }
-
     label {
       font-size: 12px;
-      color: var(--text-soft);
+      color: #9ca3af;
     }
-
-    input[type="text"],
-    input[type="date"],
-    textarea {
+    input[type="text"], textarea {
       width: 100%;
-      padding: 7px 9px;
-      border-radius: 10px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text);
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid #374151;
+      background: #020617;
+      color: #e5e7eb;
       font-size: 13px;
-      outline: none;
       resize: vertical;
-      min-height: 34px;
+      min-height: 32px;
     }
-
     textarea {
-      min-height: 70px;
+      min-height: 60px;
     }
-
-    input:focus,
-    textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3);
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #38bdf8;
     }
-
     .btn-row {
       display: flex;
       justify-content: flex-end;
       gap: 8px;
-      margin-top: 2px;
     }
-
     .btn {
-      border-radius: 999px;
+      border-radius: 6px;
       border: none;
-      padding: 7px 14px;
-      font-size: 12px;
+      padding: 6px 12px;
+      font-size: 13px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.15s, transform 0.05s, box-shadow 0.15s;
-      white-space: nowrap;
     }
-
     .btn-primary {
-      background: linear-gradient(135deg, #38bdf8, #22c55e);
-      color: #020617;
+      background: #38bdf8;
+      color: #0b1120;
       font-weight: 600;
-      box-shadow: 0 10px 25px rgba(56, 189, 248, 0.35);
+    }
+    .btn-secondary {
+      background: #111827;
+      color: #e5e7eb;
+      border: 1px solid #374151;
     }
 
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 16px 35px rgba(56, 189, 248, 0.45);
-    }
-
-    .btn-ghost {
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-soft);
-      border: 1px solid rgba(148, 163, 184, 0.4);
-    }
-
-    .btn-ghost:hover {
-      background: rgba(31, 41, 55, 0.9);
-    }
-
-    .post-list {
+    .list {
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -335,549 +139,175 @@
       overflow-y: auto;
       padding-right: 4px;
     }
-
-    .post-empty {
+    .empty {
       font-size: 12px;
-      color: var(--text-soft);
-      border-radius: 12px;
-      padding: 10px;
-      border: 1px dashed rgba(148, 163, 184, 0.4);
-      background: rgba(15, 23, 42, 0.7);
+      color: #9ca3af;
+      border-radius: 8px;
+      padding: 8px;
+      background: #020617;
+      border: 1px dashed #374151;
     }
-
-    .post {
-      background: rgba(15, 23, 42, 0.95);
-      border-radius: 12px;
-      padding: 8px 10px;
-      border: 1px solid rgba(148, 163, 184, 0.35);
+    .item {
+      padding: 8px;
+      border-radius: 8px;
+      background: #020617;
+      border: 1px solid #1f2937;
       font-size: 13px;
     }
-
-    .post-header {
-      display: flex;
-      justify-content: space-between;
-      gap: 6px;
+    .item-title {
+      font-weight: 600;
       margin-bottom: 4px;
     }
-
-    .post-title {
-      font-weight: 600;
+    .item-meta {
+      font-size: 11px;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+    .item-body {
       font-size: 13px;
-    }
-
-    .post-meta {
-      font-size: 11px;
-      color: var(--text-soft);
-      text-align: right;
-    }
-
-    .post-body {
-      font-size: 12px;
-      color: var(--text);
       white-space: pre-wrap;
-      margin-top: 2px;
     }
 
-    .glossary-list {
-      margin-top: 4px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      max-height: 280px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .glossary-item {
-      padding: 8px 10px;
-      background: rgba(15, 23, 42, 0.95);
-      border-radius: 12px;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      font-size: 12px;
-    }
-
-    .glossary-term {
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-
-    .glossary-tag {
-      font-size: 10px;
-      color: var(--accent);
-      margin-left: 4px;
-    }
-
-    .glossary-def {
-      color: var(--text-soft);
-    }
-
-    .search-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 6px;
-    }
-
-    .search-row input {
-      flex: 1;
-    }
-
-    .tiny {
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .danger-text {
-      color: var(--danger);
-      font-size: 11px;
-      margin-top: 4px;
-    }
-
-    .sidebar-card {
-      margin-bottom: 10px;
-    }
-
-    .timeline {
-      font-size: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    .timeline-item {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .timeline-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: var(--accent);
-      flex-shrink: 0;
-    }
-
-    .timeline-label {
-      font-weight: 600;
-    }
-
-    .timeline-desc {
-      color: var(--text-soft);
-      font-size: 11px;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      margin-top: 6px;
-      overflow: hidden;
-      border: 1px solid rgba(148, 163, 184, 0.4);
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 40%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, #38bdf8, #22c55e);
+    ul.simple {
+      margin: 0 0 8px 18px;
+      padding: 0;
+      font-size: 13px;
+      color: #d1d5db;
     }
 
     footer {
-      margin-top: 18px;
+      margin-top: 16px;
+      padding: 12px;
       font-size: 11px;
-      color: var(--text-soft);
       text-align: center;
+      color: #6b7280;
     }
   </style>
 </head>
 <body>
-  <div class="app-shell">
+  <div class="wrap">
     <header>
-      <div class="logo-area">
-        <div class="logo-mark">H</div>
-        <h1>
-          H-INT Survival Guide
-          <span>현대중공업 인턴을 위한 비공식 생존 매뉴얼</span>
-        </h1>
-      </div>
-      <div class="tagline">
-        시련은 있지만 실패는 없다.<br />
-        <span style="font-size: 12px;">기록하고, 나누고, 다음 인턴을 편하게.</span>
-      </div>
+      <h1>인턴 생존 가이드</h1>
+      <p>HD현대 인턴 생활하면서 힘든 점·기본 업무 내용을 정리하는 개인용 웹 노트</p>
     </header>
 
-    <div class="tabs">
-      <button class="tab-btn active" data-target="home">
-        <span class="emoji">🏠</span>홈
-      </button>
-      <button class="tab-btn" data-target="faq">
-        <span class="emoji">📌</span>FAQ / 기본업무
-      </button>
-      <button class="tab-btn" data-target="struggles">
-        <span class="emoji">😵</span>시련 공유
-      </button>
-      <button class="tab-btn" data-target="mistakes">
-        <span class="emoji">🛠</span>실수 박물관
-      </button>
-      <button class="tab-btn" data-target="glossary">
-        <span class="emoji">📚</span>용어 사전
-      </button>
-      <button class="tab-btn" data-target="daily">
-        <span class="emoji">📝</span>Daily 기록
-      </button>
-    </div>
+    <nav>
+      <button class="active" data-target="home">🏠 홈</button>
+      <button data-target="faq">📌 기본 업무 / FAQ</button>
+      <button data-target="struggle">😵 시련 공유</button>
+    </nav>
 
     <main>
-      <section id="home" class="section active">
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">어서 와, 인턴 생활은 처음이지?</div>
-              <div class="card-subtitle">
-                눈치 보면서 물어보기 애매했던 것들, 여기서 메모하고 정리해 두자.
-              </div>
-            </div>
-            <div class="chip">for HD현대 인턴 · 비공식</div>
-          </div>
-
-          <div class="home-highlight">
-            <div>
-              <span class="badge">오늘 이 사이트를 이렇게 써보자</span>
-              <ol class="hint-list">
-                <li>하루에 최소 1개씩 <b>궁금했던 것</b>을 FAQ에 기록하기</li>
-                <li>멘탈 흔들린 날엔 😵 시련 게시판에 한 줄 남기기</li>
-                <li>헷갈린 용어는 📚 용어 사전에 하나씩 추가하기</li>
-                <li>집 가기 전에 📝 Daily 탭에서 <b>오늘 배운 것 1줄</b> 적기</li>
-              </ol>
-              <p class="tiny" style="margin-top: 10px;">
-                ※ 모든 데이터는 이 브라우저의
-                <b>localStorage</b>에만 저장되고 서버로 가지 않습니다.  
-                → 다른 PC에서는 안 보이고, 브라우저 초기화하면 같이 날아감.
-              </p>
-            </div>
-            <div>
-              <div class="stat-grid">
-                <div class="stat">
-                  <div class="stat-label">현재 기록된 FAQ</div>
-                  <div class="stat-value" id="stat-faq-count">0개</div>
-                </div>
-                <div class="stat">
-                  <div class="stat-label">공유된 시련</div>
-                  <div class="stat-value" id="stat-struggle-count">0개</div>
-                </div>
-                <div class="stat">
-                  <div class="stat-label">실수 박물관 전시</div>
-                  <div class="stat-value" id="stat-mistake-count">0개</div>
-                </div>
-                <div class="stat">
-                  <div class="stat-label">오늘 Daily 기록</div>
-                  <div class="stat-value" id="stat-daily-today">미작성</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <!-- 홈 -->
+      <section id="home" class="active">
+        <h2>어서 와, 인턴 생활은 처음이지?</h2>
+        <p class="subtitle">
+          눈치 보면서 물어보기 애매했던 질문, 힘들었던 순간들을 여기다가 정리해 두면
+          나중에 자소서/면접 준비할 때 그대로 써먹을 수 있음.
+        </p>
+        <ul class="simple">
+          <li><b>📌 기본 업무 / FAQ</b> 탭: “이거 뭐 하는 거지?” 싶은 업무 내용을 정리</li>
+          <li><b>😵 시련 공유</b> 탭: 인간관계, 출근, 용어 지옥 같은 멘붕 포인트 기록</li>
+          <li>이 사이트는 <b>내 PC 브라우저(localStorage)</b>에만 저장됨 (서버 X)</li>
+        </ul>
+        <p class="subtitle">
+          ※ 새로고침해도 기록이 남게 하고 싶어서, 브라우저의 localStorage를 사용함.
+          회사 보안 정책에 따라 안 되는 브라우저면 저장이 안 될 수도 있음.
+        </p>
       </section>
 
-      <!-- FAQ 섹션 -->
-      <section id="faq" class="section">
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">FAQ / 기본 업무 정리</div>
-              <div class="card-subtitle">
-                "이거 여쭤봐도 되나...?" 싶은 질문 + 답변을 여기에 정리.
-              </div>
-            </div>
-            <div class="chip">예: IFW 라이선스, LOP가 뭔지, RTU/TCP 차이 등</div>
+      <!-- 기본 업무 / FAQ -->
+      <section id="faq">
+        <h2>📌 기본 업무 / FAQ</h2>
+        <p class="subtitle">
+          “이 업무가 정확히 뭘 의미하는지” 정리해 두는 공간.
+          예) IFW 라이선스, LOP, Modbus RTU/TCP 차이 등
+        </p>
+
+        <form id="faq-form">
+          <div>
+            <label for="faq-title">업무 / 질문 제목</label>
+            <input id="faq-title" type="text" placeholder="예: IFW 라이선스가 뭔지" required />
           </div>
+          <div>
+            <label for="faq-body">설명 / 메모</label>
+            <textarea id="faq-body" placeholder="누가 어떻게 설명해줬는지, 내가 이해한 방식으로 정리" required></textarea>
+          </div>
+          <div class="btn-row">
+            <button type="button" class="btn btn-secondary" id="faq-clear">전체 삭제</button>
+            <button type="submit" class="btn btn-primary">기록 추가</button>
+          </div>
+        </form>
 
-          <form id="faq-form">
-            <div>
-              <label for="faq-title">질문 (예: IFW 라이선스가 뭐예요?)</label>
-              <input id="faq-title" type="text" required />
-            </div>
-            <div>
-              <label for="faq-body">답변 / 메모</label>
-              <textarea
-                id="faq-body"
-                placeholder="어디서 들었는지, 누가 알려줬는지 같이 써두면 나중에 도움됨"
-                required
-              ></textarea>
-            </div>
-            <div class="btn-row">
-              <button type="button" class="btn btn-ghost" id="faq-clear">
-                전체 지우기
-              </button>
-              <button type="submit" class="btn btn-primary">
-                <span>기록 추가</span> 💾
-              </button>
-            </div>
-            <div class="danger-text">
-              ※ 전체 지우기는 이 브라우저에 저장된 FAQ만 삭제됩니다.
-            </div>
-          </form>
-
-          <div class="post-list" id="faq-list"></div>
-        </div>
+        <div id="faq-list" class="list"></div>
       </section>
 
-      <!-- 시련 공유 섹션 -->
-      <section id="struggles" class="section">
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">시련 공유 게시판</div>
-              <div class="card-subtitle">
-                인턴 생활하면서 힘들었던 순간을 가볍게 털어놓는 곳.
-              </div>
-            </div>
-            <div class="chip">익명 느낌의 닉네임 추천: "PLC와눈싸움중"</div>
+      <!-- 시련 공유 -->
+      <section id="struggle">
+        <h2>😵 시련 공유</h2>
+        <p class="subtitle">
+          인턴 생활하면서 멘탈 흔들렸던 순간을 적어두는 공간.
+          나중에 보면 웃기고, 발표/자소서 쓸 때 좋은 소재가 됨.
+        </p>
+
+        <form id="struggle-form">
+          <div>
+            <label for="struggle-title">한 줄 제목</label>
+            <input id="struggle-title" type="text" placeholder="예: 부서장님께 말 걸기 난이도 SS급" required />
           </div>
+          <div>
+            <label for="struggle-body">내용 (선택)</label>
+            <textarea id="struggle-body" placeholder="그 상황이 어땠는지, 내가 어떻게 대응했는지 적어두기"></textarea>
+          </div>
+          <div class="btn-row">
+            <button type="button" class="btn btn-secondary" id="struggle-clear">전체 삭제</button>
+            <button type="submit" class="btn btn-primary">시련 기록</button>
+          </div>
+        </form>
 
-          <form id="struggle-form">
-            <div>
-              <label for="struggle-title">한 줄 제목</label>
-              <input
-                id="struggle-title"
-                type="text"
-                placeholder="예: 부서장님이랑 말 걸기 너무 어렵다…"
-                required
-              />
-            </div>
-            <div>
-              <label for="struggle-body">자세한 내용 (선택)</label>
-              <textarea
-                id="struggle-body"
-                placeholder="선택사항이긴 한데, 나중에 보면 추억됨 ㅋㅋ"
-              ></textarea>
-            </div>
-            <div class="btn-row">
-              <button type="button" class="btn btn-ghost" id="struggle-clear">
-                전체 지우기
-              </button>
-              <button type="submit" class="btn btn-primary">
-                <span>시련 기록</span> 😵
-              </button>
-            </div>
-          </form>
-
-          <div class="post-list" id="struggle-list"></div>
-        </div>
+        <div id="struggle-list" class="list"></div>
       </section>
-
-      <!-- 실수 박물관 섹션 -->
-      <section id="mistakes" class="section">
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">실수 박물관</div>
-              <div class="card-subtitle">
-                내가 한 실수 = 다음 인턴의 시간을 절약해주는 소중한 데이터.
-              </div>
-            </div>
-            <div class="chip">실수도 자산이다</div>
-          </div>
-
-          <form id="mistake-form">
-            <div>
-              <label for="mistake-title">어떤 실수였나요?</label>
-              <input
-                id="mistake-title"
-                type="text"
-                placeholder="예: PT/LT/TE를 제대로 안 보고 태그 잘못 씀"
-                required
-              />
-            </div>
-            <div>
-              <label for="mistake-body">다음에는 이렇게 하자 (해결 방법 / 팁)</label>
-              <textarea
-                id="mistake-body"
-                placeholder="예: 센서 prefix 표 먼저 확인하고, 설계도면이랑 비교 후 태그 입력"
-                required
-              ></textarea>
-            </div>
-            <div class="btn-row">
-              <button type="button" class="btn btn-ghost" id="mistake-clear">
-                전체 지우기
-              </button>
-              <button type="submit" class="btn btn-primary">
-                <span>실수 저장</span> 🛠
-              </button>
-            </div>
-          </form>
-
-          <div class="post-list" id="mistake-list"></div>
-        </div>
-      </section>
-
-      <!-- 용어 사전 섹션 -->
-      <section id="glossary" class="section">
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">용어 사전 (Glossary)</div>
-              <div class="card-subtitle">
-                PT / LT / TE / LECM / RTU / TCP ... 한 번 정리해 두면 평생 편함.
-              </div>
-            </div>
-            <div class="chip">엔진·제어·통신 관련 용어 위주</div>
-          </div>
-
-          <div class="search-row">
-            <input
-              type="text"
-              id="glossary-search"
-              placeholder="용어 검색 (예: LOP, Modbus, Governor)"
-            />
-            <button type="button" class="btn btn-ghost" id="glossary-reset">
-              초기화
-            </button>
-          </div>
-
-          <div class="glossary-list" id="glossary-list"></div>
-        </div>
-      </section>
-
-      <!-- Daily 기록 섹션 -->
-      <section id="daily" class="section">
-        <div class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">Daily 기록</div>
-              <div class="card-subtitle">
-                출근해서 하루를 버텨낸 내 자신에게, 짧게라도 기록 남기기.
-              </div>
-            </div>
-            <div class="chip">1일 1기록 권장</div>
-          </div>
-
-          <form id="daily-form">
-            <div>
-              <label for="daily-date">날짜</label>
-              <input id="daily-date" type="date" required />
-            </div>
-            <div>
-              <label for="daily-learned">오늘 배운 것 (기술/업무)</label>
-              <textarea
-                id="daily-learned"
-                placeholder="예: Modbus RTU랑 TCP의 차이를 배움..."
-              ></textarea>
-            </div>
-            <div>
-              <label for="daily-question">오늘 했던 질문 / 남은 궁금증</label>
-              <textarea
-                id="daily-question"
-                placeholder="예: LECM이 220V를 받는 이유는 다음에 다시 여쭤보기"
-              ></textarea>
-            </div>
-            <div>
-              <label for="daily-feeling">오늘 기분 (한 줄 요약)</label>
-              <textarea
-                id="daily-feeling"
-                placeholder="예: 아직 어색하지만, 조금씩 사람들 얼굴이 익어간다."
-              ></textarea>
-            </div>
-            <div class="btn-row">
-              <button type="submit" class="btn btn-primary">
-                <span>오늘 기록 저장</span> 📝
-              </button>
-            </div>
-          </form>
-
-          <p class="tiny">
-            날짜를 바꾸면 그 날짜에 저장해 둔 기록이 자동으로 불러와집니다.
-          </p>
-        </div>
-      </section>
-
-      <!-- 오른쪽 사이드바 -->
-      <aside>
-        <div class="card sidebar-card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">인턴 로드맵 (예시)</div>
-              <div class="card-subtitle">내가 지금 어디쯤 와 있는지 감 잡기.</div>
-            </div>
-          </div>
-          <div class="timeline">
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <div>
-                <div class="timeline-label">1단계 · 환경 적응</div>
-                <div class="timeline-desc">
-                  회사 구조, 출근 루틴, 팀 사람들 얼굴 익히기.
-                </div>
-              </div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <div>
-                <div class="timeline-label">2단계 · 기본 개념 이해</div>
-                <div class="timeline-desc">
-                  엔진 / 제어 시스템 / HMI / 센서 종류 등 전반 구조 이해.
-                </div>
-              </div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <div>
-                <div class="timeline-label">3단계 · 실제 업무 참여</div>
-                <div class="timeline-desc">
-                  LOP HMI 화면 분석, 태그 정리, 도면/리스트 검토 등.
-                </div>
-              </div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-dot"></div>
-              <div>
-                <div class="timeline-label">4단계 · 기여 & 정리</div>
-                <div class="timeline-desc">
-                  내가 만든 개선/정리 내용 문서화 + 후배 인턴에게 넘길 자료 만들기.
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="progress-bar">
-            <div class="progress-fill" id="progress-fill"></div>
-          </div>
-        </div>
-
-        <div class="card sidebar-card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">사용 TIP</div>
-            </div>
-          </div>
-          <ul class="hint-list">
-            <li>업무 관련 질문은 무조건 📌 FAQ에 먼저 적고, 나중에 정리.</li>
-            <li>멘탈 흔들릴 땐 😵 시련 탭에 아무 말이나 써도 됨.</li>
-            <li>실수는 숨기지 말고 🛠 탭에 적어두면, 그게 곧 성공 포인트.</li>
-            <li>퇴근 전 3분 투자해서 📝 Daily 기록하면 나중에 자소서 쓸 때 개꿀.</li>
-          </ul>
-        </div>
-      </aside>
     </main>
 
     <footer>
-      H-INT Survival Guide · HTML only · GitHub Pages용<br />
-      이 페이지를 직접 수정해서 너만의 인턴 생존기를 만들어도 됨 😎
+      인턴 생존 가이드 · HTML + JS only · GitHub Pages용<br />
+      (이 파일 하나만 index.html로 올리면 동작합니다)
     </footer>
   </div>
 
   <script>
-    // ------- 유틸 함수들 -------
+    // ---------- 탭 전환 ----------
+    (function() {
+      var navButtons = document.querySelectorAll("nav button");
+      var sections = document.querySelectorAll("main section");
 
+      function showSection(id) {
+        sections.forEach(function(sec) {
+          if (sec.id === id) sec.classList.add("active");
+          else sec.classList.remove("active");
+        });
+      }
+
+      navButtons.forEach(function(btn) {
+        btn.addEventListener("click", function() {
+          navButtons.forEach(function(b) { b.classList.remove("active"); });
+          btn.classList.add("active");
+          var target = btn.getAttribute("data-target");
+          showSection(target);
+        });
+      });
+    })();
+
+    // ---------- localStorage 유틸 ----------
     function loadArray(key) {
       try {
-        const raw = localStorage.getItem(key);
+        var raw = localStorage.getItem(key);
         if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : [];
+        var parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return parsed;
+        return [];
       } catch (e) {
-        console.error("loadArray error:", e);
+        console.log("localStorage load error:", e);
         return [];
       }
     }
@@ -886,419 +316,23 @@
       try {
         localStorage.setItem(key, JSON.stringify(arr));
       } catch (e) {
-        console.error("saveArray error:", e);
+        console.log("localStorage save error:", e);
       }
     }
 
-    function formatDateTime(date) {
-      return new Intl.DateTimeFormat("ko-KR", {
-        year: "2-digit",
-        month: "2-digit",
-        day: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-      }).format(date);
+    function nowString() {
+      var d = new Date();
+      var y = String(d.getFullYear()).slice(2);
+      var m = String(d.getMonth() + 1).padStart(2, "0");
+      var day = String(d.getDate()).padStart(2, "0");
+      var hh = String(d.getHours()).padStart(2, "0");
+      var mm = String(d.getMinutes()).padStart(2, "0");
+      return y + "-" + m + "-" + day + " " + hh + ":" + mm;
     }
-
-    function todayStr() {
-      const d = new Date();
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth() + 1).padStart(2, "0");
-      const dd = String(d.getDate()).padStart(2, "0");
-      return `${yyyy}-${mm}-${dd}`;
-    }
-
-    // ------- 탭 전환 로직 -------
-
-    document.querySelectorAll(".tab-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const target = btn.getAttribute("data-target");
-
-        document
-          .querySelectorAll(".tab-btn")
-          .forEach((b) => b.classList.remove("active"));
-        document
-          .querySelectorAll(".section")
-          .forEach((sec) => sec.classList.remove("active"));
-
-        btn.classList.add("active");
-        const section = document.getElementById(target);
-        if (section) {
-          section.classList.add("active");
-        }
-      });
-    });
-
-    // ------- FAQ -------
-
-    const FAQ_KEY = "hint_faq_posts";
-    const faqForm = document.getElementById("faq-form");
-    const faqListEl = document.getElementById("faq-list");
-    const faqClearBtn = document.getElementById("faq-clear");
-
-    function renderFaq() {
-      const posts = loadArray(FAQ_KEY);
-      document.getElementById("stat-faq-count").textContent =
-        posts.length + "개";
-
-      if (!posts.length) {
-        faqListEl.innerHTML =
-          '<div class="post-empty">아직 기록된 FAQ가 없습니다. 오늘 하나만이라도 적어볼까?</div>';
-        return;
-      }
-
-      faqListEl.innerHTML = "";
-      posts
-        .slice()
-        .reverse()
-        .forEach((p) => {
-          const div = document.createElement("div");
-          div.className = "post";
-          div.innerHTML = `
-            <div class="post-header">
-              <div class="post-title">${escapeHtml(p.title)}</div>
-              <div class="post-meta">${escapeHtml(p.createdAt)}</div>
-            </div>
-            <div class="post-body">${escapeHtml(p.body)}</div>
-          `;
-          faqListEl.appendChild(div);
-        });
-    }
-
-    faqForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const titleInput = document.getElementById("faq-title");
-      const bodyInput = document.getElementById("faq-body");
-      const title = titleInput.value.trim();
-      const body = bodyInput.value.trim();
-
-      if (!title || !body) return;
-
-      const posts = loadArray(FAQ_KEY);
-      posts.push({
-        id: Date.now(),
-        title,
-        body,
-        createdAt: formatDateTime(new Date()),
-      });
-      saveArray(FAQ_KEY, posts);
-
-      titleInput.value = "";
-      bodyInput.value = "";
-      renderFaq();
-    });
-
-    faqClearBtn.addEventListener("click", () => {
-      if (!confirm("FAQ 전체를 삭제할까요? (되돌릴 수 없음)")) return;
-      saveArray(FAQ_KEY, []);
-      renderFaq();
-    });
-
-    // ------- 시련 공유 -------
-
-    const STRUGGLE_KEY = "hint_struggle_posts";
-    const struggleForm = document.getElementById("struggle-form");
-    const struggleListEl = document.getElementById("struggle-list");
-    const struggleClearBtn = document.getElementById("struggle-clear");
-
-    function renderStruggles() {
-      const posts = loadArray(STRUGGLE_KEY);
-      document.getElementById("stat-struggle-count").textContent =
-        posts.length + "개";
-
-      if (!posts.length) {
-        struggleListEl.innerHTML =
-          '<div class="post-empty">아직 등록된 시련이 없습니다. 오늘 있었던 소소한 멘붕을 하나 적어봐도 괜찮아요.</div>';
-        return;
-      }
-
-      struggleListEl.innerHTML = "";
-      posts
-        .slice()
-        .reverse()
-        .forEach((p) => {
-          const div = document.createElement("div");
-          div.className = "post";
-          div.innerHTML = `
-            <div class="post-header">
-              <div class="post-title">${escapeHtml(p.title)}</div>
-              <div class="post-meta">${escapeHtml(p.createdAt)}</div>
-            </div>
-            <div class="post-body">${escapeHtml(p.body || "")}</div>
-          `;
-          struggleListEl.appendChild(div);
-        });
-    }
-
-    struggleForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const titleInput = document.getElementById("struggle-title");
-      const bodyInput = document.getElementById("struggle-body");
-      const title = titleInput.value.trim();
-      const body = bodyInput.value.trim();
-
-      if (!title) return;
-
-      const posts = loadArray(STRUGGLE_KEY);
-      posts.push({
-        id: Date.now(),
-        title,
-        body,
-        createdAt: formatDateTime(new Date()),
-      });
-      saveArray(STRUGGLE_KEY, posts);
-
-      titleInput.value = "";
-      bodyInput.value = "";
-      renderStruggles();
-    });
-
-    struggleClearBtn.addEventListener("click", () => {
-      if (!confirm("시련 기록을 모두 삭제할까요?")) return;
-      saveArray(STRUGGLE_KEY, []);
-      renderStruggles();
-    });
-
-    // ------- 실수 박물관 -------
-
-    const MISTAKE_KEY = "hint_mistake_posts";
-    const mistakeForm = document.getElementById("mistake-form");
-    const mistakeListEl = document.getElementById("mistake-list");
-    const mistakeClearBtn = document.getElementById("mistake-clear");
-
-    function renderMistakes() {
-      const posts = loadArray(MISTAKE_KEY);
-      document.getElementById("stat-mistake-count").textContent =
-        posts.length + "개";
-
-      if (!posts.length) {
-        mistakeListEl.innerHTML =
-          '<div class="post-empty">아직 기록된 실수가 없습니다. (없을 리가...😏) 첫 실수를 과감히 기록해 보자.</div>';
-        return;
-      }
-
-      mistakeListEl.innerHTML = "";
-      posts
-        .slice()
-        .reverse()
-        .forEach((p) => {
-          const div = document.createElement("div");
-          div.className = "post";
-          div.innerHTML = `
-            <div class="post-header">
-              <div class="post-title">${escapeHtml(p.title)}</div>
-              <div class="post-meta">${escapeHtml(p.createdAt)}</div>
-            </div>
-            <div class="post-body">${escapeHtml(p.body)}</div>
-          `;
-          mistakeListEl.appendChild(div);
-        });
-    }
-
-    mistakeForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const titleInput = document.getElementById("mistake-title");
-      const bodyInput = document.getElementById("mistake-body");
-      const title = titleInput.value.trim();
-      const body = bodyInput.value.trim();
-
-      if (!title || !body) return;
-
-      const posts = loadArray(MISTAKE_KEY);
-      posts.push({
-        id: Date.now(),
-        title,
-        body,
-        createdAt: formatDateTime(new Date()),
-      });
-      saveArray(MISTAKE_KEY, posts);
-
-      titleInput.value = "";
-      bodyInput.value = "";
-      renderMistakes();
-    });
-
-    mistakeClearBtn.addEventListener("click", () => {
-      if (!confirm("실수 박물관을 전부 비울까요?")) return;
-      saveArray(MISTAKE_KEY, []);
-      renderMistakes();
-    });
-
-    // ------- 용어 사전 (기본 데이터 + 검색) -------
-
-    const glossaryListEl = document.getElementById("glossary-list");
-    const glossarySearchInput = document.getElementById("glossary-search");
-    const glossaryResetBtn = document.getElementById("glossary-reset");
-
-    const GLOSSARY_ITEMS = [
-      {
-        term: "LOP (Local Operating Panel)",
-        tag: "HMI",
-        def: "엔진 근처에서 직접 운전·모니터링할 수 있는 로컬 운전반. 각종 센서값과 상태를 표시하고, 필요 시 시동/정지 등을 제어."
-      },
-      {
-        term: "LECM (Large Engine Control Module)",
-        tag: "제어",
-        def: "대형 엔진 제어를 담당하는 전자 제어 모듈. 센서 신호를 받아서 연료 분사, 점화 타이밍 등 제어 로직을 실행."
-      },
-      {
-        term: "PT / LT / TE",
-        tag: "센서",
-        def: "PT: Pressure Transmitter (압력), LT: Level Transmitter (레벨), TE: Temperature Element/Transmitter (온도)."
-      },
-      {
-        term: "Modbus RTU",
-        tag: "통신",
-        def: "직렬(시리얼) 통신 기반의 Modbus 프로토콜. 주로 RS-485 라인에서 사용, 프레임이 연속적으로 붙어서 속도가 빠른 편."
-      },
-      {
-        term: "Modbus TCP",
-        tag: "통신",
-        def: "Ethernet 기반의 Modbus 프로토콜. TCP/IP 위에서 동작하며, 네트워크 인프라 활용이 쉬운 장점이 있음."
-      },
-      {
-        term: "IFW License",
-        tag: "엔지니어링 툴",
-        def: "엔지니어링 툴/소프트웨어 사용을 위한 라이선스. 동시 접속 가능한 사용자 수가 제한되는 경우가 많음."
-      },
-      {
-        term: "Dry Contact / Wet Contact",
-        tag: "전기",
-        def: "Dry: 외부 전원 없이 접점만 제공. Wet: 제어기에서 전압/전류까지 같이 제공하는 접점."
-      },
-      {
-        term: "Knock (노킹)",
-        tag: "엔진",
-        def: "정상 연소 구간 이후 실린더 내 국부적인 이상 폭발이 일어나면서 압력 파동이 생기는 현상. 센서로 감지해 점화 시기 등을 보정."
-      },
-      {
-        term: "TDC (Top Dead Center)",
-        tag: "기계",
-        def: "피스톤이 실린더 내에서 가장 위에 도달한 위치. 점화/분사 타이밍 설정의 기준점이 됨."
-      },
-      {
-        term: "HMI (Human Machine Interface)",
-        tag: "UI/UX",
-        def: "사람과 기계(설비)가 상호작용하는 화면/패널. 엔진 제어 시스템에서는 LOP, CCR 화면 등이 HMI에 해당."
-      }
-    ];
-
-    function renderGlossary(filter = "") {
-      const q = filter.trim().toLowerCase();
-      const items = GLOSSARY_ITEMS.filter((item) => {
-        if (!q) return true;
-        return (
-          item.term.toLowerCase().includes(q) ||
-          item.def.toLowerCase().includes(q) ||
-          (item.tag && item.tag.toLowerCase().includes(q))
-        );
-      });
-
-      if (!items.length) {
-        glossaryListEl.innerHTML =
-          '<div class="post-empty">검색 결과가 없습니다. 다른 키워드로 검색해 보세요.</div>';
-        return;
-      }
-
-      glossaryListEl.innerHTML = "";
-      items.forEach((item) => {
-        const div = document.createElement("div");
-        div.className = "glossary-item";
-        div.innerHTML = `
-          <div class="glossary-term">
-            ${escapeHtml(item.term)}
-            <span class="glossary-tag">${escapeHtml(item.tag || "")}</span>
-          </div>
-          <div class="glossary-def">${escapeHtml(item.def)}</div>
-        `;
-        glossaryListEl.appendChild(div);
-      });
-    }
-
-    glossarySearchInput.addEventListener("input", () => {
-      renderGlossary(glossarySearchInput.value);
-    });
-
-    glossaryResetBtn.addEventListener("click", () => {
-      glossarySearchInput.value = "";
-      renderGlossary("");
-    });
-
-    // ------- Daily 기록 -------
-
-    const DAILY_KEY = "hint_daily_records";
-    const dailyForm = document.getElementById("daily-form");
-    const dailyDateInput = document.getElementById("daily-date");
-    const dailyLearnedInput = document.getElementById("daily-learned");
-    const dailyQuestionInput = document.getElementById("daily-question");
-    const dailyFeelingInput = document.getElementById("daily-feeling");
-
-    function loadDailyMap() {
-      try {
-        const raw = localStorage.getItem(DAILY_KEY);
-        return raw ? JSON.parse(raw) : {};
-      } catch (e) {
-        console.error("loadDailyMap error:", e);
-        return {};
-      }
-    }
-
-    function saveDailyMap(map) {
-      try {
-        localStorage.setItem(DAILY_KEY, JSON.stringify(map));
-      } catch (e) {
-        console.error("saveDailyMap error:", e);
-      }
-    }
-
-    function updateDailyFormForDate(dateStr) {
-      const map = loadDailyMap();
-      const data = map[dateStr];
-      if (data) {
-        dailyLearnedInput.value = data.learned || "";
-        dailyQuestionInput.value = data.question || "";
-        dailyFeelingInput.value = data.feeling || "";
-      } else {
-        dailyLearnedInput.value = "";
-        dailyQuestionInput.value = "";
-        dailyFeelingInput.value = "";
-      }
-    }
-
-    function updateDailyStat() {
-      const map = loadDailyMap();
-      const today = todayStr();
-      const hasToday = !!map[today];
-      document.getElementById("stat-daily-today").textContent = hasToday
-        ? "기록 완료"
-        : "미작성";
-    }
-
-    dailyDateInput.addEventListener("change", () => {
-      const value = dailyDateInput.value;
-      if (!value) return;
-      updateDailyFormForDate(value);
-    });
-
-    dailyForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const date = dailyDateInput.value || todayStr();
-      const map = loadDailyMap();
-      map[date] = {
-        learned: dailyLearnedInput.value.trim(),
-        question: dailyQuestionInput.value.trim(),
-        feeling: dailyFeelingInput.value.trim(),
-      };
-      saveDailyMap(map);
-      updateDailyStat();
-      alert("Daily 기록이 저장되었습니다!");
-    });
-
-    // ------- 기타: HTML escape -------
 
     function escapeHtml(str) {
-      if (typeof str !== "string") return "";
-      return str
+      if (!str) return "";
+      return String(str)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
@@ -1306,31 +340,119 @@
         .replace(/'/g, "&#039;");
     }
 
-    // ------- 초기화 -------
+    // ---------- FAQ ----------
+    (function() {
+      var KEY = "intern_faq_list_v1";
+      var form = document.getElementById("faq-form");
+      var listEl = document.getElementById("faq-list");
+      var clearBtn = document.getElementById("faq-clear");
 
-    function initProgressBar() {
-      // 대충 오늘 기준으로 4단계 중 어느 정도 왔다는 느낌으로…
-      // 일단 하드코딩 40% (원하면 나중에 로직 바꿔도 됨)
-      const fill = document.getElementById("progress-fill");
-      if (fill) {
-        fill.style.width = "40%";
+      function render() {
+        var items = loadArray(KEY);
+        if (!items.length) {
+          listEl.innerHTML = '<div class="empty">아직 정리된 업무 내용이 없습니다. 오늘 배운 업무 하나만이라도 적어둘까?</div>';
+          return;
+        }
+        listEl.innerHTML = "";
+        // 최신이 위로 오도록 뒤집기
+        items.slice().reverse().forEach(function(item) {
+          var div = document.createElement("div");
+          div.className = "item";
+          div.innerHTML =
+            '<div class="item-title">' + escapeHtml(item.title) + '</div>' +
+            '<div class="item-meta">' + escapeHtml(item.time) + '</div>' +
+            '<div class="item-body">' + escapeHtml(item.body) + '</div>';
+          listEl.appendChild(div);
+        });
       }
-    }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      // 초기 렌더링
-      renderFaq();
-      renderStruggles();
-      renderMistakes();
-      renderGlossary("");
-      initProgressBar();
+      form.addEventListener("submit", function(e) {
+        e.preventDefault();
+        var titleInput = document.getElementById("faq-title");
+        var bodyInput = document.getElementById("faq-body");
+        var title = titleInput.value.trim();
+        var body = bodyInput.value.trim();
+        if (!title || !body) return;
 
-      // Daily 날짜 기본값 오늘로
-      const today = todayStr();
-      dailyDateInput.value = today;
-      updateDailyFormForDate(today);
-      updateDailyStat();
-    });
+        var items = loadArray(KEY);
+        items.push({
+          id: Date.now(),
+          title: title,
+          body: body,
+          time: nowString()
+        });
+        saveArray(KEY, items);
+        titleInput.value = "";
+        bodyInput.value = "";
+        render();
+      });
+
+      clearBtn.addEventListener("click", function() {
+        var ok = confirm("정말 FAQ 내용을 모두 삭제할까요?");
+        if (!ok) return;
+        saveArray(KEY, []);
+        render();
+      });
+
+      render();
+    })();
+
+    // ---------- 시련 공유 ----------
+    (function() {
+      var KEY = "intern_struggle_list_v1";
+      var form = document.getElementById("struggle-form");
+      var listEl = document.getElementById("struggle-list");
+      var clearBtn = document.getElementById("struggle-clear");
+
+      function render() {
+        var items = loadArray(KEY);
+        if (!items.length) {
+          listEl.innerHTML = '<div class="empty">아직 기록된 시련이 없습니다. 오늘 있었던 멘붕 한 줄만 써도 OK.</div>';
+          return;
+        }
+        listEl.innerHTML = "";
+        items.slice().reverse().forEach(function(item) {
+          var div = document.createElement("div");
+          div.className = "item";
+          div.innerHTML =
+            '<div class="item-title">' + escapeHtml(item.title) + '</div>' +
+            '<div class="item-meta">' + escapeHtml(item.time) + '</div>' +
+            '<div class="item-body">' + escapeHtml(item.body || "") + '</div>';
+          listEl.appendChild(div);
+        });
+      }
+
+      form.addEventListener("submit", function(e) {
+        e.preventDefault();
+        var titleInput = document.getElementById("struggle-title");
+        var bodyInput = document.getElementById("struggle-body");
+        var title = titleInput.value.trim();
+        var body = bodyInput.value.trim();
+        if (!title) return;
+
+        var items = loadArray(KEY);
+        items.push({
+          id: Date.now(),
+          title: title,
+          body: body,
+          time: nowString()
+        });
+        saveArray(KEY, items);
+        titleInput.value = "";
+        bodyInput.value = "";
+        render();
+      });
+
+      clearBtn.addEventListener("click", function() {
+        var ok = confirm("정말 시련 기록을 모두 삭제할까요?");
+        if (!ok) return;
+        saveArray(KEY, []);
+        render();
+      });
+
+      render();
+    })();
   </script>
 </body>
 </html>
+
