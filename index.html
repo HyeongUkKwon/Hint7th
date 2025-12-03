@@ -312,6 +312,16 @@ input:focus, textarea:focus {
       <p style="margin-top:10px; color:#97ff54; font-size:14px; font-weight:bold;">
       익명 ID : <span id="userNick"></span>
   </p>
+      <div style="margin-top:6px;">
+        <input id="nicknameInput" 
+               placeholder="닉네임 직접 입력 (저장됨)"
+               style="padding:6px; border-radius:4px; border:1px solid #6FDB29; background:#011d2e; color:white; width:200px;">
+        <button id="saveNickBtn" 
+                style="padding:6px 10px; border:none; background:#6FDB29; color:#002b45; font-weight:bold; border-radius:4px; cursor:pointer;">
+          저장
+        </button>
+      </div>
+
     </header>
 
     <nav>
@@ -478,6 +488,25 @@ input:focus, textarea:focus {
   }
 
   window.USER_NICKNAME = loadUserNickname();
+
+  // ⭐ 닉네임 표시 UI 제어
+  document.getElementById("userNick").textContent = USER_NICKNAME;
+  
+  // ⭐ 닉네임 입력 필드에 기존 저장값 표시
+  document.getElementById("nicknameInput").value = USER_NICKNAME;
+  
+  // ⭐ 저장 버튼 이벤트
+  document.getElementById("saveNickBtn").addEventListener("click", () => {
+    const newNick = document.getElementById("nicknameInput").value.trim();
+    if (!newNick) return alert("닉네임을 입력하세요!");
+  
+    localStorage.setItem("intern_user_nickname", newNick);
+    window.USER_NICKNAME = newNick;
+  
+    document.getElementById("userNick").textContent = newNick;
+    alert("닉네임 저장 완료!");
+  });
+
     
     // ---------- 공통 함수 (삭제되면 전체 기능 멈춤) ----------
   function loadArray(key) {
