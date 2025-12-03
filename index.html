@@ -30,36 +30,7 @@ body {
 }
 
 /* Green line pattern (top right) */
-body::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 400px;
-  height: 400px;
-  background: transparent;
-  border: 2px solid #6FDB29;
-  border-radius: 40% 5% 60% 10%;
-  transform: rotate(25deg);
-  opacity: 0.6;
-  pointer-events: none;
-}
 
-/* Green line pattern (bottom left) */
-body::after {
-  content: "";
-  position: absolute;
-  bottom: -60px;
-  left: -40px;
-  width: 350px;
-  height: 350px;
-  background: transparent;
-  border: 2px solid #6FDB29;
-  border-radius: 10% 50% 20% 70%;
-  transform: rotate(-15deg);
-  opacity: 0.5;
-  pointer-events: none;
-}
 
 /* Card redesign (white modern tile like poster) */
 section {
@@ -288,42 +259,8 @@ input:focus, textarea:focus {
       overflow-x: hidden;
     }
   
-    .hero-background {
-    /* HD Hyundai signature background shape */
-    .hero-shape {
-      position: fixed;
-      top: -50px;
-      right: -80px;
-      width: 480px;
-      height: 600px;
-      border: 4px solid #6FDB29;
-      transform: rotate(25deg);
-      clip-path: polygon(
-        40% 0%, 
-        100% 0%, 
-        100% 100%, 
-        0 60%
-  );
-  <div class="hero-shape"></div>
 
-  opacity: 0.35;
-  pointer-events: none;
-  z-index: -1;
-}
-
-    }
   
-    .hero-line {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 60vw;
-      height: 60vh;
-      border: 2px solid #6FDB29;
-      clip-path: polygon(35% 0, 100% 0, 100% 100%, 0 55%);
-      z-index: -2;
-      opacity: 0.4;
-    }
     /* ---- HD Hyundai Outline Background ---- */
 
     /* HD 현대 윤곽선 로고 스타일 */
@@ -343,10 +280,6 @@ input:focus, textarea:focus {
   </style>
 </head>
 <body>
-
-  <!-- 🔹 HD현대 스타일 대각선 배경 요소 -->
-  <div class="hero-background"></div>
-  <div class="hero-line"></div>
 
   <div class="wrap">
 
