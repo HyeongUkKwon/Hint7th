@@ -572,32 +572,35 @@ input:focus, textarea:focus {
   });
 })();
 
-   /* ---------- Daily 기록 (날짜별 그룹) ---------- */
-  (function () {
-  let currentDept = "조선"; // 기본값
 
-  const KEY = "intern_daily_by_dept_v1";
+  /* ---------- Daily 기록 (날짜별 + 사업부별 저장) ---------- */
+(function () {
+  let currentDept = "조선"; // 기본 선택 값
+
+  const KEY = "intern_daily_by_dept_v2";
   const form = document.getElementById("daily-form");
   const listEl = document.getElementById("faq-list");
   const clearBtn = document.getElementById("daily-clear");
 
-  const deptButtons = document.querySelectorAll(".dept");
-  deptButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      deptButtons.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      currentDept = btn.dataset.dept;
-      render();
-    });
-  });
+  function loadDeptStore() {
+    try {
+      return JSON.parse(localStorage.getItem(KEY)) || {};
+    } catch {
+      return {};
+    }
+  }
+
+  function saveDeptStore(data) {
+    localStorage.setItem(KEY, JSON.stringify(data));
+  }
 
   function today() {
     const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
   }
 
   function render() {
-    const store = loadArray(KEY);
+    const store = loadDeptStore();
     const logs = store[currentDept] || [];
 
     if (!logs.length) {
@@ -605,14 +608,15 @@ input:focus, textarea:focus {
       return;
     }
 
-    const grouped = logs.reverse().reduce((acc, item) => {
-      (acc[item.date] = acc[item.date] || []).push(item);
+    const grouped = logs.reduce((acc, item) => {
+      acc[item.date] = acc[item.date] || [];
+      acc[item.date].push(item);
       return acc;
     }, {});
 
     listEl.innerHTML = "";
 
-    Object.keys(grouped).forEach(date => {
+    Object.keys(grouped).reverse().forEach(date => {
       const container = document.createElement("div");
       container.className = "item";
 
@@ -644,26 +648,38 @@ input:focus, textarea:focus {
     });
   }
 
-  form.addEventListener("submit", function (e) {
+  // 저장 이벤트
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
     const bodyInput = document.getElementById("daily-body");
     const text = bodyInput.value.trim();
     if (!text) return;
 
-    const store = loadArray(KEY);
+    const store = loadDeptStore();
     store[currentDept] = store[currentDept] || [];
     store[currentDept].push({ id: Date.now(), text, date: today() });
-    saveArray(KEY, store);
 
+    saveDeptStore(store);
     bodyInput.value = "";
     render();
   });
 
-  clearBtn.addEventListener("click", function () {
+  // 사업부 선택 UI
+  document.querySelectorAll(".dept").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".dept").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentDept = btn.dataset.dept;
+      render();
+    });
+  });
+
+  // 삭제 버튼
+  clearBtn.addEventListener("click", () => {
     if (confirm(`${currentDept} 사업부 기록 전부 삭제?`)) {
-      const store = loadArray(KEY);
+      const store = loadDeptStore();
       store[currentDept] = [];
-      saveArray(KEY, store);
+      saveDeptStore(store);
       render();
     }
   });
