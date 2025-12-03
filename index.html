@@ -283,6 +283,31 @@ input:focus, textarea:focus {
       width: 90vw;
       transform: rotate(12deg);
     }
+
+    /* === 하단 라인 2개 (반대 방향) === */
+    .bottom-line-1,
+    .bottom-line-2 {
+      position: fixed;
+      border-top: 2px solid #6FDB29;
+      width: 85vw;
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.22;
+      transform: rotate(-12deg);
+    }
+    
+    /* 첫 번째 아래 라인 */
+    .bottom-line-1 {
+      bottom: 140px;
+      right: -100px;
+    }
+    
+    /* 두 번째 아래 라인 */
+    .bottom-line-2 {
+      bottom: 40px;
+      right: -140px;
+    }
+
     
     /* 첫 번째 (위) */
     .hd-stripes::before {
@@ -320,8 +345,8 @@ input:focus, textarea:focus {
 </head>
 <body>
   <div class="hd-stripes"></div>
-     <div class="bottom-line-1"></div>
-     <div class="bottom-line-2"></div> 
+   <div class="bottom-line-1"></div>
+   <div class="bottom-line-2"></div> 
 
   <div class="wrap">
 
