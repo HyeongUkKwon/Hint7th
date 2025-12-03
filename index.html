@@ -347,11 +347,33 @@ input:focus, textarea:focus {
   </div>
 
   <script>
+  // ---------- 탭 전환 ----------
+(function() {
+  var navButtons = document.querySelectorAll("nav button");
+  var sections = document.querySelectorAll("main section");
+
+  function showSection(id) {
+    sections.forEach(function(sec) {
+      if (sec.id === id) sec.classList.add("active");
+      else sec.classList.remove("active");
+    });
+  }
+
+  navButtons.forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      navButtons.forEach(function(b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      var target = btn.getAttribute("data-target");
+      showSection(target);
+    });
+  });
+})();
+
    /* ---------- Daily 기록 (날짜별 그룹) ---------- */
   (function () {
     const KEY = "intern_daily_log_v1";
     const form = document.getElementById("daily-form");
-    const listEl = document.getElementById("daily-list");
+    const listEl = document.getElementById("faq-list");
     const clearBtn = document.getElementById("daily-clear");
   
     function today() {
