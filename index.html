@@ -280,21 +280,39 @@ input:focus, textarea:focus {
       content: "";
       position: absolute;
       border-top: 2px solid #6FDB29;
-      width: 70vw;
-      transform: rotate(-15deg);
+      width: 90vw;
+      transform: rotate(12deg);
     }
     
-    /* 첫번째 라인 */
+    /* 첫 번째 (위) */
     .hd-stripes::before {
-      top: 140px;
-      right: -150px;
+      top: 120px;
+      left: -150px;
     }
     
-    /* 두번째 라인 */
+    /* 두 번째 (조금 아래) */
     .hd-stripes::after {
-      top: 280px;
-      right: -110px;
+      top: 260px;
+      left: -100px;
     }
+    
+    /* === 하단 라인 2개 (↗ 반대 방향) */
+    .hd-stripes::after,
+    .hd-stripes::before {}
+    
+    /* 새 라인 2개 추가 */
+    .hd-stripes::after,
+    .hd-stripes::before {}
+    
+    .hd-stripes::before,
+    .hd-stripes::after {}
+    
+    /* 묶어서 별도 추가 */
+    .hd-stripes::before,
+    .hd-stripes::after {}
+    
+    .hd-stripes::before,
+    .hd-stripes::after {}
 
     
 
@@ -302,6 +320,8 @@ input:focus, textarea:focus {
 </head>
 <body>
   <div class="hd-stripes"></div>
+     <div class="bottom-line-1"></div>
+     <div class="bottom-line-2"></div> 
 
   <div class="wrap">
 
