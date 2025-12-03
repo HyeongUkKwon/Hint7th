@@ -213,6 +213,8 @@ input:focus, textarea:focus {
       <button class="active" data-target="home">🏠 홈</button>
       <button data-target="faq">📌 기본 업무 / FAQ</button>
       <button data-target="struggle">😵 시련 공유</button>
+      <button data-target="boss">😎 부서장님 백문백답</button>
+      <button data-target="food">🍜 맛집 공유</button>
     </nav>
 
     <main>
@@ -525,6 +527,110 @@ input:focus, textarea:focus {
 
       render();
     })();
+    /* ---------- 부서장님 백문백답 ---------- */
+    (function () {
+      var KEY = "intern_boss_notes";
+      var form = document.getElementById("boss-form");
+      var listEl = document.getElementById("boss-list");
+      var clearBtn = document.getElementById("boss-clear");
+    
+      function render() {
+        var items = loadArray(KEY);
+        if (!items.length) {
+          listEl.innerHTML = '<div class="empty">아직 기록이 없습니다. 오늘 들은 한 문장이라도 적어볼까?</div>';
+          return;
+        }
+        listEl.innerHTML = "";
+        items.slice().reverse().forEach(function (item) {
+          var div = document.createElement("div");
+          div.className = "item";
+          div.innerHTML =
+            `<div class="item-title">${escapeHtml(item.title)}</div>` +
+            `<div class="item-meta">${escapeHtml(item.time)}</div>` +
+            `<div class="item-body">${escapeHtml(item.body)}</div>`;
+          listEl.appendChild(div);
+        });
+      }
+    
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var title = document.getElementById("boss-title").value.trim();
+        var body = document.getElementById("boss-body").value.trim();
+        if (!title || !body) return;
+    
+        var items = loadArray(KEY);
+        items.push({ id: Date.now(), title, body, time: nowString() });
+        saveArray(KEY, items);
+    
+        form.reset();
+        render();
+      });
+    
+      clearBtn.addEventListener("click", function () {
+        if (confirm("정말 전체 삭제할까요?")) {
+          saveArray(KEY, []);
+          render();
+        }
+      });
+    
+      render();
+    })();
+    
+    
+    
+    /* ---------- 맛집 공유 ---------- */
+    (function () {
+      var KEY = "intern_food_list";
+      var form = document.getElementById("food-form");
+      var listEl = document.getElementById("food-list");
+      var clearBtn = document.getElementById("food-clear");
+    
+      function render() {
+        var items = loadArray(KEY);
+        if (!items.length) {
+          listEl.innerHTML = '<div class="empty">아직 공유된 맛집이 없습니다. 점심 먹고 후기 남겨볼까?</div>';
+          return;
+        }
+    
+        listEl.innerHTML = "";
+        items.slice().reverse().forEach(function (item) {
+          var div = document.createElement("div");
+          div.className = "item";
+          div.innerHTML =
+            `<div class="item-title">${escapeHtml(item.title)} (${escapeHtml(item.rating || "⭐️")})</div>` +
+            `<div class="item-meta">추천 메뉴: ${escapeHtml(item.menu || "정보 없음")} · ${escapeHtml(item.time)}</div>` +
+            `<div class="item-body">${escapeHtml(item.body)}</div>`;
+          listEl.appendChild(div);
+        });
+      }
+    
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var title = document.getElementById("food-title").value.trim();
+        var menu = document.getElementById("food-menu").value.trim();
+        var rating = document.getElementById("food-rating").value.trim();
+        var body = document.getElementById("food-body").value.trim();
+    
+        if (!title) return;
+    
+        var items = loadArray(KEY);
+        items.push({ id: Date.now(), title, menu, rating, body, time: nowString() });
+        saveArray(KEY, items);
+    
+        form.reset();
+        render();
+      });
+    
+      clearBtn.addEventListener("click", function () {
+        if (confirm("정말 전체 삭제할까요?")) {
+          saveArray(KEY, []);
+          render();
+        }
+      });
+    
+      render();
+    })();
+
   </script>
 </body>
 </html>
