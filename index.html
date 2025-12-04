@@ -287,6 +287,55 @@
             color: white;
           }
 
+          /* 부서장님 백문백답 섬네일용 */
+            .boss-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+              gap: 12px;
+              margin-bottom: 8px;
+            }
+            
+            .boss-card {
+              border: 1px solid var(--border);
+              border-radius: 12px;
+              padding: 10px;
+              cursor: pointer;
+              background: #fafafa;
+              transition: transform 0.15s ease, box-shadow 0.15s ease;
+            }
+            
+            .boss-card:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+            }
+            
+            .boss-thumb {
+              width: 100%;
+              height: 120px;
+              object-fit: cover;
+              border-radius: 8px;
+              display: block;
+              margin-bottom: 8px;
+            }
+            
+            .boss-info {
+              font-size: 13px;
+              color: var(--subtext);
+            }
+            
+            /* 카드 클릭 시 펼쳐질 전체 이미지 뷰어 */
+            .boss-viewer {
+              margin-top: 10px;
+              max-height: 500px;
+              overflow-y: auto;
+              border-radius: 10px;
+              border: 1px solid var(--border);
+            }
+            .boss-viewer img {
+              width: 100%;
+              display: block;
+            }
+    
   </style>
 </head>
   <body>
@@ -432,15 +481,17 @@
           우리 부서장님 이야기 추가하는 방법 : 사업부 / 부서 / 성함 입력 후 업로드!     
         </p>
 
-          <!-- 버튼 -->
+        <!-- 🔹 위쪽 섬네일 리스트 영역 -->
+        <div id="boss-list" class="boss-grid"></div>
+        
+          <!-- 아래쪽 추가 버튼 -->
           <button id="boss-add-btn" 
             style="width:100%; padding:12px; background:#007aff; color:white; border-radius:10px; border:none; font-weight:bold;">
-            ➕ 부서장님 백문백답 추가하기
+            ➕ 우리 부서장님 백문백답 추가하기
           </button>
 
-            <!-- 숨김 입력폼 -->
-            <form id="boss-form" style="display:none; margin-top:16px;">
-        <form id="boss-form">
+          <!-- 🔹 숨김 입력 폼 (버튼 클릭 시 열림) -->
+          <form id="boss-form" style="display:none; margin-top:16px; display:flex; flex-direction:column; gap:12px;">
 
               <!-- 🏭 사업부 선택 -->
                 <div>
@@ -466,9 +517,16 @@
                     <input id="boss-name" type="text" placeholder="예: 김OO 부장님" required />
                   </div>
 
-          
-
-         
+                <!-- 🖼 JPG 업로드 -->
+                  <div>
+                    <label>자료 업로드 (JPG 파일만 가능)</label>
+                    <input id="boss-file" type="file" accept="image/jpeg" required />
+                  </div>
+        
+                  <button type="submit" class="btn-primary" style="border:none;">
+                    업로드
+                  </button>
+                </form>       
 
       </section>
       
@@ -932,82 +990,121 @@
 
       render();
     })();
-    /* ---------- 부서장님 백문백답 ---------- */
+    /* ---------- 부서장님 백문백답 (JPG + 섬네일) ---------- */
     (function () {
-      var KEY = "intern_boss_notes";
+      var KEY = "intern_boss_image_v1";
       var form = document.getElementById("boss-form");
       var listEl = document.getElementById("boss-list");
-      var clearBtn = document.getElementById("boss-clear");
-    
+      var addBtn = document.getElementById("boss-add-btn");
+
+      // ▸ 추가하기 버튼 클릭 시 폼 열기/닫기
+      addBtn.addEventListener("click", function () {
+        if (!form) return;
+        form.style.display = (form.style.display === "none" || !form.style.display)
+          ? "flex"
+          : "none";
+      });
+
+      // ▸ localStorage에서 목록 읽어서 섬네일 카드 렌더링
       function render() {
-        var items = loadArray(KEY);
+        var raw = localStorage.getItem(KEY);
+        var items = [];
+        try {
+          items = raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          items = [];
+        }
+
         if (!items.length) {
-          listEl.innerHTML = '<div class="empty">아직 기록이 없습니다.</div>';
+          listEl.innerHTML = '<div class="empty">아직 업로드된 백문백답이 없습니다.</div>';
           return;
         }
-      
+
         listEl.innerHTML = "";
-        items.slice().reverse().forEach(item => {
-          var div = document.createElement("div");
-          div.className = "item";
-          div.innerHTML = `
-            <div class="item-title">${escapeHtml(item.title)}</div>
-            <div class="item-meta">${escapeHtml(item.time)} · 👤 ${escapeHtml(item.user || "익명")}</div>
-            <div class="item-body">${escapeHtml(item.body)}</div>
-      
-            <div style="margin-top:10px; display:flex; gap:8px;">
-              <button class="edit-btn" data-id="${item.id}">✏ 수정</button>
-              <button class="delete-btn" data-id="${item.id}" style="background:red;color:white;">🗑 삭제</button>
+        items.slice().reverse().forEach(function (item) {
+          var card = document.createElement("div");
+          card.className = "boss-card";
+
+          card.innerHTML = `
+            <img src="${item.image}" class="boss-thumb" alt="섬네일 이미지">
+            <div class="boss-info">
+              <div><b>${escapeHtml(item.name)}</b></div>
+              <div>${escapeHtml(item.dept)} / ${escapeHtml(item.team)}</div>
+              <div style="font-size:12px;">${escapeHtml(item.time)}</div>
+            </div>
+            <div class="boss-viewer" style="display:none; margin-top:8px;">
+              <img src="${item.image}" alt="전체 이미지">
             </div>
           `;
-          listEl.appendChild(div);
-        });
-      
-        document.querySelectorAll(".delete-btn").forEach(btn => {
-          btn.onclick = () => {
-            const id = Number(btn.dataset.id);
-            saveArray(KEY, items.filter(i => i.id !== id));
-            render();
-          };
-        });
-      
-        document.querySelectorAll(".edit-btn").forEach(btn => {
-          btn.onclick = () => {
-            const id = Number(btn.dataset.id);
-            const target = items.find(i => i.id === id);
-            const updated = prompt("수정:", target.body);
-            if (!updated) return;
-            target.body = updated;
-            saveArray(KEY, items);
-            render();
-          };
+
+          // 카드 클릭 시 아래에 전체 이미지 펼치기/접기
+          card.addEventListener("click", function () {
+            var viewer = card.querySelector(".boss-viewer");
+            if (!viewer) return;
+            viewer.style.display = (viewer.style.display === "none" || !viewer.style.display)
+              ? "block"
+              : "none";
+          });
+
+          listEl.appendChild(card);
         });
       }
 
-    
-      form.addEventListener("submit", function (e) {
-        e.preventDefault();
-        var title = document.getElementById("boss-title").value.trim();
-        var body = document.getElementById("boss-body").value.trim();
-        if (!title || !body) return;
-    
-        var items = loadArray(KEY);
-        items.push({ id: Date.now(), title, body, time: nowString(), user: USER_NICKNAME });
-        saveArray(KEY, items);
-    
-        form.reset();
-        render();
-      });
-    
-      clearBtn.addEventListener("click", function () {
-        if (confirm("정말 전체 삭제할까요?")) {
-          saveArray(KEY, []);
-          render();
-        }
-      });
-    
+      // ▸ 폼 submit: JPG 읽어서 base64로 저장
+      if (form) {
+        form.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          var dept = document.getElementById("boss-dept").value.trim();
+          var team = document.getElementById("boss-team").value.trim();
+          var name = document.getElementById("boss-name").value.trim();
+          var fileInput = document.getElementById("boss-file");
+          var file = fileInput.files[0];
+
+          if (!dept || !team || !name || !file) {
+            alert("사업부 / 부서 / 성함 / JPG 파일을 모두 입력해주세요.");
+            return;
+          }
+
+          if (file.type !== "image/jpeg") {
+            alert("JPG 형식의 파일만 업로드 가능합니다.");
+            return;
+          }
+
+          var reader = new FileReader();
+          reader.onload = function () {
+            var base64 = reader.result;
+            var raw = localStorage.getItem(KEY);
+            var items = [];
+            try {
+              items = raw ? JSON.parse(raw) : [];
+            } catch (e) {
+              items = [];
+            }
+
+            items.push({
+              id: Date.now(),
+              dept: dept,
+              team: team,
+              name: name,
+              image: base64,
+              time: nowString(),
+              user: USER_NICKNAME
+            });
+
+            localStorage.setItem(KEY, JSON.stringify(items));
+
+            form.reset();
+            form.style.display = "none";
+            render();
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+
       render();
     })();
+
     
     
     
