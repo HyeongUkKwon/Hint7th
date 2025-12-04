@@ -790,7 +790,7 @@
             btn.addEventListener("click", () => {
               const id = Number(btn.dataset.id);
               const store = loadDeptStore();
-              const logs = store[currentDept];
+              const logs = getLogsRef(store, currentDept, currentMid, currentTeam);
               const target = logs.find(i => i.id === id);
         
               const updated = prompt("수정할 내용을 입력하세요:", target.text);
@@ -807,7 +807,13 @@
             btn.addEventListener("click", () => {
               const id = Number(btn.dataset.id);
               const store = loadDeptStore();
-              store[currentDept] = store[currentDept].filter(i => i.id !== id);
+              const logs = getLogsRef(store, currentDept, currentMid, currentTeam);
+              const updated = logs.filter(i => i.id !== id);
+              if (currentDept !== "엔진기계") {
+                store[currentDept] = updated;
+              } else {
+                store[currentDept][currentMid][currentTeam] = updated;
+              }
               saveDeptStore(store);
               render();
             });
@@ -938,7 +944,8 @@
   clearBtn.addEventListener("click", () => {
     if (confirm(`${currentDept} 사업부 기록 전부 삭제?`)) {
       const store = loadDeptStore();
-      store[currentDept] = [];
+      const logs = getLogsRef(store, currentDept, currentMid, currentTeam);
+      logs.length = 0;
       saveDeptStore(store);
       render();
     }
@@ -1234,6 +1241,22 @@
     })();
 
   document.getElementById("userNick").textContent = USER_NICKNAME;
+
+        function getLogsRef(store, dept, mid, team) {
+      // 엔진기계 아닌 경우 → 1단계 구조 유지
+      if (dept !== "엔진기계") {
+        store[dept] ??= [];
+        return store[dept];
+      }
+    
+      // 엔진기계 → 3단계 구조 생성
+      store[dept] ??= {};
+      store[dept][mid] ??= {};
+      store[dept][mid][team] ??= [];
+    
+      return store[dept][mid][team];
+    }
+
   </script>
 </body>
 </html>
