@@ -331,56 +331,13 @@
               border-radius: 10px;
               border: 1px solid var(--border);
             }
-            .boss-viewer img {
+            .boss-viewer img ㄴ{
               width: 100%;
               display: block;
             }
 
 
-              function updateSubmenus() {
-                  const submenu = document.getElementById("eg-submenu");
-                  const structure = deptStructure[currentDept];
-              
-                  if (!structure) {
-                    submenu.style.display = "none";
-                    currentMid = null;
-                    currentTeam = null;
-                    return;
-                  }
-              
-                  submenu.style.display = "block";
-              
-                  const level2Btns = document.querySelectorAll(".eg-level2");
-                  level2Btns.forEach(btn => {
-                    btn.style.display = structure[btn.dataset.level2] ? "block" : "none";
-                  });
-              
-                  if (!currentMid || !structure[currentMid]) {
-                    currentMid = Object.keys(structure)[0];
-                  }
-              
-                  level2Btns.forEach(b =>
-                    b.classList.toggle("active", b.dataset.level2 === currentMid)
-                  );
-              
-                  const level3Btns = document.querySelectorAll(".eg-level3");
-                  level3Btns.forEach(btn => {
-                    btn.style.display =
-                      structure[currentMid] &&
-                      structure[currentMid].includes(btn.dataset.level3)
-                        ? "block"
-                        : "none";
-                  });
-              
-                  const availableTeams = structure[currentMid];
-                  if (availableTeams && (!currentTeam || !availableTeams.includes(currentTeam))) {
-                    currentTeam = availableTeams[0];
-                  }
-              
-                  level3Btns.forEach(b =>
-                    b.classList.toggle("active", b.dataset.level3 === currentTeam)
-                  );
-                }
+             
 
   </style>
 </head>
@@ -618,29 +575,73 @@
   </div>
 
   <script>
-  const deptStructure = {
-    "엔진기계": {
-      "설계": [
-        "제어시스템설계부",
-        "친환경시스템설계부",
-        "엔진개발부",
-        "엔진개발시험부",
-        "대형엔진설계부",
-        "힘센엔진설계부"
-      ],
-      "생산": [
-        "대형엔진생산부",
-        "프로펠러생산부",
-        "힘센/대형시운전부"
-      ],
-      "영업": [
-        "엔진시스템영업/기술",
-        "엔진발전",
-        "중국엔진기술/영업"
-      ]
-    }
-  };
+        const deptStructure = {
+          "엔진기계": {
+            "설계": [
+              "제어시스템설계부",
+              "친환경시스템설계부",
+              "엔진개발부",
+              "엔진개발시험부",
+              "대형엔진설계부",
+              "힘센엔진설계부"
+            ],
+            "생산": [
+              "대형엔진생산부",
+              "프로펠러생산부",
+              "힘센/대형시운전부"
+            ],
+            "영업": [
+              "엔진시스템영업/기술",
+              "엔진발전",
+              "중국엔진기술/영업"
+            ]
+          }
+        };
     
+         function updateSubmenus() {
+                        const submenu = document.getElementById("eg-submenu");
+                        const structure = deptStructure[currentDept];
+                    
+                        if (!structure) {
+                          submenu.style.display = "none";
+                          currentMid = null;
+                          currentTeam = null;
+                          return;
+                        }
+                    
+                        submenu.style.display = "block";
+                    
+                        const level2Btns = document.querySelectorAll(".eg-level2");
+                        level2Btns.forEach(btn => {
+                          btn.style.display = structure[btn.dataset.level2] ? "block" : "none";
+                        });
+                    
+                        if (!currentMid || !structure[currentMid]) {
+                          currentMid = Object.keys(structure)[0];
+                        }
+                    
+                        level2Btns.forEach(b =>
+                          b.classList.toggle("active", b.dataset.level2 === currentMid)
+                        );
+                    
+                        const level3Btns = document.querySelectorAll(".eg-level3");
+                        level3Btns.forEach(btn => {
+                          btn.style.display =
+                            structure[currentMid] &&
+                            structure[currentMid].includes(btn.dataset.level3)
+                              ? "block"
+                              : "none";
+                        });
+                    
+                        const availableTeams = structure[currentMid];
+                        if (availableTeams && (!currentTeam || !availableTeams.includes(currentTeam))) {
+                          currentTeam = availableTeams[0];
+                        }
+                    
+                        level3Btns.forEach(b =>
+                          b.classList.toggle("active", b.dataset.level3 === currentTeam)
+                        );
+                      }
   const animals = [
     "참새","호랑이","고래","고양이","두루미","돌고래","비둘기",
     "부엉이","말미잘","기린","북극곰","판다","치타","늑대","토끼"
