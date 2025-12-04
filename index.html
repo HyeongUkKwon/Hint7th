@@ -1229,10 +1229,10 @@
       function getLogsRef(store, path) {
         let target = getPathArray(path, store);
       
-        if (!Array.isArray(target.entries)) target.entries = [];
+        if (!Array.isArray(target.entries)) {target.entries = [];
         return target.entries;
+        }
       
-
     return target;
     }
   </script>
