@@ -710,6 +710,12 @@
     const store = loadDeptStore();
     let logs;
 
+      // ⭐ 데이터 초기화 코드 (여기 추가!)
+      if (!store[currentDept]) {
+        store[currentDept] = [];
+        saveDeptStore(store);
+      }
+
       if (currentDept === "엔진기계") {
       
         if (!currentMid || !currentTeam) {
