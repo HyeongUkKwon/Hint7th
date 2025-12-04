@@ -719,6 +719,30 @@ input:focus, textarea:focus {
 
           listEl.appendChild(div);
         });
+        // 삭제 버튼 기능
+          listEl.querySelectorAll(".delete-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+              const id = Number(btn.dataset.id);
+              const newItems = items.filter(i => i.id !== id);
+              saveArray(KEY, newItems);
+              render();
+            });
+          });
+        
+          // 수정 버튼 기능
+          listEl.querySelectorAll(".edit-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+              const id = Number(btn.dataset.id);
+              const target = items.find(i => i.id === id);
+        
+              const updated = prompt("수정할 내용:", target.body || target.title);
+              if (!updated) return;
+        
+              target.body = updated;
+              saveArray(KEY, items);
+              render();
+            });
+          }); 
       }
 
       form.addEventListener("submit", function(e) {
@@ -762,50 +786,48 @@ input:focus, textarea:focus {
       function render() {
         var items = loadArray(KEY);
         if (!items.length) {
-          listEl.innerHTML = '<div class="empty">아직 기록이 없습니다. 오늘 들은 한 문장이라도 적어볼까?</div>';
+          listEl.innerHTML = '<div class="empty">아직 기록이 없습니다.</div>';
           return;
         }
+      
         listEl.innerHTML = "";
-        items.slice().reverse().forEach(function (item) {
+        items.slice().reverse().forEach(item => {
           var div = document.createElement("div");
           div.className = "item";
           div.innerHTML = `
             <div class="item-title">${escapeHtml(item.title)}</div>
             <div class="item-meta">${escapeHtml(item.time)} · 👤 ${escapeHtml(item.user || "익명")}</div>
-            <div class="item-body">${escapeHtml(item.body || "")}</div>
-          
-            <div style="margin-top:8px; display:flex; gap:6px;">
-              <button class="edit-btn" data-id="${item.id}" style="padding:4px 8px; font-size:12px;">✏ 수정</button>
-              <button class="delete-btn" data-id="${item.id}" style="padding:4px 8px; font-size:12px; background:#b71c1c; color:white;">🗑 삭제</button>
+            <div class="item-body">${escapeHtml(item.body)}</div>
+      
+            <div style="margin-top:10px; display:flex; gap:8px;">
+              <button class="edit-btn" data-id="${item.id}">✏ 수정</button>
+              <button class="delete-btn" data-id="${item.id}" style="background:red;color:white;">🗑 삭제</button>
             </div>
           `;
-
           listEl.appendChild(div);
         });
-               // 🔧 수정/삭제 이벤트 여기 붙임 (render() 끝나기 전에)
-        listEl.querySelectorAll(".delete-btn").forEach(btn => {
-          btn.addEventListener("click", () => {
+      
+        document.querySelectorAll(".delete-btn").forEach(btn => {
+          btn.onclick = () => {
             const id = Number(btn.dataset.id);
-            const newItems = items.filter(i => i.id !== id);
-            saveArray(KEY, newItems);
+            saveArray(KEY, items.filter(i => i.id !== id));
             render();
-          });
+          };
         });
       
-        listEl.querySelectorAll(".edit-btn").forEach(btn => {
-          btn.addEventListener("click", () => {
+        document.querySelectorAll(".edit-btn").forEach(btn => {
+          btn.onclick = () => {
             const id = Number(btn.dataset.id);
             const target = items.find(i => i.id === id);
-      
-            const newText = prompt("내용 수정:", target.body || target.title);
-            if (!newText) return;
-      
-            target.body = newText;
+            const updated = prompt("수정:", target.body);
+            if (!updated) return;
+            target.body = updated;
             saveArray(KEY, items);
             render();
-          });
+          };
         });
       }
+
     
       form.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -840,23 +862,52 @@ input:focus, textarea:focus {
       var listEl = document.getElementById("food-list");
       var clearBtn = document.getElementById("food-clear");
     
-      function render() {
-        var items = loadArray(KEY);
-        if (!items.length) {
-          listEl.innerHTML = '<div class="empty">아직 공유된 맛집이 없습니다. 점심 먹고 후기 남겨볼까?</div>';
-          return;
-        }
-    
-        listEl.innerHTML = "";
-        items.slice().reverse().forEach(function (item) {
-          var div = document.createElement("div");
-          div.className = "item";
-          div.innerHTML =
-            `<div class="item-title">${escapeHtml(item.title)} (${escapeHtml(item.rating || "⭐️")})</div>` +
-            `<div class="item-meta">추천 메뉴: ${escapeHtml(item.menu || "정보 없음")} · ${escapeHtml(item.time)}</div>` +
-            `<div class="item-body">${escapeHtml(item.body)}</div>`;
-          listEl.appendChild(div);
-        });
+        function render() {
+          var items = loadArray(KEY);
+          if (!items.length) {
+            listEl.innerHTML = '<div class="empty">아직 맛집이 없습니다.</div>';
+            return;
+          }
+        
+          listEl.innerHTML = "";
+          items.slice().reverse().forEach(item => {
+            var div = document.createElement("div");
+            div.className = "item";
+            div.innerHTML = `
+              <div class="item-title">${escapeHtml(item.title)} (${escapeHtml(item.rating || "⭐")})</div>
+              <div class="item-meta">추천: ${escapeHtml(item.menu || "정보 없음")} · ${escapeHtml(item.time)}</div>
+              <div class="item-body">${escapeHtml(item.body || "")}</div>
+        
+              <div style="margin-top:10px; display:flex; gap:8px;">
+                <button class="edit-btn" data-id="${item.id}">✏ 수정</button>
+                <button class="delete-btn" data-id="${item.id}" style="background:red;color:white;">🗑 삭제</button>
+              </div>
+            `;
+            listEl.appendChild(div);
+          });
+        
+          document.querySelectorAll(".delete-btn").forEach(btn => {
+            btn.onclick = () => {
+              const id = Number(btn.dataset.id);
+              saveArray(KEY, items.filter(i => i.id !== id));
+              render();
+            };
+          });
+        
+          document.querySelectorAll(".edit-btn").forEach(btn => {
+            btn.onclick = () => {
+              const id = Number(btn.dataset.id);
+              const target = items.find(i => i.id === id);
+        
+              const updated = prompt("내용 수정:", target.body);
+              if (!updated) return;
+        
+              target.body = updated;
+              saveArray(KEY, items);
+              render();
+            };
+          });
+
       }
     
       form.addEventListener("submit", function (e) {
