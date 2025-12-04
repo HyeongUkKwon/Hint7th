@@ -721,7 +721,8 @@
       
       } else {
       
-        logs = Array.isArray(store[currentDept]) ? store[currentDept] : [];
+        store[currentDept] ??=[];
+        logs = store[currentDept];
       
       } 
     listEl.innerHTML = "";
