@@ -5,106 +5,218 @@
   <title>인턴 생존 가이드</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+       @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&display=swap');
         :root {
-          --primary: #6FDB29;
-          --primary-light: #97ff54;
-          --bg: #002B45;
-          --card: #013958;
-          --border: #0a4a70;
-          --text: #ffffff;
-          --text-sub: #bcd1dd;
+          --bg: #f2f2f7;
+          --card: #ffffff;
+          --text: #111111;
+          --subtext: #6e6e73;
+          --primary: #007aff;
+          --danger: #ff3b30;
+          --radius: 14px;
+          --border: #d1d1d6;
         }
         
         * {
+          font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
           box-sizing: border-box;
-          font-family: 'Segoe UI', Roboto, Pretendard, sans-serif;
         }
         
         body {
           margin: 0;
-          background-image: url("copy_page-0001.jpg");
-          background-size: min(100%, 1600px);
-          background-position: center;
-          background-repeat: no-repeat;
-          background-color: var(--bg);
+          background: var(--bg);
           color: var(--text);
-          overflow-x: hidden;
         }
         
+        /* Layout */
         .wrap {
-          width: min(90%, 1600px);
+          width: min(92%, 1200px);
           margin: auto;
-          padding: 20px;
+          padding: 24px 0;
         }
         
-        /* HEADER */
+        /* Header */
         header {
-          padding: 20px;
+          padding: 28px;
           background: var(--card);
-          border-radius: 10px;
+          border-radius: var(--radius);
           border: 1px solid var(--border);
         }
         
-        /* NAVIGATION */
+        header h1 {
+          font-weight: 700;
+          margin: 0 0 6px;
+          font-size: 26px;
+        }
+        
+        header p {
+          margin: 2px 0;
+          font-size: 14px;
+          color: var(--subtext);
+        }
+        
+        #userNick {
+          color: var(--primary);
+          font-weight: 600;
+        }
+        
+        /* Nav - iOS segmented button */
         nav {
           display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-          margin: 18px 0;
+          gap: 4px;
+          padding: 12px;
+          background: var(--card);
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          margin: 20px;
+          overflow-x: auto;
         }
         
         nav button {
+          flex: 1;
+          padding: 12px 10px;
+          border: none;
+          border-radius: 10px;
           background: transparent;
-          border: 1px solid var(--border);
-          color: var(--text-sub);
-          padding: 10px 16px;
-          border-radius: 6px;
           cursor: pointer;
           font-size: 14px;
-          transition: 0.15s;
+          color: var(--subtext);
+          transition: 0.25s;
         }
         
         nav button.active {
           background: var(--primary);
-          color: #002b45;
-          font-weight: bold;
+          color: white;
+          font-weight: 600;
         }
         
-        nav button:hover:not(.active) {
-          background: #024d72;
-        }
-        
-        /* SECTIONS */
+        /* Sections */
         section {
           display: none;
-          background: rgba(0, 43, 69, 0.55);
-          backdrop-filter: blur(8px);
-          border: 1px solid rgba(111, 219, 41, 0.25);
-          border-radius: 12px;
-          padding: 2rem;
-          margin: 0 auto;
-          width: min(90%, 900px);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+          background: var(--card);
+          margin-top: 14px;
+          border-radius: var(--radius);
+          padding: 26px;
+          border: 1px solid var(--border);
         }
         
         section.active {
           display: block;
         }
         
-        /* List items */
-        .item {
-          padding: 12px;
-          background: #022b42;
-          border-radius: 6px;
-          border: 1px solid var(--border);
+        section h2 {
+          margin: 0 0 4px;
+          font-size: 20px;
+          font-weight: 600;
         }
         
-        /* Input focus */
+        .subtitle {
+          margin-bottom: 18px;
+          font-size: 14px;
+          color: var(--subtext);
+        }
+        
+        /* Form */
+        form {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          margin-bottom: 20px;
+        }
+        
+        input, textarea {
+          width: 100%;
+          padding: 12px 14px;
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          background: #fafafa;
+          font-size: 14px;
+          transition: 0.2s;
+        }
+        
         input:focus, textarea:focus {
           outline: none;
-          border: 2px solid var(--primary);
-          background: #002233;
+          border-color: var(--primary);
+          background: white;
+          box-shadow: 0 0 0 2px rgba(0,122,255,0.2);
         }
+        
+        /* Buttons Row */
+        .btn-row {
+          display: flex;
+          gap: 10px;
+        }
+        
+        .btn-primary {
+          background: var(--primary);
+          padding: 12px;
+          border-radius: 12px;
+          border: none;
+          font-weight: 600;
+          color: white;
+          cursor: pointer;
+        }
+        
+        .btn-secondary {
+          background: #e5e5ea;
+          padding: 12px;
+          border-radius: 12px;
+          border: none;
+          font-weight: 500;
+          cursor: pointer;
+        }
+        
+        /* List Items */
+        .item {
+          background: var(--card);
+          border: 1px solid var(--border);
+          padding: 18px 16px;
+          border-radius: 12px;
+          margin-bottom: 10px;
+        }
+        
+        .item-title {
+          font-size: 16px;
+          font-weight: 600;
+        }
+        
+        .item-meta {
+          font-size: 12px;
+          margin: 4px 0;
+          color: var(--subtext);
+        }
+        
+        .item-body {
+          margin-top: 8px;
+          line-height: 1.45;
+          font-size: 14px;
+        }
+        
+        /* small action buttons */
+        .edit-btn, .delete-btn {
+          padding: 6px 10px;
+          font-size: 13px;
+          border-radius: 8px;
+          border: none;
+          cursor: pointer;
+        }
+        
+        .edit-btn {
+          background: #e5e5ea;
+        }
+        
+        .delete-btn {
+          background: var(--danger);
+          color: white;
+        }
+        
+        /* Empty state */
+        .empty {
+          text-align: center;
+          padding: 26px;
+          color: var(--subtext);
+        }
+
 
   </style>
 </head>
