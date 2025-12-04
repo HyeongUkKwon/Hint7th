@@ -708,29 +708,8 @@
 
   function render() {
     const store = loadDeptStore();
-    let logs;
 
-      // ⭐ 데이터 초기화 코드 (여기 추가!)
-      if (!store[currentDept]) {
-        store[currentDept] = [];
-        saveDeptStore(store);
-      }
-
-      if (currentDept === "엔진기계") {
-      
-        if (!currentMid || !currentTeam) {
-          listEl.innerHTML = `<div class="empty">하위 부서를 먼저 선택하세요.</div>`;
-          return;
-        }
-      
-        logs = store[currentDept]?.[currentMid]?.[currentTeam] || [];
-      
-      } else {
-      
-        store[currentDept] ??=[];
-        logs = store[currentDept];
-      
-      } 
+      logs = getLogsRef(store, currentDept, currentMid, currentTeam);
     listEl.innerHTML = "";
   
 
