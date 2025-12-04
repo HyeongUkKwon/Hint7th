@@ -24,7 +24,7 @@
 body {
   margin: 0;
   background: url("copy_page-0001.jpg");
-  background-size: contain;
+  background-size: min(100%, 1600px);
   background-color: #002B45;
   background-position : center;
   background-repeat: no-repeat;
@@ -145,10 +145,10 @@ section {
   backdrop-filter: blur(8px);
   border-radius: 12px;
   border: 1px solid rgba(111, 219, 41, 0.25);
-  padding: 2vw; /* 화면 비례 */
-  width: 80vw;  /* 화면 기준 자동 조정 */
-  max-width: 1050px; /* 너무 커지지 않도록 제한 */
-  margin: auto;
+  padding: 2rem; /* 화면 비례 */
+  width: min (90%, 900px); /* 화면 기준 자동 조정 */
+  margin: 0 auto;
+  
   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
 }
 
