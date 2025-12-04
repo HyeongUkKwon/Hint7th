@@ -567,7 +567,9 @@
   /* ---------- Daily 기록 (날짜별 + 사업부별 저장) ---------- */
 (function () {
   let currentDept = "조선"; // 기본 선택 값
-
+  let currentMid = "설계"; // 엔진기계 기본 부문
+  let currentTeam = "제어시스템설계부"; // 첫 기본 팀
+  
   const KEY = "intern_daily_by_dept_v3";
   const form = document.getElementById("daily-form");
   const listEl = document.getElementById("faq-list");
@@ -715,16 +717,45 @@
   });
 
   // 사업부 선택 UI
-  document.querySelectorAll(".dept").forEach(btn => {
-    btn.addEventListener("click", () => {
-      document.querySelectorAll(".dept").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      currentDept = btn.dataset.dept;
-      document.getElementById("eg-submenu").style.display =
-        currentDept === "엔진기계" ? "block" : "none";  
-      render();
-    });
-  });
+    // 📍 1단계: 사업부 선택 이벤트
+            document.querySelectorAll(".dept").forEach(btn => {
+              btn.addEventListener("click", () => {
+                document.querySelectorAll(".dept").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+            
+                currentDept = btn.dataset.dept;
+            
+                // 엔진기계 선택 시에만 하위 메뉴 표시
+                document.getElementById("eg-submenu").style.display =
+                  currentDept === "엔진기계" ? "block" : "none";
+            
+                render();
+              });
+            });
+            
+            
+            // 📍 2단계: 🏷️ "설계/생산/영업" 레벨 버튼 이벤트
+            document.querySelectorAll(".eg-level2").forEach(btn => {
+              btn.addEventListener("click", () => {
+                document.querySelectorAll(".eg-level2").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+            
+                currentMid = btn.dataset.level2;
+                render();
+              });
+            });
+      
+      
+      // 📍 3단계: 🧩 세부부서(엔진개발/힘센엔진설계 등) 버튼 이벤트
+      document.querySelectorAll(".eg-level3").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".eg-level3").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+      
+          currentTeam = btn.dataset.level3;
+          render();
+        });
+      });
 
   // 삭제 버튼
   clearBtn.addEventListener("click", () => {
