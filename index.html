@@ -714,9 +714,9 @@
       logs = store[currentDept]?.[currentMid]?.[currentTeam] || [];
     } else {
       logs = store[currentDept] || [];
-    } else {
+    } 
     listEl.innerHTML = "";
-    }
+  
 
     if (!logs.length) {
       listEl.innerHTML = `<div class="empty">${currentDept} 사업부 기록 없음</div>`;
