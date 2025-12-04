@@ -606,7 +606,15 @@
         content.className = "item-body";
         content.style.borderTop = "1px dashed #1f2937";
         content.style.padding = "6px 0";
-        content.textContent = `• ${entry.text}`;
+        content.innerHTML = `
+            • ${entry.text}
+            <div style="margin-top:6px; display:flex; gap:8px;">
+              <button class="daily-edit-btn" data-id="${entry.id}">✏ 수정</button>
+              <button class="daily-delete-btn" data-id="${entry.id}">🗑 삭제</button>
+            </div>
+          `;
+
+        
         body.appendChild(content);
       });
 
