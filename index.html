@@ -840,27 +840,28 @@
     render();
   });
 
-  // 사업부 선택 UI
-    // 📍 1단계: 사업부 선택 이벤트
-            document.querySelectorAll(".dept").forEach(btn => {
-              btn.addEventListener("click", () => {
-                document.querySelectorAll(".dept").forEach(b => b.classList.remove("active"));
-                btn.classList.add("active");
-            
-                currentDept = btn.dataset.dept;
-
-                const submenu = document.getElementById("eg-submenu");
-                  if (currentDept === "엔진기계") {
-                    submenu.style.display = "block";
-                  } else {
-                    submenu.style.display = "none";
-                    currentMid = null;
-                    currentTeam = null;
-                  }
-              
-                  render();
+          // 사업부 선택 UI
+            // 📍 1단계: 사업부 선택 이벤트
+                document.querySelectorAll(".dept").forEach(btn => {
+                  btn.addEventListener("click", () => {
+                    document.querySelectorAll(".dept").forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                
+                    currentDept = btn.dataset.dept;
+                
+                    const submenu = document.getElementById("eg-submenu");
+                
+                    if (currentDept === "엔진기계") {
+                      submenu.style.display = "block";
+                    } else {
+                      submenu.style.display = "none";
+                      currentMid = null;
+                      currentTeam = null;
+                    }
+                
+                    render();
+                  });
                 });
-              });
             
 
             
