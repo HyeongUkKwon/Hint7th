@@ -428,25 +428,48 @@
         <h2>😎 부서장님 백문백답</h2>
         <p class="subtitle">
           부서장님께 들은 명언, 인사이트, 업무 방향성, 꿀팁 등을 저장하는 공간.
-          A급 인턴이 되기 위해서는 꼭 봐야하는 필수 공간!
+          A급 인턴이 되기 위해서는 꼭 봐야하는 필수 공간! <br>
+          우리 부서장님 이야기 추가하는 방법 : 사업부 / 부서 / 성함 입력 후 업로드!     
         </p>
-      
+
+          <!-- 버튼 -->
+          <button id="boss-add-btn" 
+            style="width:100%; padding:12px; background:#007aff; color:white; border-radius:10px; border:none; font-weight:bold;">
+            ➕ 부서장님 백문백답 추가하기
+          </button>
+
+            <!-- 숨김 입력폼 -->
+            <form id="boss-form" style="display:none; margin-top:16px;">
         <form id="boss-form">
-          <div>
-            <label for="boss-title">질문 또는 주제</label>
-            <input id="boss-title" type="text" placeholder="예: '업무에서 가장 중요한 태도'" required />
-          </div>
-          <div>
-            <label for="boss-body">부서장님의 답변 / 내 해석</label>
-            <textarea id="boss-body" placeholder="예: '모르는 걸 두려워하지 말고 질문해라' 라고 하심. → 확실히 질문 문화 중요." required></textarea>
-          </div>
-          <div class="btn-row">
-            <button type="button" class="btn btn-secondary" id="boss-clear">전체 삭제</button>
-            <button type="submit" class="btn btn-primary">기록 저장</button>
-          </div>
-        </form>
-      
-        <div id="boss-list" class="list"></div>
+
+              <!-- 🏭 사업부 선택 -->
+                <div>
+                  <label>사업부 선택</label>
+                  <select id="boss-dept" required>
+                    <option value="">선택해주세요</option>
+                    <option>조선</option>
+                    <option>특수선</option>
+                    <option>엔진기계</option>
+                    <option>해양에너지</option>
+                  </select>
+                </div>
+
+               <!-- 🏢 부서 직접 입력 -->
+                <div>
+                  <label>부서 입력</label>
+                  <input id="boss-team" type="text" placeholder="예: 힘센엔진설계부" required />
+                </div>
+
+                <!-- 👤 성함 직접 입력 -->
+                  <div>
+                    <label>부서장님 성함</label>
+                    <input id="boss-name" type="text" placeholder="예: 김OO 부장님" required />
+                  </div>
+
+          
+
+         
+
       </section>
       
       
