@@ -240,9 +240,10 @@
             justify-content: space-between;
           }
         
-          .dept {
+          .dept, .eg-level2, .eg-level3 {
             flex: 1;
-            padding: 10px 12px;
+            padding: 12px 14px;
+            border-radius: 10px;
             border: none;
             background: transparent;
             color: #6e6e73;
@@ -252,8 +253,17 @@
             border-radius: 10px;
             transition: all 0.25s ease;
           }
+
+            /* Hover 효과 */
+            .dept:hover,
+            .eg-level2:hover,
+            .eg-level3:hover {
+              background: #e5e5ea;
+            }
         
-          .dept.active {
+          .dept.active,
+          .eg-level2.active,
+          .eg-level3.active {
             background: #007aff;
             color: white;
             font-weight: 600;
