@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>인턴 생존 가이드</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+        :root {
+          --primary: #6FDB29;
+          --primary-light: #97ff54;
+          --bg: #002B45;
+          --card: #013958;
+          --border: #0a4a70;
+          --text: #ffffff;
+          --text-sub: #bcd1dd;
+        }
+        
+        * {
+          box-sizing: border-box;
+          font-family: 'Segoe UI', Roboto, Pretendard, sans-serif;
+        }
+        
+        body {
+          margin: 0;
+          background-image: url("copy_page-0001.jpg");
+          background-size: min(100%, 1600px);
+          background-position: center;
+          background-repeat: no-repeat;
+          background-color: var(--bg);
+          color: var(--text);
+          overflow-x: hidden;
+        }
+        
+        .wrap {
+          width: min(90%, 1600px);
+          margin: auto;
+          padding: 20px;
+        }
+        
+        /* HEADER */
+        header {
+          padding: 20px;
+          background: var(--card);
+          border-radius: 10px;
+          border: 1px solid var(--border);
+        }
+        
+        /* NAVIGATION */
+        nav {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin: 18px 0;
+        }
+        
+        nav button {
+          background: transparent;
+          border: 1px solid var(--border);
+          color: var(--text-sub);
+          padding: 10px 16px;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 14px;
+          transition: 0.15s;
+        }
+        
+        nav button.active {
+          background: var(--primary);
+          color: #002b45;
+          font-weight: bold;
+        }
+        
+        nav button:hover:not(.active) {
+          background: #024d72;
+        }
+        
+        /* SECTIONS */
+        section {
+          display: none;
+          background: rgba(0, 43, 69, 0.55);
+          backdrop-filter: blur(8px);
+          border: 1px solid rgba(111, 219, 41, 0.25);
+          border-radius: 12px;
+          padding: 2rem;
+          margin: 0 auto;
+          width: min(90%, 900px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+        
+        section.active {
+          display: block;
+        }
+        
+        /* List items */
+        .item {
+          padding: 12px;
+          background: #022b42;
+          border-radius: 6px;
+          border: 1px solid var(--border);
+        }
+        
+        /* Input focus */
+        input:focus, textarea:focus {
+          outline: none;
+          border: 2px solid var(--primary);
+          background: #002233;
+        }
+
+  </style>
+</head>
+  <body>
+
+
+  <div class="wrap">
+
+    <header>
+      <h1>인턴 생존 가이드</h1>
+      <p>H-int 생활하면서 힘든 점을 공유하는 H-int 대나무숲</p>
+      <!-- 🔥 익명 사용자 표시 UI -->
+      <p style="margin-top:10px; color:#97ff54; font-size:14px; font-weight:bold;">
+      익명 ID : <span id="userNick"></span>
+  </p>
+      <div style="margin-top:6px;">
+        <input id="nicknameInput" 
+               placeholder="닉네임 직접 입력 (저장됨)"
+               style="padding:6px; border-radius:4px; border:1px solid #6FDB29; background:#011d2e; color:white; width:200px;">
+        <button id="saveNickBtn" 
+                style="padding:6px 10px; border:none; background:#6FDB29; color:#002b45; font-weight:bold; border-radius:4px; cursor:pointer;">
+          저장
+        </button>
+      </div>
+
+    </header>
+
+    <nav>
+      <button class="active" data-target="home">🏠 홈</button>
+      <button data-target="faq">📌 기본 업무 / FAQ</button>
+      <button data-target="struggle">😵 시련 공유</button>
+      <button data-target="boss">😎 부서장님 백문백답</button>
+      <button data-target="food">🍜 맛집 공유</button>
+    </nav>
+
+    <main>
+      <!-- 홈 -->
+      <section id="home" class="active">
+        <h2>어서 와, 인턴 생활은 처음이지?</h2>
+        <p class="subtitle">
+          처음 인턴 때는 아무것도 모르는 것이 당연해!
+          지금부터 조금씩 나만의 가이드북을 만들어가자 :)
+        </p>
+        <ul class="simple">
+          <li><b>📌 기본 업무 / FAQ</b> 탭: 인턴 생활의 하루하루를 기록, 성장의 발판!</li>
+          <li><b>😵 시련 공유</b> 탭: 인간관계, 출근, 용어 지옥 같은 멘붕 포인트 기록</li>
+          <li><b>😎 부서장님 백문백답</b> 탭: 너무 멀게만 보이는 부서장님의 이야기들</li>
+          <li><b>🍜 맛집 공유</b> 탭: 울산 내 맛집에 대한 정보들!</li>
+      </ul> 
+      </section>
+
+      <!-- 기본 업무 / FAQ -->
+      <section id="faq">
+        <h2>📌 기본 업무 / FAQ</h2>
+        <p class="subtitle">
+          “이 업무가 정확히 뭘 의미하는지” 정리해 두는 공간.
+          예) 힘센엔진의 4행정 stroke 구조
+        </p>
+        <div class="dept-select">
+          <button data-dept="조선" class="dept active">조선</button>
+          <button data-dept="특수선" class="dept">특수선</button>
+          <button data-dept="엔진기계" class="dept">엔진기계</button>
+          <button data-dept="해양에너지" class="dept">해양에너지</button>
+        </div>
+        <form id="daily-form">
+        <div>
+          <label for="daily-body">오늘 기록</label>
+          <textarea id="daily-body" placeholder="오늘 배운 업무 내용을 적어보세요." required></textarea>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="btn btn-secondary" id="daily-clear">전체 삭제</button>
+          <button type="submit" class="btn btn-primary">기록 추가</button>
+        </div>
+      </form>
+
+        <div id="faq-list" class="list"></div>
+      </section>
+
+      <!-- 시련 공유 -->
+      <section id="struggle">
+        <h2>😵 시련 공유</h2>
+        <p class="subtitle">
+          인턴 생활하면서 멘탈 흔들렸던 순간을 적어두는 공간.
+          나중에 보면 웃기고, 발표/자소서 쓸 때 좋은 소재가 됨.
+        </p>
+
+        <form id="struggle-form">
+          <div>
+            <label for="struggle-title">한 줄 제목</label>
+            <input id="struggle-title" type="text" placeholder="예: 부서장님께 말 걸기 난이도 SS급" required />
+          </div>
+          <div>
+            <label for="struggle-body">내용 (선택)</label>
+            <textarea id="struggle-body" placeholder="그 상황이 어땠는지, 내가 어떻게 대응했는지 적어두기"></textarea>
+          </div>
+          <div class="btn-row">
+            <button type="button" class="btn btn-secondary" id="struggle-clear">전체 삭제</button>
+            <button type="submit" class="btn btn-primary">시련 기록</button>
+          </div>
+        </form>
+
+        <div id="struggle-list" class="list"></div>
+      </section>
+      
+      <!-- 부서장님 백문백답 -->
+      <section id="boss">
+        <h2>😎 부서장님 백문백답</h2>
+        <p class="subtitle">
+          부서장님께 들은 명언, 인사이트, 업무 방향성, 꿀팁 등을 저장하는 공간.
+          A급 인턴이 되기 위해서는 꼭 봐야하는 필수 공간!
+        </p>
+      
+        <form id="boss-form">
+          <div>
+            <label for="boss-title">질문 또는 주제</label>
+            <input id="boss-title" type="text" placeholder="예: '업무에서 가장 중요한 태도'" required />
+          </div>
+          <div>
+            <label for="boss-body">부서장님의 답변 / 내 해석</label>
+            <textarea id="boss-body" placeholder="예: '모르는 걸 두려워하지 말고 질문해라' 라고 하심. → 확실히 질문 문화 중요." required></textarea>
+          </div>
+          <div class="btn-row">
+            <button type="button" class="btn btn-secondary" id="boss-clear">전체 삭제</button>
+            <button type="submit" class="btn btn-primary">기록 저장</button>
+          </div>
+        </form>
+      
+        <div id="boss-list" class="list"></div>
+      </section>
+      
+      
+      
+      <!-- 맛집 공유 -->
+      <section id="food">
+        <h2>🍜 맛집 공유</h2>
+        <p class="subtitle">
+          울산엔 생각보다 숨은 맛집이 많다. 점심 메뉴 고민하지 않도록 기록해두자.
+        </p>
+      
+        <form id="food-form">
+          <div>
+            <label for="food-title">가게 이름</label>
+            <input id="food-title" type="text" placeholder="예: 삼산역 냉면" required />
+          </div>
+          <div>
+            <label for="food-menu">추천 메뉴</label>
+            <input id="food-menu" type="text" placeholder="예: 물냉면 + 만두" />
+          </div>
+          <div>
+            <label for="food-rating">평가 (0~5점)</label>
+            <input id="food-rating" type="text" placeholder="예: ⭐⭐⭐⭐☆ / 4.5점" />
+          </div>
+          <div>
+            <label for="food-body">코멘트</label>
+            <textarea id="food-body" placeholder="예: 점심에 가면 줄 섬. 직원들 친절. 냉면 국물 깔끔함."></textarea>
+          </div>
+          <div class="btn-row">
+            <button type="button" class="btn btn-secondary" id="food-clear">전체 삭제</button>
+            <button type="submit" class="btn btn-primary">맛집 추가</button>
+          </div>
+        </form>
+      
+        <div id="food-list" class="list"></div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script>
+  const animals = [
+    "참새","호랑이","고래","고양이","두루미","돌고래","비둘기",
+    "부엉이","말미잘","기린","북극곰","판다","치타","늑대","토끼"
+  ];
+
+  function generateRandomNickname() {
+    const animal = animals[Math.floor(Math.random() * animals.length)];
+    const num = Math.floor(1000 + Math.random() * 9000);
+    return `${animal}_${num}`;
+  }
+
+  function loadUserNickname() {
+    let stored = localStorage.getItem("intern_user_nickname");
+    if (!stored) {
+      stored = generateRandomNickname();
+      localStorage.setItem("intern_user_nickname", stored);
+    }
+    return stored;
+  }
+
+  window.USER_NICKNAME = loadUserNickname();
+
+  // ⭐ 닉네임 표시 UI 제어
+  document.getElementById("userNick").textContent = USER_NICKNAME;
+  
+  // ⭐ 닉네임 입력 필드에 기존 저장값 표시
+  document.getElementById("nicknameInput").value = USER_NICKNAME;
+  
+  // ⭐ 저장 버튼 이벤트
+  document.getElementById("saveNickBtn").addEventListener("click", () => {
+    const newNick = document.getElementById("nicknameInput").value.trim();
+    if (!newNick) return alert("닉네임을 입력하세요!");
+  
+    localStorage.setItem("intern_user_nickname", newNick);
+    window.USER_NICKNAME = newNick;
+  
+    document.getElementById("userNick").textContent = newNick;
+    alert("닉네임 저장 완료!");
+  });
+
+    
+    // ---------- 공통 함수 (삭제되면 전체 기능 멈춤) ----------
+  function loadArray(key) {
+    try {
+      var raw = localStorage.getItem(key);
+      if (!raw) return [];
+      var parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+      return [];
+    } catch (e) {
+      console.log("localStorage load error:", e);
+      return [];
+    }
+  }
+  
+  function saveArray(key, arr) {
+    try {
+      localStorage.setItem(key, JSON.stringify(arr));
+    } catch (e) {
+      console.log("localStorage save error:", e);
+    }
+  }
+  
+  function nowString() {
+    var d = new Date();
+    var y = String(d.getFullYear()).slice(2);
+    var m = String(d.getMonth() + 1).padStart(2, "0");
+    var day = String(d.getDate()).padStart(2, "0");
+    var hh = String(d.getHours()).padStart(2, "0");
+    var mm = String(d.getMinutes()).padStart(2, "0");
+    return y + "-" + m + "-" + day + " " + hh + ":" + mm;
+  }
+  
+  function escapeHtml(str) {
+    if (!str) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  // ---------- 탭 전환 ----------
+(function() {
+  var navButtons = document.querySelectorAll("nav button");
+  var sections = document.querySelectorAll("main section");
+
+  function showSection(id) {
+    sections.forEach(function(sec) {
+      if (sec.id === id) sec.classList.add("active");
+      else sec.classList.remove("active");
+    });
+  }
+
+  navButtons.forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      navButtons.forEach(function(b) { b.classList.remove("active"); });
+      btn.classList.add("active");
+      var target = btn.getAttribute("data-target");
+      showSection(target);
+    });
+  });
+})();
+
+
+  /* ---------- Daily 기록 (날짜별 + 사업부별 저장) ---------- */
+(function () {
+  let currentDept = "조선"; // 기본 선택 값
+
+  const KEY = "intern_daily_by_dept_v2";
+  const form = document.getElementById("daily-form");
+  const listEl = document.getElementById("faq-list");
+  const clearBtn = document.getElementById("daily-clear");
+
+  function loadDeptStore() {
+    try {
+      return JSON.parse(localStorage.getItem(KEY)) || {};
+    } catch {
+      return {};
+    }
+  }
+
+  function saveDeptStore(data) {
+    localStorage.setItem(KEY, JSON.stringify(data));
+  }
+
+  function today() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+  }
+
+  function render() {
+    const store = loadDeptStore();
+    const logs = store[currentDept] || [];
+
+    if (!logs.length) {
+      listEl.innerHTML = `<div class="empty">${currentDept} 사업부 기록 없음</div>`;
+      return;
+    }
+
+    const grouped = logs.reduce((acc, item) => {
+      acc[item.date] = acc[item.date] || [];
+      acc[item.date].push(item);
+      return acc;
+    }, {});
+
+    listEl.innerHTML = "";
+
+    Object.keys(grouped).reverse().forEach(date => {
+      const container = document.createElement("div");
+      container.className = "item";
+
+      const header = document.createElement("div");
+      header.className = "item-title";
+      header.style.cursor = "pointer";
+      header.textContent = `📅 ${date} ▸`;
+
+      const body = document.createElement("div");
+      body.style.display = "none";
+
+      header.onclick = () => {
+        body.style.display = body.style.display === "none" ? "block" : "none";
+        header.textContent = body.style.display === "none" ? `📅 ${date} ▸` : `📅 ${date} ▼`;
+      };
+
+      grouped[date].forEach(entry => {
+        const content = document.createElement("div");
+        content.className = "item-body";
+        content.style.borderTop = "1px dashed #1f2937";
+        content.style.padding = "6px 0";
+        content.textContent = `• ${entry.text}`;
+        body.appendChild(content);
+      });
+
+      container.appendChild(header);
+      container.appendChild(body);
+      listEl.appendChild(container);
+    });
+  }
+
+  // 저장 이벤트
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const bodyInput = document.getElementById("daily-body");
+    const text = bodyInput.value.trim();
+    if (!text) return;
+
+    const store = loadDeptStore();
+    store[currentDept] = store[currentDept] || [];
+    store[currentDept].push({ id: Date.now(), text, date: today() });
+
+    saveDeptStore(store);
+    bodyInput.value = "";
+    render();
+  });
+
+  // 사업부 선택 UI
+  document.querySelectorAll(".dept").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".dept").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentDept = btn.dataset.dept;
+      render();
+    });
+  });
+
+  // 삭제 버튼
+  clearBtn.addEventListener("click", () => {
+    if (confirm(`${currentDept} 사업부 기록 전부 삭제?`)) {
+      const store = loadDeptStore();
+      store[currentDept] = [];
+      saveDeptStore(store);
+      render();
+    }
+  });
+
+  render();
+})();
+
+
+    // ---------- 시련 공유 ----------
+    (function() {
+      var KEY = "intern_struggle_list_v1";
+      var form = document.getElementById("struggle-form");
+      var listEl = document.getElementById("struggle-list");
+      var clearBtn = document.getElementById("struggle-clear");
+
+      function render() {
+        var items = loadArray(KEY);
+        if (!items.length) {
+          listEl.innerHTML = '<div class="empty">아직 기록된 시련이 없습니다. 오늘 있었던 멘붕 한 줄만 써도 OK.</div>';
+          return;
+        }
+        listEl.innerHTML = "";
+        items.slice().reverse().forEach(function(item) {
+          var div = document.createElement("div");
+          div.className = "item";
+         div.innerHTML = `
+          <div class="item-title">${escapeHtml(item.title)}</div>
+          <div class="item-meta">${escapeHtml(item.time)} · 👤 ${escapeHtml(item.user || "익명")}</div>
+          <div class="item-body">${escapeHtml(item.body || "")}</div>
+        
+          <div style="margin-top:10px; display:flex; gap:8px;">
+            <button class="edit-btn" data-id="${item.id}">✏ 수정</button>
+            <button class="delete-btn" data-id="${item.id}" style="background:#b71c1c;color:white;">🗑 삭제</button>
+          </div>
+        `;
+
+          listEl.appendChild(div);
+        });
+        // 삭제 버튼 기능
+          listEl.querySelectorAll(".delete-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+              const id = Number(btn.dataset.id);
+              const newItems = items.filter(i => i.id !== id);
+              saveArray(KEY, newItems);
+              render();
+            });
+          });
+        
+          // 수정 버튼 기능
+          listEl.querySelectorAll(".edit-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+              const id = Number(btn.dataset.id);
+              const target = items.find(i => i.id === id);
+        
+              const updated = prompt("수정할 내용:", target.body || target.title);
+              if (!updated) return;
+        
+              target.body = updated;
+              saveArray(KEY, items);
+              render();
+            });
+          }); 
+      }
+
+      form.addEventListener("submit", function(e) {
+        e.preventDefault();
+        var titleInput = document.getElementById("struggle-title");
+        var bodyInput = document.getElementById("struggle-body");
+        var title = titleInput.value.trim();
+        var body = bodyInput.value.trim();
+        if (!title) return;
+
+        var items = loadArray(KEY);
+        items.push({
+          id: Date.now(),
+          title: title,
+          body: body,
+          time: nowString(),
+          user: USER_NICKNAME  // ⭐ 사용자 닉네임 저장
+        });
+        saveArray(KEY, items);
+        titleInput.value = "";
+        bodyInput.value = "";
+        render();
+      });
+
+      clearBtn.addEventListener("click", function() {
+        var ok = confirm("정말 시련 기록을 모두 삭제할까요?");
+        if (!ok) return;
+        saveArray(KEY, []);
+        render();
+      });
+
+      render();
+    })();
+    /* ---------- 부서장님 백문백답 ---------- */
+    (function () {
+      var KEY = "intern_boss_notes";
+      var form = document.getElementById("boss-form");
+      var listEl = document.getElementById("boss-list");
+      var clearBtn = document.getElementById("boss-clear");
+    
+      function render() {
+        var items = loadArray(KEY);
+        if (!items.length) {
+          listEl.innerHTML = '<div class="empty">아직 기록이 없습니다.</div>';
+          return;
+        }
+      
+        listEl.innerHTML = "";
+        items.slice().reverse().forEach(item => {
+          var div = document.createElement("div");
+          div.className = "item";
+          div.innerHTML = `
+            <div class="item-title">${escapeHtml(item.title)}</div>
+            <div class="item-meta">${escapeHtml(item.time)} · 👤 ${escapeHtml(item.user || "익명")}</div>
+            <div class="item-body">${escapeHtml(item.body)}</div>
+      
+            <div style="margin-top:10px; display:flex; gap:8px;">
+              <button class="edit-btn" data-id="${item.id}">✏ 수정</button>
+              <button class="delete-btn" data-id="${item.id}" style="background:red;color:white;">🗑 삭제</button>
+            </div>
+          `;
+          listEl.appendChild(div);
+        });
+      
+        document.querySelectorAll(".delete-btn").forEach(btn => {
+          btn.onclick = () => {
+            const id = Number(btn.dataset.id);
+            saveArray(KEY, items.filter(i => i.id !== id));
+            render();
+          };
+        });
+      
+        document.querySelectorAll(".edit-btn").forEach(btn => {
+          btn.onclick = () => {
+            const id = Number(btn.dataset.id);
+            const target = items.find(i => i.id === id);
+            const updated = prompt("수정:", target.body);
+            if (!updated) return;
+            target.body = updated;
+            saveArray(KEY, items);
+            render();
+          };
+        });
+      }
+
+    
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var title = document.getElementById("boss-title").value.trim();
+        var body = document.getElementById("boss-body").value.trim();
+        if (!title || !body) return;
+    
+        var items = loadArray(KEY);
+        items.push({ id: Date.now(), title, body, time: nowString(), user: USER_NICKNAME });
+        saveArray(KEY, items);
+    
+        form.reset();
+        render();
+      });
+    
+      clearBtn.addEventListener("click", function () {
+        if (confirm("정말 전체 삭제할까요?")) {
+          saveArray(KEY, []);
+          render();
+        }
+      });
+    
+      render();
+    })();
+    
+    
+    
+    /* ---------- 맛집 공유 ---------- */
+    (function () {
+      var KEY = "intern_food_list";
+      var form = document.getElementById("food-form");
+      var listEl = document.getElementById("food-list");
+      var clearBtn = document.getElementById("food-clear");
+    
+        function render() {
+          var items = loadArray(KEY);
+          if (!items.length) {
+            listEl.innerHTML = '<div class="empty">아직 맛집이 없습니다.</div>';
+            return;
+          }
+        
+          listEl.innerHTML = "";
+          items.slice().reverse().forEach(item => {
+            var div = document.createElement("div");
+            div.className = "item";
+            div.innerHTML = `
+              <div class="item-title">${escapeHtml(item.title)} (${escapeHtml(item.rating || "⭐")})</div>
+              <div class="item-meta">추천: ${escapeHtml(item.menu || "정보 없음")} · ${escapeHtml(item.time)}</div>
+              <div class="item-body">${escapeHtml(item.body || "")}</div>
+        
+              <div style="margin-top:10px; display:flex; gap:8px;">
+                <button class="edit-btn" data-id="${item.id}">✏ 수정</button>
+                <button class="delete-btn" data-id="${item.id}" style="background:red;color:white;">🗑 삭제</button>
+              </div>
+            `;
+            listEl.appendChild(div);
+          });
+        
+          document.querySelectorAll(".delete-btn").forEach(btn => {
+            btn.onclick = () => {
+              const id = Number(btn.dataset.id);
+              saveArray(KEY, items.filter(i => i.id !== id));
+              render();
+            };
+          });
+        
+          document.querySelectorAll(".edit-btn").forEach(btn => {
+            btn.onclick = () => {
+              const id = Number(btn.dataset.id);
+              const target = items.find(i => i.id === id);
+        
+              const updated = prompt("내용 수정:", target.body);
+              if (!updated) return;
+        
+              target.body = updated;
+              saveArray(KEY, items);
+              render();
+            };
+          });
+
+      }
+    
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var title = document.getElementById("food-title").value.trim();
+        var menu = document.getElementById("food-menu").value.trim();
+        var rating = document.getElementById("food-rating").value.trim();
+        var body = document.getElementById("food-body").value.trim();
+    
+        if (!title) return;
+    
+        var items = loadArray(KEY);
+        items.push({ id: Date.now(), title, menu, rating, body, time: nowString() });
+        saveArray(KEY, items);
+    
+        form.reset();
+        render();
+      });
+    
+      clearBtn.addEventListener("click", function () {
+        if (confirm("정말 전체 삭제할까요?")) {
+          saveArray(KEY, []);
+          render();
+        }
+      });
+    
+      render();
+    })();
+
+  document.getElementById("userNick").textContent = USER_NICKNAME;
+  </script>
+</body>
+</html>
