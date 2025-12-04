@@ -769,21 +769,21 @@
                 // 🔥 레벨3 버튼 모두 숨김
                   document.querySelectorAll(".eg-level3").forEach(b => {
                     b.classList.remove("active");
-                    b.style.display = "none";
+                    b.stylee.display = "none";
                   });
               
                   // 🔥 선택한 카테고리만 표시
-                  document.querySelectorAll(`.eg-level3[data-level2="${currentMid}"]`).forEach(b => {
-                    b.style.display = "block";
+                  const availableTeams = document.querySelectorAll(`.eg-level3[data-level2="${currentMid}"]`);
+                  availableTeams.forEach(b => (b.style.display = "block"));
                   });
               
                   // 기본 선택(첫 버튼 자동 선택)
-                  const firstTeam = document.querySelector(`.eg-level3[data-level2="${currentMid}"]`);
-                  if (firstTeam) {
-                    firstTeam.classList.add("active");
-                    currentTeam = firstTeam.dataset.level3;
-                  }
-                
+                      if (availableTeams.length > 0) {
+                          const first = availableTeams[0];
+                          first.classList.add("active");
+                          currentTeam = first.dataset.level3;
+                        }
+              
                 render();
               });
             });
