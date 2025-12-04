@@ -146,7 +146,7 @@ section {
   border-radius: 12px;
   border: 1px solid rgba(111, 219, 41, 0.25);
   padding: 2rem; /* 화면 비례 */
-  width: min (90%, 900px); /* 화면 기준 자동 조정 */
+  width: min(90%, 900px); /* 화면 기준 자동 조정 */
   margin: 0 auto;
   
   box-shadow: 0 4px 12px rgba(0,0,0,0.25);
@@ -712,10 +712,16 @@ input:focus, textarea:focus {
         items.slice().reverse().forEach(function(item) {
           var div = document.createElement("div");
           div.className = "item";
-          div.innerHTML =
-          `<div class="item-title">${escapeHtml(item.title)}</div>` +
-          `<div class="item-meta">${escapeHtml(item.time)} · 👤 ${escapeHtml(item.user || "익명")}</div>` +
-          `<div class="item-body">${escapeHtml(item.body || "")}</div>`;
+         div.innerHTML = `
+          <div class="item-title">${escapeHtml(item.title)}</div>
+          <div class="item-meta">${escapeHtml(item.time)} · 👤 ${escapeHtml(item.user || "익명")}</div>
+          <div class="item-body">${escapeHtml(item.body || "")}</div>
+        
+          <div style="margin-top:10px; display:flex; gap:8px;">
+            <button class="edit-btn" data-id="${item.id}">✏ 수정</button>
+            <button class="delete-btn" data-id="${item.id}" style="background:#b71c1c;color:white;">🗑 삭제</button>
+          </div>
+        `;
 
           listEl.appendChild(div);
         });
