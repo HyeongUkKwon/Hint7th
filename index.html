@@ -706,11 +706,23 @@
     return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
   }
 
-  function render() {
-    const store = loadDeptStore();
-    const path = [currentDept, currentMid, currentTeam].filter(Boolean);
-    const logs = getLogsRef(store, path);
-    listEl.innerHTML = "";
+    function render() {
+      const store = loadDeptStore();
+      let logs;
+    
+      // 🔥 엔진기계만 세부 구조 사용
+      if (currentDept === "엔진기계") {
+        const path = [currentDept, currentMid, currentTeam].filter(Boolean);
+        logs = getLogsRef(store, path);
+      } else {
+        // 🔥 나머지 사업부는 단일 배열 저장 방식
+        if (!Array.isArray(store[currentDept])) {
+          store[currentDept] = [];
+          saveDeptStore(store);
+        }
+        logs = store[currentDept];
+      }
+
   
 
     if (!logs.length) {
