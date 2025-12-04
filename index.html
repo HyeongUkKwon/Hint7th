@@ -710,11 +710,20 @@
     const store = loadDeptStore();
     let logs;
 
-    if (currentDept === "엔진기계") {
-      logs = store[currentDept]?.[currentMid]?.[currentTeam] || [];
-    } else {
-      logs = store[currentDept] || [];
-    } 
+      if (currentDept === "엔진기계") {
+      
+        if (!currentMid || !currentTeam) {
+          listEl.innerHTML = `<div class="empty">하위 부서를 먼저 선택하세요.</div>`;
+          return;
+        }
+      
+        logs = store[currentDept]?.[currentMid]?.[currentTeam] || [];
+      
+      } else {
+      
+        logs = Array.isArray(store[currentDept]) ? store[currentDept] : [];
+      
+      } 
     listEl.innerHTML = "";
   
 
@@ -839,14 +848,21 @@
                 btn.classList.add("active");
             
                 currentDept = btn.dataset.dept;
-            
-                // 엔진기계 선택 시에만 하위 메뉴 표시
-                document.getElementById("eg-submenu").style.display =
-                  currentDept === "엔진기계" ? "block" : "none";
-            
-                render();
+
+                const submenu = document.getElementByID("eg-submenu");
+                  if (currentDept === "엔진기계") {
+                    submenu.style.display = "block";
+                  } else {
+                    submenu.style.display = "none";
+                    currentMid = null;
+                    currentTeam = null;
+                  }
+              
+                  render();
+                });
               });
-            });
+            
+
             
             
             // 📍 2단계: 🏷️ "설계/생산/영업"
