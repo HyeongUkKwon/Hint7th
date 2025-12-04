@@ -712,6 +712,8 @@
       logs = store[currentDept]?.[currentMid]?.[currentTeam] || [];
     } else {
       logs = store[currentDept] || [];
+    } else {
+    listEl.innerHTML = "";
     }
 
     if (!logs.length) {
