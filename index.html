@@ -801,36 +801,24 @@
 
   // 저장 이벤트
   form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const bodyInput = document.getElementById("daily-body");
-    const text = bodyInput.value.trim();
-    if (!text) return;
+  e.preventDefault();
+  const bodyInput = document.getElementById("daily-body");
+  const text = bodyInput.value.trim();
+  if (!text) return;
 
-    const store = loadDeptStore();
-     // 엔진기계 → 설계 → 세부부서 구조 저장
-      if (currentDept === "엔진기계") {
-        store[currentDept] ??= {};
-        store[currentDept][currentMid] ??= {};
-       store[currentDept][currentMid][currentTeam] ??= [];
-        store[currentDept][currentMid][currentTeam].push({
-          id: Date.now(),
-          text,
-          date: today(),
-        });
-      } else {
-        // 기존 사업부 저장 방식 유지
-        store[currentDept] ??= [];
-        store[currentDept].push({
-          id: Date.now(),
-          text,
-          date: today(),
-        });
-      }
+  const store = loadDeptStore();
+  const logs = getLogsRef(store, currentDept, currentMid, currentTeam);
 
-    saveDeptStore(store);
-    bodyInput.value = "";
-    render();
+  logs.push({
+    id: Date.now(),
+    text,
+    date: today(),
   });
+
+  saveDeptStore(store);
+  bodyInput.value = "";
+  render();
+});
 
           // 사업부 선택 UI
             // 📍 1단계: 사업부 선택 이벤트
