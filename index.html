@@ -249,6 +249,22 @@
             box-shadow: 0 4px 10px rgba(0, 122, 255, 0.25);
           }
 
+        .daily-edit-btn, .daily-delete-btn {
+            padding: 6px 10px;
+            font-size: 13px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+          }
+          
+          .daily-edit-btn {
+            background: #e5e5ea;
+          }
+          
+          .daily-delete-btn {
+            background: #ff3b30;
+            color: white;
+          }
 
   </style>
 </head>
@@ -598,7 +614,35 @@
       container.appendChild(body);
       listEl.appendChild(container);
     });
-  }
+  
+       // 수정 버튼 기능
+          listEl.querySelectorAll(".daily-edit-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+              const id = Number(btn.dataset.id);
+              const store = loadDeptStore();
+              const logs = store[currentDept];
+              const target = logs.find(i => i.id === id);
+        
+              const updated = prompt("수정할 내용을 입력하세요:", target.text);
+              if (!updated) return;
+        
+              target.text = updated;
+              saveDeptStore(store);
+              render();  
+            });
+          });
+        
+          // 삭제 버튼 기능
+          listEl.querySelectorAll(".daily-delete-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+              const id = Number(btn.dataset.id);
+              const store = loadDeptStore();
+              store[currentDept] = store[currentDept].filter(i => i.id !== id);
+              saveDeptStore(store);
+              render();
+            });
+          });
+        }
 
   // 저장 이벤트
   form.addEventListener("submit", (e) => {
