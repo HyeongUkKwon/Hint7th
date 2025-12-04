@@ -335,7 +335,53 @@
               width: 100%;
               display: block;
             }
-    
+
+
+              function updateSubmenus() {
+                  const submenu = document.getElementById("eg-submenu");
+                  const structure = deptStructure[currentDept];
+              
+                  if (!structure) {
+                    submenu.style.display = "none";
+                    currentMid = null;
+                    currentTeam = null;
+                    return;
+                  }
+              
+                  submenu.style.display = "block";
+              
+                  const level2Btns = document.querySelectorAll(".eg-level2");
+                  level2Btns.forEach(btn => {
+                    btn.style.display = structure[btn.dataset.level2] ? "block" : "none";
+                  });
+              
+                  if (!currentMid || !structure[currentMid]) {
+                    currentMid = Object.keys(structure)[0];
+                  }
+              
+                  level2Btns.forEach(b =>
+                    b.classList.toggle("active", b.dataset.level2 === currentMid)
+                  );
+              
+                  const level3Btns = document.querySelectorAll(".eg-level3");
+                  level3Btns.forEach(btn => {
+                    btn.style.display =
+                      structure[currentMid] &&
+                      structure[currentMid].includes(btn.dataset.level3)
+                        ? "block"
+                        : "none";
+                  });
+              
+                  const availableTeams = structure[currentMid];
+                  if (availableTeams && (!currentTeam || !availableTeams.includes(currentTeam))) {
+                    currentTeam = availableTeams[0];
+                  }
+              
+                  level3Btns.forEach(b =>
+                    b.classList.toggle("active", b.dataset.level3 === currentTeam)
+                  );
+                }
+
   </style>
 </head>
   <body>
@@ -847,7 +893,7 @@
                 
                     const submenu = document.getElementById("eg-submenu");
                 
-                    submenu.style.display = "block";
+                    updateSubmenus();
  
 
                     document.querySelector("#daily-form").style.display = "block";
