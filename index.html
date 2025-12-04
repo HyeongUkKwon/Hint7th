@@ -708,7 +708,8 @@
 
   function render() {
     const store = loadDeptStore();
-    const logs = getLogsRef(store, currentDept, currentMid, currentTeam);
+    const path = [currentDept, currentMid, currentTeam].filter(Boolean);
+    const logs = getLogsRef(store, path);
     listEl.innerHTML = "";
   
 
@@ -769,7 +770,8 @@
             btn.addEventListener("click", () => {
               const id = Number(btn.dataset.id);
               const store = loadDeptStore();
-              const logs = getLogsRef(store, currentDept, currentMid, currentTeam);
+              const path = [currentDept, currentMid, currentTeam].filter(Boolean);
+              const logs = getLogsRef(store, path);
               const target = logs.find(i => i.id === id);
         
               const updated = prompt("수정할 내용을 입력하세요:", target.text);
@@ -786,7 +788,9 @@
             btn.addEventListener("click", () => {
               const id = Number(btn.dataset.id);
               const store = loadDeptStore();
-              const logs = getLogsRef(store, currentDept, currentMid, currentTeam);
+              const path = [currentDept, currentMid, currentTeam].filter(Boolean);
+              const logs = getLogsRef(store, path);
+              logs.length = 0;
               const updated = logs.filter(i => i.id !== id);
               if (currentDept !== "엔진기계") {
                 store[currentDept] = updated;
