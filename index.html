@@ -857,6 +857,24 @@
                 btn.classList.add("active");
             
                 currentMid = btn.dataset.level2;
+
+                // 🔹 모든 하위 부서 버튼 숨김
+                document.querySelectorAll(".eg-level3").forEach(b => {
+                  b.style.display = "none";
+                  b.classList.remove("active");
+                });
+                
+                // 🔹 선택된 중분류(level2)의 팀만 표시
+                const matchedTeams = document.querySelectorAll(`.eg-level3[data-level2="${currentMid}"]`);
+                matchedTeams.forEach(b => {
+                  b.style.display = "block";
+                });
+                
+                // 🔹 첫 팀 자동 선택
+                if (matchedTeams.length > 0) {
+                  matchedTeams[0].classList.add("active");
+                  currentTeam = matchedTeams[0].dataset.level3;
+                    }
             
                 // 🔥 레벨3 버튼 초기화
                 document.querySelectorAll(".eg-level3").forEach(b => {
