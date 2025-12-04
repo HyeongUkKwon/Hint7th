@@ -769,11 +769,41 @@ input:focus, textarea:focus {
         items.slice().reverse().forEach(function (item) {
           var div = document.createElement("div");
           div.className = "item";
-          div.innerHTML =
-          `<div class="item-title">${escapeHtml(item.title)}</div>` +
-          `<div class="item-meta">${escapeHtml(item.time)} · 👤 ${escapeHtml(item.user || "익명")}</div>` +
-          `<div class="item-body">${escapeHtml(item.body)}</div>`;
+          div.innerHTML = `
+            <div class="item-title">${escapeHtml(item.title)}</div>
+            <div class="item-meta">${escapeHtml(item.time)} · 👤 ${escapeHtml(item.user || "익명")}</div>
+            <div class="item-body">${escapeHtml(item.body || "")}</div>
+          
+            <div style="margin-top:8px; display:flex; gap:6px;">
+              <button class="edit-btn" data-id="${item.id}" style="padding:4px 8px; font-size:12px;">✏ 수정</button>
+              <button class="delete-btn" data-id="${item.id}" style="padding:4px 8px; font-size:12px; background:#b71c1c; color:white;">🗑 삭제</button>
+            </div>
+          `;
+
           listEl.appendChild(div);
+        });
+               // 🔧 수정/삭제 이벤트 여기 붙임 (render() 끝나기 전에)
+        listEl.querySelectorAll(".delete-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const id = Number(btn.dataset.id);
+            const newItems = items.filter(i => i.id !== id);
+            saveArray(KEY, newItems);
+            render();
+          });
+        });
+      
+        listEl.querySelectorAll(".edit-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            const id = Number(btn.dataset.id);
+            const target = items.find(i => i.id === id);
+      
+            const newText = prompt("내용 수정:", target.body || target.title);
+            if (!newText) return;
+      
+            target.body = newText;
+            saveArray(KEY, items);
+            render();
+          });
         });
       }
     
