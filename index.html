@@ -807,8 +807,8 @@
   if (!text) return;
 
   const store = loadDeptStore();
-  const logs = getLogsRef(store, currentDept, currentMid, currentTeam);
-
+  const path = [currentDept, currentMid, currentTeam].filter(Boolean);
+  const logs = getLogsRef(store, path);
   logs.push({
     id: Date.now(),
     text,
@@ -914,7 +914,8 @@
   clearBtn.addEventListener("click", () => {
     if (confirm(`${currentDept} 사업부 기록 전부 삭제?`)) {
       const store = loadDeptStore();
-      const logs = getLogsRef(store, currentDept, currentMid, currentTeam);
+      const path = [currentDept, currentMid, currentTeam].filter(Boolean);
+      const logs = getLogsRef(store, path);
       logs.length = 0;
       saveDeptStore(store);
       render();
@@ -1212,19 +1213,21 @@
 
   document.getElementById("userNick").textContent = USER_NICKNAME;
 
-        function getLogsRef(store, dept, mid, team) {
-      // 엔진기계 아닌 경우 → 1단계 구조 유지
-      if (dept !== "엔진기계") {
-        store[dept] ??= [];
-        return store[dept];
+    function getPathArray(keys, base) {
+        let ref = base;
+        keys.forEach(k => {
+          if (!ref[k]) ref[k] = {};
+          ref = ref[k];
+        });
+        return ref;
       }
-      // 엔진기계 → 3단계 구조 생성
-      store[dept] ??= {};
-      store[dept][mid] ??= {};
-      store[dept][mid][team] ??= [];
-    
-      return store[dept][mid][team];
-    }
+      
+      function getLogsRef(store, path) {
+        let target = getPathArray(path, store);
+      
+        if (!Array.isArray(target.entries)) target.entries = [];
+        return target.entries;
+      }
 
   </script>
 </body>
