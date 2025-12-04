@@ -5,6 +5,16 @@
   <title>인턴 생존 가이드</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+
+          #internMessage {
+            font-size: 22px;      /* 더 크게 */
+            font-weight: 800;     /* 볼드 강화 */
+            font-style: italic;   /* 글씨 기울임 */
+            transform: rotate(-2deg); /* 약간 눕힌 느낌 (조금만) */
+            color: #fffa9d;       /* 약간 강조되는 따뜻한 색(옵션) */
+            text-shadow: 0 0 8px rgba(255,255,255,0.3);
+          }
+
        @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&display=swap');
         :root {
           --bg: #f2f2f7;
@@ -275,7 +285,7 @@
 
     <header>
       <h1>인턴 생존 가이드</h1>
-      <p>시련은 있어도 실패는 없는거야!</p>
+      <p id="internMessage">시련은 있어도 실패는 없는거야!</p>
       <!-- 🔥 익명 사용자 표시 UI -->
       <p style="margin-top:10px; color:#97ff54; font-size:14px; font-weight:bold;">
       익명 ID : <span id="userNick"></span>
