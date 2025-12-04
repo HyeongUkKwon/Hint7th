@@ -333,12 +333,28 @@
           “이 업무가 정확히 뭘 의미하는지” 정리해 두는 공간.
           예) 힘센엔진의 4행정 stroke 구조
         </p>
-        <div class="dept-select">
-          <button data-dept="조선" class="dept active">조선</button>
-          <button data-dept="특수선" class="dept">특수선</button>
-          <button data-dept="엔진기계" class="dept">엔진기계</button>
-          <button data-dept="해양에너지" class="dept">해양에너지</button>
-        </div>
+            <!-- ▼ 엔진기계 선택 시 표시되는 하위 메뉴 -->
+              <div id="eg-submenu" style="display:none; margin-top:12px;">
+                
+                <!-- 부문 선택 (현재 설계만 활성) -->
+                <div class="dept-select" style="margin-bottom:10px;">
+                  <button class="eg-level2 active" data-level2="설계">설계</button>
+                  <button class="eg-level2" disabled style="opacity:0.4;">생산</button>
+                  <button class="eg-level2" disabled style="opacity:0.4;">영업</button>
+                </div>
+              
+                <!-- 세부 조직 -->
+                <div class="dept-select" id="eg-level3-wrapper">
+                  <button class="eg-level3 active" data-level3="제어시스템설계부">제어시스템설계부</button>
+                  <button class="eg-level3" data-level3="친환경시스템설계부">친환경시스템설계부</button>
+                  <button class="eg-level3" data-level3="엔진개발부">엔진개발부</button>
+                  <button class="eg-level3" data-level3="엔진개발시험부">엔진개발시험부</button>
+                  <button class="eg-level3" data-level3="대형엔진설계부">대형엔진설계부</button>
+                  <button class="eg-level3" data-level3="힘센엔진설계부">힘센엔진설계부</button>
+                </div>
+              
+              </div>
+        
         <form id="daily-form">
         <div>
           <label for="daily-body">오늘 기록</label>
@@ -555,7 +571,7 @@
 (function () {
   let currentDept = "조선"; // 기본 선택 값
 
-  const KEY = "intern_daily_by_dept_v2";
+  const KEY = "intern_daily_by_dept_v3";
   const form = document.getElementById("daily-form");
   const listEl = document.getElementById("faq-list");
   const clearBtn = document.getElementById("daily-clear");
@@ -579,7 +595,13 @@
 
   function render() {
     const store = loadDeptStore();
-    const logs = store[currentDept] || [];
+    let logs;
+
+    if (currentDept === "엔진기계") {
+      logs = store[currentDept]?.[currentMid]?.[currentTeam] || [];
+    } else {
+      logs = store[currentDept] || [];
+    }
 
     if (!logs.length) {
       listEl.innerHTML = `<div class="empty">${currentDept} 사업부 기록 없음</div>`;
@@ -670,8 +692,25 @@
     if (!text) return;
 
     const store = loadDeptStore();
-    store[currentDept] = store[currentDept] || [];
-    store[currentDept].push({ id: Date.now(), text, date: today() });
+     // 엔진기계 → 설계 → 세부부서 구조 저장
+      if (currentDept === "엔진기계") {
+        store[currentDept] ??= {};
+        store[currentDept][currentMid] ??= {};
+       store[currentDept][currentMid][currentTeam] ??= [];
+        store[currentDept][currentMid][currentTeam].push({
+          id: Date.now(),
+          text,
+          date: today(),
+        });
+      } else {
+        // 기존 사업부 저장 방식 유지
+        store[currentDept] ??= [];
+        store[currentDept].push({
+          id: Date.now(),
+          text,
+          date: today(),
+        });
+      }
 
     saveDeptStore(store);
     bodyInput.value = "";
@@ -684,6 +723,8 @@
       document.querySelectorAll(".dept").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       currentDept = btn.dataset.dept;
+      document.getElementById("eg-submenu").style.display =
+        currentDept === "엔진기계" ? "block" : "none";  
       render();
     });
   });
