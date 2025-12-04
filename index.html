@@ -1215,10 +1215,9 @@
         function getLogsRef(store, dept, mid, team) {
       // 엔진기계 아닌 경우 → 1단계 구조 유지
       if (dept !== "엔진기계") {
-        currentMid = null;
-        currentTeam = null;
+        store[dept] ??= [];
+        return store[dept];
       }
-    
       // 엔진기계 → 3단계 구조 생성
       store[dept] ??= {};
       store[dept][mid] ??= {};
