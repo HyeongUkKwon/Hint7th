@@ -254,6 +254,76 @@
             transition: all 0.25s ease;
           }
 
+          /* ---------- 📌 공용 수정 모달 UI ---------- */
+
+          #editModal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+          }
+          
+          #editModal .modal-bg {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(5px);
+          }
+          
+          #editModal .modal-box {
+            position: relative;
+            width: 90%;
+            max-width: 400px;
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+            animation: fadeUp 0.25s ease;
+          }
+          
+          #editModal textarea {
+            width: 100%;
+            height: 110px;
+            padding: 12px;
+            border: 1px solid #d1d1d6;
+            border-radius: 10px;
+            resize: none;
+            font-size: 14px;
+          }
+          
+          #editModal .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            margin-top: 14px;
+          }
+          
+          #cancelEdit {
+            background: #e5e5ea;
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            border: none;
+          }
+          
+          #saveEdit {
+            background: #007aff;
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: white;
+            font-weight: 600;
+            border: none;
+          }
+          
+          @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+
           #eg-level2-wrapper {
               margin-bottom: 12px;
             }
@@ -554,7 +624,19 @@
     </main>
 
   </div>
-
+          <!-- ⭐ 여기 추가 (팝업 HTML) -->
+          <div id="editModal" style="display:none;">
+            <div class="modal-bg"></div>
+            <div class="modal-box">
+              <h3>✏ 내용 수정</h3>
+              <textarea id="editInput"></textarea>
+              <div class="modal-actions">
+                <button id="cancelEdit">취소</button>
+                <button id="saveEdit">저장</button>
+              </div>
+            </div>
+          </div>
+          <!-- ⭐ 여기까지 -->
   <script>
 
   /*----------------------------닉네임 제어----------------------------------*/
@@ -866,7 +948,7 @@
                     const items = loadItems();
                     const target = items.find(i => i.id === id);
               
-                    const updated = prompt("수정할 내용을 입력하세요:", target.text);
+                    openEditModal(target.text, (updated) => {
                     if (!updated) return;
               
                     target.text = updated;
@@ -978,7 +1060,7 @@
               const id = Number(btn.dataset.id);
               const target = items.find(i => i.id === id);
         
-              const updated = prompt("수정할 내용:", target.body || target.title);
+              openEditModal(target.text, (updated) => {
               if (!updated) return;
         
               target.body = updated;
@@ -1179,7 +1261,7 @@
               const id = Number(btn.dataset.id);
               const target = items.find(i => i.id === id);
         
-              const updated = prompt("내용 수정:", target.body);
+              openEditModal(target.body, (updated) => {
               if (!updated) return;
         
               target.body = updated;
