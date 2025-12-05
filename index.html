@@ -795,7 +795,7 @@
             // level3: 선택된 level2에 해당하는 것만 표시
             level3Btns.forEach(btn => {
               const match = btn.dataset.level2 === selected.level2;
-              btn.style.display = (selected.dept === "엔진기계" && match) ? "block" : "none";
+              btn.style.display = match ? "block" : "none";
               btn.classList.toggle("active", btn.dataset.level3 === selected.level3);
             });
           }
