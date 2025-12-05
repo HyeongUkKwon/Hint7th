@@ -623,32 +623,7 @@
 
     </main>
 
-              <script type="module">
-            // Firebase core app
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-          
-            // Firestore database
-            import { getFirestore } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
-          
-            // Your Firebase project config
-            const firebaseConfig = {
-              apiKey: "AIzaSyApdO9aULmMKCRDj6H1Dri1yTgkcHATpmc",
-              authDomain: "h-int-survival.firebaseapp.com",
-              projectId: "h-int-survival",
-              storageBucket: "h-int-survival.firebasestorage.app",
-              messagingSenderId: "343672530876",
-              appId: "1:343672530876:web:3ea707d33f28c8f58eadb9"
-            };
-          
-            // Initialize Firebase
-            const app = initializeApp(firebaseConfig);
-          
-            // Initialize Firestore (🔥 이게 저장소 역할)
-            const db = getFirestore(app);
-          
-            console.log("🔥 Firebase 연결됨 / Firestore 준비 완료:", db);
-      </script>
-
+         
   </div>
           <!-- ⭐ 여기 추가 (팝업 HTML) -->
           <div id="editModal" style="display:none;">
@@ -1389,6 +1364,33 @@
 
 
   </script>
+
+  <script type="module">
+        // Firebase core app
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+      
+        // Firestore database
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+      
+        // Your Firebase project config
+        const firebaseConfig = {
+          apiKey: "AIzaSyApdO9aULmMKCRDj6H1Dri1yTgkcHATpmc",
+          authDomain: "h-int-survival.firebaseapp.com",
+          projectId: "h-int-survival",
+          storageBucket: "h-int-survival.firebasestorage.app",
+          messagingSenderId: "343672530876",
+          appId: "1:343672530876:web:3ea707d33f28c8f58eadb9"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+      
+        // Initialize Firestore (🔥 이게 저장소 역할)
+        const db = getFirestore(app);
+      
+        console.log("🔥 Firebase 연결됨 / Firestore 준비 완료:", db);
+  </script>
+   
 </body>
 </html>
 
