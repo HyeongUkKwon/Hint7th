@@ -575,117 +575,168 @@
   </div>
 
   <script>
-        const DEPT_STRUCTURE = {
-          "조선": null,
-          "특수선": null,
-          "해양에너지": null,
-          "엔진기계": {
-            "설계": [
-              "제어시스템설계부",
-              "친환경시스템설계부",
-              "엔진개발부",
-              "엔진개발시험부",
-              "대형엔진설계부",
-              "힘센엔진설계부"
-            ],
-            "생산": [
-              "대형엔진생산부",
-              "프로펠러생산부",
-              "힘센/대형시운전부"
-            ],
-            "영업": [
-              "엔진시스템영업/기술",
-              "엔진발전",
-              "중국엔진기술/영업"
-            ]
+          document.addEventListener("DOMContentLoaded", function () {
+        
+          /* ============================
+             1) 상태 및 요소 세팅
+          ============================ */
+          let currentDept = null;
+          let currentMid = null;
+          let currentTeam = null;
+        
+          const deptButtons = document.querySelectorAll(".dept");
+          const midSection = document.getElementById("eg-submenu");
+          const midButtons = document.querySelectorAll(".eg-level2");
+          const teamSection = document.getElementById("eg-level3-wrapper");
+          const teamButtons = document.querySelectorAll(".eg-level3");
+        
+          const inputForm = document.getElementById("daily-form");
+          const inputField = document.getElementById("daily-body");
+          const saveBtn = document.getElementById("daily-saveBtn");
+        
+          const logList = document.getElementById("faq-list");
+        
+        
+          /* ============================
+             2) Key 생성 함수
+          ============================ */
+          function getStorageKey() {
+            if (!currentDept) return null;
+        
+            if (currentDept !== "엔진기계") return currentDept;
+        
+            if (currentDept && currentMid && !currentTeam)
+              return `${currentDept} > ${currentMid}`;
+        
+            if (currentDept && currentMid && currentTeam)
+              return `${currentDept} > ${currentMid} > ${currentTeam}`;
+        
+            return null;
           }
-        };
-        // ▼ 여기부터 추가
-        let currentDept = null;    // 사용자가 선택한 1단계
-        let currentMid = null;     // 엔진기계 2단계
-        let currentTeam = null;    // 엔진기계 3단계
-
-        function renderDeptUI() {
-          const container = document.getElementById("dept-container");
-          container.innerHTML = "";
         
-          Object.keys(DEPT_STRUCTURE).forEach(dept => {
-            const btn = document.createElement("button");
-            btn.textContent = dept;
-            btn.classList.add("dept-btn");
         
+          /* ============================
+             3) 기록 Render
+          ============================ */
+          function renderLogs() {
+            const key = getStorageKey();
+            logList.innerHTML = "";
+        
+            if (!key) return;
+        
+            const logs = JSON.parse(localStorage.getItem("dailyLogs") || "{}")[key] || [];
+        
+            logs.forEach(log => {
+              const div = document.createElement("div");
+              div.classList.add("log-item");
+              div.innerHTML = `
+                <span>${log.text}</span>
+                <small>${log.date}</small>
+                <button class="delete-log" data-id="${log.id}">삭제</button>
+              `;
+              logList.appendChild(div);
+            });
+        
+            document.querySelectorAll(".delete-log").forEach(btn => {
+              btn.onclick = () => deleteLog(btn.dataset.id);
+            });
+          }
+        
+        
+          /* ============================
+             4) 삭제 기능
+          ============================ */
+          function deleteLog(id) {
+            const key = getStorageKey();
+            const logs = JSON.parse(localStorage.getItem("dailyLogs") || "{}");
+        
+            logs[key] = logs[key].filter(entry => entry.id != id);
+        
+            localStorage.setItem("dailyLogs", JSON.stringify(logs));
+            renderLogs();
+          }
+        
+        
+          /* ============================
+             5) 저장 기능
+          ============================ */
+          function saveLog() {
+            const key = getStorageKey();
+            if (!key) return;
+        
+            const text = inputField.value.trim();
+            if (!text) return;
+        
+            const logs = JSON.parse(localStorage.getItem("dailyLogs") || "{}");
+            if (!logs[key]) logs[key] = [];
+        
+            logs[key].push({
+              id: Date.now(),
+              date: new Date().toISOString().split("T")[0],
+              text
+            });
+        
+            localStorage.setItem("dailyLogs", JSON.stringify(logs));
+            inputField.value = "";
+            renderLogs();
+          }
+        
+        
+          /* ============================
+             6) UI 이벤트 바인딩
+          ============================ */
+          deptButtons.forEach(btn => {
             btn.onclick = () => {
-              currentDept = dept;
+              currentDept = btn.dataset.dept;
               currentMid = null;
               currentTeam = null;
         
-              renderMidUI();
-              renderTeamUI();
-              renderInputUI();
+              if (currentDept === "엔진기계") {
+                midSection.style.display = "block";
+                teamSection.style.display = "none";
+                inputForm.style.display = "none";
+              } else {
+                midSection.style.display = "none";
+                teamSection.style.display = "none";
+                inputForm.style.display = "block";
+              }
+        
+              renderLogs();
             };
-        
-            container.appendChild(btn);
           });
-        }
         
-        
-        function renderMidUI() {
-          const container = document.getElementById("mid-container");
-          container.innerHTML = "";
-        
-          const structure = DEPT_STRUCTURE[currentDept];
-        
-          if (!structure) return;
-        
-          Object.keys(structure).forEach(mid => {
-            const btn = document.createElement("button");
-            btn.textContent = mid;
-            btn.classList.add("mid-btn");
-        
+          midButtons.forEach(btn => {
             btn.onclick = () => {
-              currentMid = mid;
+              currentMid = btn.dataset.mid;
               currentTeam = null;
-              renderTeamUI();
-              renderInputUI();
+        
+              teamSection.style.display = "block";
+              inputForm.style.display = "none";
+              renderLogs();
             };
-        
-            container.appendChild(btn);
           });
-        }
         
-        
-        function renderTeamUI() {
-          const container = document.getElementById("team-container");
-          container.innerHTML = "";
-        
-          const structure = DEPT_STRUCTURE[currentDept];
-          if (!structure || !currentMid) return;
-        
-          structure[currentMid].forEach(team => {
-            const btn = document.createElement("button");
-            btn.textContent = team;
-            btn.classList.add("team-btn");
-        
+          teamButtons.forEach(btn => {
             btn.onclick = () => {
-              currentTeam = team;
-              renderInputUI();
+              currentTeam = btn.dataset.team;
+              inputForm.style.display = "block";
+              renderLogs();
             };
-        
-            container.appendChild(btn);
           });
-        }
         
         
-        function renderInputUI() {
-          const form = document.getElementById("daily-form");
+          /* ============================
+             7) 저장 이벤트 연결
+          ============================ */
+          saveBtn.onclick = saveLog;
         
-          const noMoreDepth =
-            !DEPT_STRUCTURE[currentDept] ||
-            (currentDept && currentMid && currentTeam);
-        
-          form.style.display = noMoreDepth ? "block" : "none";
-        }
+          /* ============================
+             8) 초기 실행
+          ============================ */
+          renderLogs();
+        });
 
+   /*기본업무 페이지 필요 내용*/   
 
 
   function loadUserNickname() {
