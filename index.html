@@ -550,14 +550,19 @@
   <script>
 
   /*----------------------------닉네임 제어----------------------------------*/
-  function loadUserNickname() {
-    let stored = localStorage.getItem("intern_user_nickname");
-    if (!stored) {
-      stored = generateRandomNickname();
-      localStorage.setItem("intern_user_nickname", stored);
+    function generateRandomNickname() {
+      return "User-" + Math.random().toString(36).substring(2, 10);
+      }
+
+    
+    function loadUserNickname() {
+      let stored = localStorage.getItem("intern_user_nickname");
+      if (!stored) {
+        stored = generateRandomNickname();
+        localStorage.setItem("intern_user_nickname", stored);
+      }
+      return stored;
     }
-    return stored;
-  }
 
   window.USER_NICKNAME = loadUserNickname();
 
