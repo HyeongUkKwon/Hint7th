@@ -835,9 +835,38 @@
                 <div class="item-title">📌 ${item.dept}${item.level2 ? " / " + item.level2 : ""}${item.level3 ? " / " + item.level3 : ""}</div>
                 <div class="item-meta">${item.time} · 👤 ${item.user}</div>
                 <div class="item-body">${escapeHtml(item.text)}</div>
+              
+                <div style="margin-top:10px; display:flex; gap:8px;">
+                  <button class="daily-edit-btn" data-id="${item.id}">✏ 수정</button>
+                  <button class="daily-delete-btn" data-id="${item.id}">🗑 삭제</button>
+                </div>
               `;
               listEl.appendChild(div);
             });
+
+              // --- 여기부터 추가된 코드 ---
+                listEl.querySelectorAll(".daily-delete-btn").forEach(btn => {
+                  btn.addEventListener("click", () => {
+                    const id = Number(btn.dataset.id);
+                    const items = loadItems().filter(i => i.id !== id);
+                    saveItems(items);
+                    render();
+                  });
+                });
+              
+                listEl.querySelectorAll(".daily-edit-btn").forEach(btn => {
+                  btn.addEventListener("click", () => {
+                    const id = Number(btn.dataset.id);
+                    const items = loadItems();
+                    const target = items.find(i => i.id === id);
+              
+                    const updated = prompt("수정할 내용을 입력하세요:", target.text);
+                    if (!updated) return;
+              
+                    target.text = updated;
+                    saveItems(items);
+                    render();
+                  });
           }
         
         
