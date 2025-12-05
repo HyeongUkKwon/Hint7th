@@ -716,6 +716,40 @@
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
   }
+        /* ---------- 📌 공용 수정 모달 로직 (이게 빠져서 동작 안 함) ---------- */
+      const modal = document.getElementById("editModal");
+      const modalInput = document.getElementById("editInput");
+      const cancelBtn = document.getElementById("cancelEdit");
+      const saveBtn = document.getElementById("saveEdit");
+      let onSaveCallback = null; // 저장 버튼 누를 때 실행할 함수 임시 저장
+    
+      // 모달 열기 함수
+      function openEditModal(initialText, callback) {
+        if (!modal) return;
+        modalInput.value = initialText; // 기존 내용 채우기
+        modal.style.display = "flex";   // 모달 보이게 하기
+        onSaveCallback = callback;      // 저장 후 할 일 기억하기
+      }
+    
+      // 취소 버튼 클릭 시
+      if (cancelBtn) {
+        cancelBtn.addEventListener("click", () => {
+          modal.style.display = "none";
+          onSaveCallback = null;
+        });
+      }
+    
+      // 저장 버튼 클릭 시
+      if (saveBtn) {
+        saveBtn.addEventListener("click", () => {
+          if (onSaveCallback && modalInput) {
+            onSaveCallback(modalInput.value); // 수정된 내용 전달
+          }
+          modal.style.display = "none"; // 모달 닫기
+          onSaveCallback = null;
+        });
+      }
+    
  /*----------------------------공통 함수 저장 같은 기능 끝----------------------------------*/
   // ---------- 탭 전환 ----------
 (function() {
