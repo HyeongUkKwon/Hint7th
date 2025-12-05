@@ -675,84 +675,203 @@
 
  /*----------------------------탭 전환----------------------------------*/
   /* ---------- Daily 기록 (날짜별 + 사업부별 저장) ---------- */
+/* ---------------------------------------------------------
+  📌 기본 업무 / FAQ 기능 스크립트
+  - 사업부 선택
+  - 하위 메뉴 표시(엔진기계만)
+  - 기록 추가/수정/삭제
+  - localStorage 저장
+----------------------------------------------------------*/
 
-(function () {
-  const deptButtons = document.querySelectorAll(".dept");
-  const level2Buttons = document.querySelectorAll(".eg-level2");
-  const level3Buttons = document.querySelectorAll(".eg-level3");
-  const egSubmenu = document.getElementById("eg-submenu");
 
-  let selectedDept = "조선";  // 기본값
-  let selectedLevel2 = "";    // 엔진기계 선택 전엔 X
-  let selectedLevel3 = "";
+// ---------------------- 상태값 저장 ----------------------
 
-  // ---- 1️⃣ 사업부 선택 이벤트 ----
-  deptButtons.forEach(btn => {
-    btn.addEventListener("click", function () {
-      deptButtons.forEach(b => b.classList.remove("active"));
-      this.classList.add("active");
+// 현재 선택된 경로 저장할 객체
+let FAQ_PATH = {
+  dept: "조선",   // 기본값
+  level2: null,
+  level3: null
+};
 
-      selectedDept = this.dataset.dept;
+// 저장 함수 (localStorage 유지)
+function saveFAQPath() {
+  localStorage.setItem("intern_faq_path", JSON.stringify(FAQ_PATH));
+}
 
-      // 엔진기계 선택 시에만 하위 메뉴 활성화
-      if (selectedDept === "엔진기계") {
-        egSubmenu.style.display = "block";
-      } else {
-        egSubmenu.style.display = "none";
-        selectedLevel2 = "";
-        selectedLevel3 = "";
-      }
+// 불러오기 함수 (앱 재시작해도 선택 유지)
+function loadFAQPath() {
+  const saved = localStorage.getItem("intern_faq_path");
+  if (saved) FAQ_PATH = JSON.parse(saved);
+}
+loadFAQPath();
 
-      console.log("📌 선택된 사업부:", selectedDept);
+
+// ---------------------- UI 요소 연결 ----------------------
+
+const deptBtns = document.querySelectorAll(".dept");
+const level2Btns = document.querySelectorAll(".eg-level2");
+const level3Btns = document.querySelectorAll(".eg-level3");
+const egSubMenu = document.getElementById("eg-submenu");
+
+
+// ---------------------- 카테고리 UI 동작 ----------------------
+
+// 1단계: 사업부 선택
+deptBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    deptBtns.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    FAQ_PATH.dept = btn.dataset.dept;
+
+    // 엔진기계 선택 시에만 하위 메뉴 표시
+    egSubMenu.style.display = (FAQ_PATH.dept === "엔진기계") ? "block" : "none";
+
+    saveFAQPath();
+    renderFAQ();
+  });
+});
+
+
+// 2단계: 엔진기계 부문 선택
+level2Btns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (FAQ_PATH.dept !== "엔진기계") return;
+
+    level2Btns.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    FAQ_PATH.level2 = btn.dataset.level2;
+
+    // 선택된 level2에 속한 level3만 표시
+    level3Btns.forEach(l3 => {
+      l3.style.display = (l3.dataset.level2 === FAQ_PATH.level2) ? "block" : "none";
     });
+
+    saveFAQPath();
+    renderFAQ();
+  });
+});
+
+
+// 3단계: 세부 부서 선택
+level3Btns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (!FAQ_PATH.level2) return;
+
+    level3Btns.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    FAQ_PATH.level3 = btn.dataset.level3;
+
+    saveFAQPath();
+    renderFAQ();
+  });
+});
+
+
+// ---------------------- 저장 데이터 구조 ----------------------
+
+const FAQ_KEY = "intern_faq_list";
+
+// 저장된 데이터 불러오기 함수
+function loadFAQItems() {
+  try {
+    const raw = localStorage.getItem(FAQ_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+// 저장 함수
+function saveFAQItems(items) {
+  localStorage.setItem(FAQ_KEY, JSON.stringify(items));
+}
+
+
+// ---------------------- FAQ 입력 이벤트 ----------------------
+
+const faqForm = document.getElementById("daily-form");
+const faqList = document.getElementById("faq-list");
+const clearBtn = document.getElementById("daily-clear");
+
+
+faqForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const text = document.getElementById("daily-body").value.trim();
+  if (!text) return;
+
+  const items = loadFAQItems();
+
+  items.push({
+    id: Date.now(),
+    text,
+    time: nowString(),
+    user: window.USER_NICKNAME || "익명",
+    dept: FAQ_PATH.dept,
+    level2: FAQ_PATH.level2,
+    level3: FAQ_PATH.level3
   });
 
-  // ---- 2️⃣ 두 번째 레벨(설계 / 생산 / 영업) 선택 ----
-  level2Buttons.forEach(btn => {
-    btn.addEventListener("click", function () {
-      if (selectedDept !== "엔진기계") return;
+  saveFAQItems(items);
+  faqForm.reset();
+  renderFAQ();
+});
 
-      level2Buttons.forEach(b => b.classList.remove("active"));
-      this.classList.add("active");
-      
-      selectedLevel2 = this.dataset.level2;
 
-      // 해당 레벨의 level3만 보여주기
-      level3Buttons.forEach(l3 => {
-        l3.style.display = (l3.dataset.level2 === selectedLevel2) ? "block" : "none";
-      });
+// ---------------------- 삭제 버튼 ----------------------
 
-      console.log("📌 선택된 부문(Level2):", selectedLevel2);
-    });
+clearBtn.addEventListener("click", () => {
+  if (confirm("정말 전체 삭제할까요?")) {
+    saveFAQItems([]);
+    renderFAQ();
+  }
+});
+
+
+// ---------------------- 화면 출력 함수 ----------------------
+
+function renderFAQ() {
+  const items = loadFAQItems();
+
+  // 선택된 사업부에 따라 필터링
+  let filtered = items.filter(i => i.dept === FAQ_PATH.dept);
+
+  if (FAQ_PATH.dept === "엔진기계") {
+    if (FAQ_PATH.level2) filtered = filtered.filter(i => i.level2 === FAQ_PATH.level2);
+    if (FAQ_PATH.level3) filtered = filtered.filter(i => i.level3 === FAQ_PATH.level3);
+  }
+
+  // 출력 없는 경우 메시지
+  if (filtered.length === 0) {
+    faqList.innerHTML = `<div class="empty">아직 기록이 없습니다.</div>`;
+    return;
+  }
+
+  faqList.innerHTML = "";
+  filtered.reverse().forEach(item => {
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `
+      <div class="item-title">📌 ${escapeHtml(item.dept)} ${
+        item.level2 ? `/ ${escapeHtml(item.level2)}` : ""
+      } ${
+        item.level3 ? `/ ${escapeHtml(item.level3)}` : ""
+      }</div>
+
+      <div class="item-meta">${item.time} · 👤 ${item.user}</div>
+      <div class="item-body">${escapeHtml(item.text)}</div>
+    `;
+    faqList.appendChild(div);
   });
-
-  // ---- 3️⃣ 세 번째 레벨(세부부서) 선택 ----
-  level3Buttons.forEach(btn => {
-    btn.addEventListener("click", function () {
-      if (!selectedLevel2) return; // 2단계 선택 없어도 선택 못함
-
-      level3Buttons.forEach(b => b.classList.remove("active"));
-      this.classList.add("active");
-
-      selectedLevel3 = this.dataset.level3;
-
-      console.log("📌 최종 선택:", {
-        사업부: selectedDept,
-        부문: selectedLevel2,
-        세부부서: selectedLevel3
-      });
-    });
-  });
-
-})();
+}
 
 
-            
+// ---------------------- 초기 렌더 ----------------------
 
-            
-
-
-
+renderFAQ();
 
 
 //------------------------------------------------------------------------------------------------------------------------------
