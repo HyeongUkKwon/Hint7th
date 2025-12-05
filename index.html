@@ -1211,8 +1211,12 @@
       render();
     })();
 
-  document.getElementById("userNick").textContent = USER_NICKNAME;
-
+      document.addEventListener("DOMContentLoaded", () => {
+            const nickElement = document.getElementById("userNick");
+            if (nickElement) {
+              nickElement.textContent = USER_NICKNAME;
+            }
+          });
     function getPathArray(keys, base) {
         let ref = base;
         keys.forEach(k => {
