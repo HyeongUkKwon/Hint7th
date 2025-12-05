@@ -763,8 +763,8 @@
             let filtered = items.filter(i => i.dept === selected.dept);
         
             if (selected.dept === "엔진기계") {
-              if (selected.level2) filtered = filtered.filter(i => i.level2 === selected.level2);
-              if (selected.level3) filtered = filtered.filter(i => i.level3 === selected.level3);
+              if (selected.level2! == null) filtered = filtered.filter(i => i.level2 === selected.level2);
+              if (selected.level3! == null) filtered = filtered.filter(i => i.level3 === selected.level3);
             }
         
             if (!filtered.length) {
