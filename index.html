@@ -848,29 +848,7 @@
               render();
             });
           });
-        
-          level2Btns.forEach(btn => {
-            btn.addEventListener("click", () => {
-              if (selected.dept !== "엔진기계") return;
-              selected.level2 = btn.dataset.level2;
-              selected.level3 = null;
-              savePath();
-              applyPathToUI();
-              render();
-            });
-          });
-        
-          level3Btns.forEach(btn => {
-            btn.addEventListener("click", () => {
-              if (!selected.level2) return;
-              selected.level3 = btn.dataset.level3;
-              savePath();
-              applyPathToUI();
-              render();
-            });
-          });
-        
-        
+           
           // ----------------- 입력 이벤트 -----------------
           form.addEventListener("submit", e => {
             e.preventDefault();
