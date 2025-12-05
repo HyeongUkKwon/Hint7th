@@ -1226,7 +1226,7 @@
         let target = getPathArray(path, store);
       
         if (!Array.isArray(target.entries)) {target.entries = [];
-        return target.entries;
+        target.entries = [];
         }
       
     return target;
