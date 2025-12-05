@@ -676,8 +676,76 @@
  /*----------------------------탭 전환----------------------------------*/
   /* ---------- Daily 기록 (날짜별 + 사업부별 저장) ---------- */
 
-          // 사업부 선택 UI
-            // 📍 1단계: 사업부 선택 이벤트
+(function () {
+  const deptButtons = document.querySelectorAll(".dept");
+  const level2Buttons = document.querySelectorAll(".eg-level2");
+  const level3Buttons = document.querySelectorAll(".eg-level3");
+  const egSubmenu = document.getElementById("eg-submenu");
+
+  let selectedDept = "조선";  // 기본값
+  let selectedLevel2 = "";    // 엔진기계 선택 전엔 X
+  let selectedLevel3 = "";
+
+  // ---- 1️⃣ 사업부 선택 이벤트 ----
+  deptButtons.forEach(btn => {
+    btn.addEventListener("click", function () {
+      deptButtons.forEach(b => b.classList.remove("active"));
+      this.classList.add("active");
+
+      selectedDept = this.dataset.dept;
+
+      // 엔진기계 선택 시에만 하위 메뉴 활성화
+      if (selectedDept === "엔진기계") {
+        egSubmenu.style.display = "block";
+      } else {
+        egSubmenu.style.display = "none";
+        selectedLevel2 = "";
+        selectedLevel3 = "";
+      }
+
+      console.log("📌 선택된 사업부:", selectedDept);
+    });
+  });
+
+  // ---- 2️⃣ 두 번째 레벨(설계 / 생산 / 영업) 선택 ----
+  level2Buttons.forEach(btn => {
+    btn.addEventListener("click", function () {
+      if (selectedDept !== "엔진기계") return;
+
+      level2Buttons.forEach(b => b.classList.remove("active"));
+      this.classList.add("active");
+      
+      selectedLevel2 = this.dataset.level2;
+
+      // 해당 레벨의 level3만 보여주기
+      level3Buttons.forEach(l3 => {
+        l3.style.display = (l3.dataset.level2 === selectedLevel2) ? "block" : "none";
+      });
+
+      console.log("📌 선택된 부문(Level2):", selectedLevel2);
+    });
+  });
+
+  // ---- 3️⃣ 세 번째 레벨(세부부서) 선택 ----
+  level3Buttons.forEach(btn => {
+    btn.addEventListener("click", function () {
+      if (!selectedLevel2) return; // 2단계 선택 없어도 선택 못함
+
+      level3Buttons.forEach(b => b.classList.remove("active"));
+      this.classList.add("active");
+
+      selectedLevel3 = this.dataset.level3;
+
+      console.log("📌 최종 선택:", {
+        사업부: selectedDept,
+        부문: selectedLevel2,
+        세부부서: selectedLevel3
+      });
+    });
+  });
+
+})();
+
 
             
 
@@ -685,6 +753,10 @@
 
 
 
+
+
+//------------------------------------------------------------------------------------------------------------------------------
+    
     // ---------- 시련 공유 ----------
     (function() {
       var KEY = "intern_struggle_list_v1";
