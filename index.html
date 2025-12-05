@@ -677,26 +677,31 @@
   /*----------------------------공통 함수 저장 같은 기능----------------------------------*/
     
     // ---------- 공통 함수 (삭제되면 전체 기능 멈춤) ----------
-  function loadArray(key) {
-    try {
-      var raw = localStorage.getItem(key);
-      if (!raw) return [];
-      var parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
-      return [];
-    } catch (e) {
-      console.log("localStorage load error:", e);
-      return [];
-    }
-  }
-  
-  function saveArray(key, arr) {
-    try {
-      localStorage.setItem(key, JSON.stringify(arr));
-    } catch (e) {
-      console.log("localStorage save error:", e);
-    }
-  }
+    
+
+          function loadArray(key, callback) {
+            try {
+              onSnapshot(collection(db, key), (snapshot) => {
+                const result = snapshot.docs.map(doc => ({
+                  id: doc.id,
+                  ...doc.data()
+                }));
+                callback(result); // 🧠 localStorage 대신 Firestore 결과를 callback으로 전달
+              });
+            } catch (e) {
+              console.log("Firestore load error:", e);
+              callback([]);
+            }
+          }
+    
+        // 🔥 Firestore 기반 saveArray (localStorage → Firestore 저장 방식 변경)
+        async function saveArray(key, item) {
+          try {
+            await addDoc(collection(db, key), item);
+          } catch (e) {
+            console.log("Firestore save error:", e);
+          }
+        }
   
   function nowString() {
     var d = new Date();
@@ -1370,7 +1375,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
       
         // Firestore database
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc } 
+        from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
       
         // Your Firebase project config
         const firebaseConfig = {
