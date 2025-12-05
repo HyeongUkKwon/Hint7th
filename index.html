@@ -405,38 +405,11 @@
               <button data-dept="해양에너지" class="dept">해양에너지</button>
             </div>
         </p>
-            <!-- ▼ 엔진기계 선택 시 표시되는 하위 메뉴 -->
-              <div id="eg-submenu" style="display:none; margin-top:12px;">
-                
-                <!-- 부문 선택 (현재 설계만 활성) -->
-                <div class="dept-select" style="margin-bottom:10px;">
-                  <button class="eg-level2 active" data-level2="설계">설계</button>
-                  <button class="eg-level2" data-level2="생산">생산</button>
-                  <button class="eg-level2" data-level2="영업">영업</button>
-                </div>
-              
-                  <div class="dept-select" id="eg-level3-wrapper">
-  
-                    <!-- 설계 소속 -->
-                    <button class="eg-level3 active" data-level2="설계" data-level3="제어시스템설계부">제어시스템설계부</button>
-                    <button class="eg-level3" data-level2="설계" data-level3="친환경시스템설계부">친환경시스템설계부</button>
-                    <button class="eg-level3" data-level2="설계" data-level3="엔진개발부">엔진개발부</button>
-                    <button class="eg-level3" data-level2="설계" data-level3="엔진개발시험부">엔진개발시험부</button>
-                    <button class="eg-level3" data-level2="설계" data-level3="대형엔진설계부">대형엔진설계부</button>
-                    <button class="eg-level3" data-level2="설계" data-level3="힘센엔진설계부">힘센엔진설계부</button>
-                  
-                    <!-- 생산 소속 (예시) -->
-                    <button class="eg-level3" data-level2="생산" data-level3="생산기술부">대형엔진생산부</button>
-                    <button class="eg-level3" data-level2="생산" data-level3="프로펠러생산부">프로펠러생산부</button>
-                    <button class="eg-level3" data-level2="생산" data-level3="힘센/대형시운전부">힘센/대형시운전부</button>
-                  
-                    <!-- 영업 소속 (예시) -->
-                    <button class="eg-level3" data-level2="영업" data-level3="엔진시스템영업/기술">엔진시스템영업/기술</button>
-                    <button class="eg-level3" data-level2="영업" data-level3="엔진발전">엔진발전</button>
-                    <button class="eg-level3" data-level2="영업" data-level3="중국엔진기술/영업">중국엔진기술/영업</button>
-                  
-                </div>
-        
+            <div id="eg-submenu" style="margin-top:12px;">
+                <div class="dept-select" id="eg-level2-wrapper"></div>
+                <div class="dept-select" id="eg-level3-wrapper"></div>
+              </div>
+
         <form id="daily-form">
         <div>
           <label for="daily-body">오늘 기록</label>
@@ -685,23 +658,93 @@
         
         
           // ----------------- 선택 상태 저장용 객체 -----------------
-          let selected = {
-            dept: "조선",
-            level2: null,
-            level3: null
-          };
-        
-        
-          // ----------------- DOM 요소 가져오기 -----------------
-          const deptBtns = document.querySelectorAll(".dept");
-          const level2Btns = document.querySelectorAll(".eg-level2");
-          const level3Btns = document.querySelectorAll(".eg-level3");
-          const submenu = document.getElementById("eg-submenu");
+            let selected = { dept:"조선", level2:null, level3:null };
+          
+            const deptBtns = document.querySelectorAll(".dept");
+            const submenu = document.getElementById("eg-submenu");
+            const level2Wrapper = document.getElementById("eg-level2-wrapper");
+            const level3Wrapper = document.getElementById("eg-level3-wrapper");
+
+          // 📌 사업부별 레벨 구조 정의
+              const DEPT_STRUCTURE = {
+                조선: {
+                  level2: ["설계", "생산", "영업"],
+                  level3: {
+                    설계: ["선체설계팀", "의장설계팀", "도면검토팀"],
+                    생산: ["조선생산1팀", "조선생산2팀"],
+                    영업: ["조선영업1팀", "조선영업지원팀"]
+                  }
+                },
+                특수선: {
+                  level2: ["설계", "생산", "영업"],
+                  level3: {
+                    설계: ["잠수함설계팀", "함정설계팀"],
+                    생산: ["특수선생산1팀", "특수선생산2팀"],
+                    영업: ["특수선영업팀"]
+                  }
+                },
+                엔진기계: {
+                  level2: ["설계", "생산", "영업"],
+                  level3: {
+                    설계: ["제어시스템설계부", "친환경시스템설계부", "힘센엔진설계부"],
+                    생산: ["엔진생산기술부", "프로펠러생산부"],
+                    영업: ["엔진시스템영업부", "중국엔진영업부"]
+                  }
+                },
+                해양에너지: {
+                  level2: ["설계", "생산", "영업"],
+                  level3: {
+                    설계: ["해양설비설계팀", "플랜트설계팀"],
+                    생산: ["해양생산팀"],
+                    영업: ["해양에너지영업팀"]
+                  }
+                }
+              };
         
           const form = document.getElementById("daily-form");
           const input = document.getElementById("daily-body");
           const listEl = document.getElementById("faq-list");
           const clearBtn = document.getElementById("daily-clear");
+
+
+                         // 3️⃣ 👉 그리고 JSON 바로 아래에 **이 renderSubmenu() 함수 추가**
+                  function renderSubmenu() {
+                    const structure = DEPT_STRUCTURE[selected.dept];
+                
+                    // Level2 생성
+                    level2Wrapper.innerHTML = structure.level2
+                      .map(l => `<button class="eg-level2 ${l === selected.level2 ? "active" : ""}" data-level2="${l}">${l}</button>`)
+                      .join("");
+                
+                    level2Wrapper.querySelectorAll(".eg-level2").forEach(btn => {
+                      btn.addEventListener("click", () => {
+                        selected.level2 = btn.dataset.level2;
+                        selected.level3 = null;
+                        savePath();
+                        renderSubmenu();
+                        render();
+                      });
+                    });
+                
+                    // Level3 생성
+                    if (selected.level2) {
+                      level3Wrapper.innerHTML = structure.level3[selected.level2]
+                        .map(l => `<button class="eg-level3 ${l === selected.level3 ? "active" : ""}" data-level3="${l}">${l}</button>`)
+                        .join("");
+                
+                      level3Wrapper.querySelectorAll(".eg-level3").forEach(btn => {
+                        btn.addEventListener("click", () => {
+                          selected.level3 = btn.dataset.level3;
+                          savePath();
+                          renderSubmenu();
+                          render();
+                        });
+                      });
+                
+                    } else {
+                      level3Wrapper.innerHTML = "";
+                    }
+                  }
         
         
           // ----------------- 저장 / 불러오기 -----------------
@@ -737,9 +780,8 @@
             deptBtns.forEach(btn => {
               btn.classList.toggle("active", btn.dataset.dept === selected.dept);
             });
-        
-            // 엔진기계가 아닐 경우 서브 UI 숨김
-            submenu.style.display = (selected.dept === "엔진기계") ? "block" : "none";
+
+            submenu.style.display = "block";
         
             // level2
             level2Btns.forEach(btn =>
