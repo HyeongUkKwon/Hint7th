@@ -772,11 +772,12 @@
             localStorage.setItem(KEY, JSON.stringify(arr));
           }
         
-          const level2Btns = document.querySelectorAll(".eg-level2");
-          const level3Btns = document.querySelectorAll(".eg-level3");
+
           // ----------------- UI 적용 -----------------
           function applyPathToUI() {
-        
+
+            const level2Btns = document.querySelectorAll(".eg-level2");
+            const level3Btns = document.querySelectorAll(".eg-level3");        
             // 사업부 버튼
             deptBtns.forEach(btn => {
               btn.classList.toggle("active", btn.dataset.dept === selected.dept);
