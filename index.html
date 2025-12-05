@@ -729,8 +729,9 @@
                     // Level3 생성
                     if (selected.level2) {
                       level3Wrapper.innerHTML = structure.level3[selected.level2]
-                        .map(l => `<button class="eg-level3 ${l === selected.level3 ? "active" : ""}" data-level3="${l}">${l}</button>`)
+                        .map(l => `<button class="eg-level3 ${l === selected.level3 ? "active" : ""}" data-level2="${selected.level2}" data-level3="${l}">${l}</button>`)
                         .join("");
+
                 
                       level3Wrapper.querySelectorAll(".eg-level3").forEach(btn => {
                         btn.addEventListener("click", () => {
