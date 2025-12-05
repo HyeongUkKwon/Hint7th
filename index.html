@@ -675,204 +675,192 @@
 
  /*----------------------------탭 전환----------------------------------*/
   /* ---------- Daily 기록 (날짜별 + 사업부별 저장) ---------- */
-/* ---------------------------------------------------------
-  📌 기본 업무 / FAQ 기능 스크립트
-  - 사업부 선택
-  - 하위 메뉴 표시(엔진기계만)
-  - 기록 추가/수정/삭제
-  - localStorage 저장
-----------------------------------------------------------*/
-
-
-// ---------------------- 상태값 저장 ----------------------
-
-// 현재 선택된 경로 저장할 객체
-let FAQ_PATH = {
-  dept: "조선",   // 기본값
-  level2: null,
-  level3: null
-};
-
-// 저장 함수 (localStorage 유지)
-function saveFAQPath() {
-  localStorage.setItem("intern_faq_path", JSON.stringify(FAQ_PATH));
-}
-
-// 불러오기 함수 (앱 재시작해도 선택 유지)
-function loadFAQPath() {
-  const saved = localStorage.getItem("intern_faq_path");
-  if (saved) FAQ_PATH = JSON.parse(saved);
-}
-loadFAQPath();
-
-
-// ---------------------- UI 요소 연결 ----------------------
-
-const deptBtns = document.querySelectorAll(".dept");
-const level2Btns = document.querySelectorAll(".eg-level2");
-const level3Btns = document.querySelectorAll(".eg-level3");
-const egSubMenu = document.getElementById("eg-submenu");
-
-
-// ---------------------- 카테고리 UI 동작 ----------------------
-
-// 1단계: 사업부 선택
-deptBtns.forEach(btn => {
-  btn.addEventListener("click", () => {
-    deptBtns.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    FAQ_PATH.dept = btn.dataset.dept;
-
-    // 엔진기계 선택 시에만 하위 메뉴 표시
-    egSubMenu.style.display = (FAQ_PATH.dept === "엔진기계") ? "block" : "none";
-
-    saveFAQPath();
-    renderFAQ();
-  });
-});
-
-
-// 2단계: 엔진기계 부문 선택
-level2Btns.forEach(btn => {
-  btn.addEventListener("click", () => {
-    if (FAQ_PATH.dept !== "엔진기계") return;
-
-    level2Btns.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    FAQ_PATH.level2 = btn.dataset.level2;
-
-    // 선택된 level2에 속한 level3만 표시
-    level3Btns.forEach(l3 => {
-      l3.style.display = (l3.dataset.level2 === FAQ_PATH.level2) ? "block" : "none";
-    });
-
-    saveFAQPath();
-    renderFAQ();
-  });
-});
-
-
-// 3단계: 세부 부서 선택
-level3Btns.forEach(btn => {
-  btn.addEventListener("click", () => {
-    if (!FAQ_PATH.level2) return;
-
-    level3Btns.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    FAQ_PATH.level3 = btn.dataset.level3;
-
-    saveFAQPath();
-    renderFAQ();
-  });
-});
-
-
-// ---------------------- 저장 데이터 구조 ----------------------
-
-const FAQ_KEY = "intern_faq_list";
-
-// 저장된 데이터 불러오기 함수
-function loadFAQItems() {
-  try {
-    const raw = localStorage.getItem(FAQ_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
-}
-
-// 저장 함수
-function saveFAQItems(items) {
-  localStorage.setItem(FAQ_KEY, JSON.stringify(items));
-}
-
-
-// ---------------------- FAQ 입력 이벤트 ----------------------
-
-const faqForm = document.getElementById("daily-form");
-const faqList = document.getElementById("faq-list");
-const clearBtn = document.getElementById("daily-clear");
-
-
-faqForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-
-  const text = document.getElementById("daily-body").value.trim();
-  if (!text) return;
-
-  const items = loadFAQItems();
-
-  items.push({
-    id: Date.now(),
-    text,
-    time: nowString(),
-    user: window.USER_NICKNAME || "익명",
-    dept: FAQ_PATH.dept,
-    level2: FAQ_PATH.level2,
-    level3: FAQ_PATH.level3
-  });
-
-  saveFAQItems(items);
-  faqForm.reset();
-  renderFAQ();
-});
-
-
-// ---------------------- 삭제 버튼 ----------------------
-
-clearBtn.addEventListener("click", () => {
-  if (confirm("정말 전체 삭제할까요?")) {
-    saveFAQItems([]);
-    renderFAQ();
-  }
-});
-
-
-// ---------------------- 화면 출력 함수 ----------------------
-
-function renderFAQ() {
-  const items = loadFAQItems();
-
-  // 선택된 사업부에 따라 필터링
-  let filtered = items.filter(i => i.dept === FAQ_PATH.dept);
-
-  if (FAQ_PATH.dept === "엔진기계") {
-    if (FAQ_PATH.level2) filtered = filtered.filter(i => i.level2 === FAQ_PATH.level2);
-    if (FAQ_PATH.level3) filtered = filtered.filter(i => i.level3 === FAQ_PATH.level3);
-  }
-
-  // 출력 없는 경우 메시지
-  if (filtered.length === 0) {
-    faqList.innerHTML = `<div class="empty">아직 기록이 없습니다.</div>`;
-    return;
-  }
-
-  faqList.innerHTML = "";
-  filtered.reverse().forEach(item => {
-    const div = document.createElement("div");
-    div.className = "item";
-    div.innerHTML = `
-      <div class="item-title">📌 ${escapeHtml(item.dept)} ${
-        item.level2 ? `/ ${escapeHtml(item.level2)}` : ""
-      } ${
-        item.level3 ? `/ ${escapeHtml(item.level3)}` : ""
-      }</div>
-
-      <div class="item-meta">${item.time} · 👤 ${item.user}</div>
-      <div class="item-body">${escapeHtml(item.text)}</div>
-    `;
-    faqList.appendChild(div);
-  });
-}
-
-
-// ---------------------- 초기 렌더 ----------------------
-
-renderFAQ();
-
+/* ---------- 기본 업무 / FAQ (사업부/부문/세부부서 + 기록 저장) ---------- */
+        
+        (function () {
+        
+          // ----------------- 로컬스토리지 KEY -----------------
+          const KEY = "intern_faq_list_v2";       // 기록 저장
+          const PATH_KEY = "intern_faq_selected"; // 선택된 카테고리 저장
+        
+        
+          // ----------------- 선택 상태 저장용 객체 -----------------
+          let selected = {
+            dept: "조선",
+            level2: null,
+            level3: null
+          };
+        
+        
+          // ----------------- DOM 요소 가져오기 -----------------
+          const deptBtns = document.querySelectorAll(".dept");
+          const level2Btns = document.querySelectorAll(".eg-level2");
+          const level3Btns = document.querySelectorAll(".eg-level3");
+          const submenu = document.getElementById("eg-submenu");
+        
+          const form = document.getElementById("daily-form");
+          const input = document.getElementById("daily-body");
+          const listEl = document.getElementById("faq-list");
+          const clearBtn = document.getElementById("daily-clear");
+        
+        
+          // ----------------- 저장 / 불러오기 -----------------
+          function savePath() {
+            localStorage.setItem(PATH_KEY, JSON.stringify(selected));
+          }
+        
+          function loadPath() {
+            const raw = localStorage.getItem(PATH_KEY);
+            if (!raw) return;
+            try {
+              selected = JSON.parse(raw);
+            } catch { }
+          }
+        
+          function loadItems() {
+            try {
+              return JSON.parse(localStorage.getItem(KEY)) || [];
+            } catch {
+              return [];
+            }
+          }
+        
+          function saveItems(arr) {
+            localStorage.setItem(KEY, JSON.stringify(arr));
+          }
+        
+        
+          // ----------------- UI 적용 -----------------
+          function applyPathToUI() {
+        
+            // 사업부 버튼
+            deptBtns.forEach(btn => {
+              btn.classList.toggle("active", btn.dataset.dept === selected.dept);
+            });
+        
+            // 엔진기계가 아닐 경우 서브 UI 숨김
+            submenu.style.display = (selected.dept === "엔진기계") ? "block" : "none";
+        
+            // level2
+            level2Btns.forEach(btn =>
+              btn.classList.toggle("active", btn.dataset.level2 === selected.level2)
+            );
+        
+            // level3: 선택된 level2에 해당하는 것만 표시
+            level3Btns.forEach(btn => {
+              const match = btn.dataset.level2 === selected.level2;
+              btn.style.display = (selected.dept === "엔진기계" && match) ? "block" : "none";
+              btn.classList.toggle("active", btn.dataset.level3 === selected.level3);
+            });
+          }
+        
+        
+          // ----------------- render() -----------------
+          function render() {
+            const items = loadItems();
+        
+            // 🔎 선택된 카테고리 기준으로 필터링
+            let filtered = items.filter(i => i.dept === selected.dept);
+        
+            if (selected.dept === "엔진기계") {
+              if (selected.level2) filtered = filtered.filter(i => i.level2 === selected.level2);
+              if (selected.level3) filtered = filtered.filter(i => i.level3 === selected.level3);
+            }
+        
+            if (!filtered.length) {
+              listEl.innerHTML = `<div class="empty">해당 카테고리에 기록이 없습니다.</div>`;
+              return;
+            }
+        
+            listEl.innerHTML = "";
+            filtered.reverse().forEach(item => {
+              const div = document.createElement("div");
+              div.className = "item";
+        
+              div.innerHTML = `
+                <div class="item-title">📌 ${item.dept}${item.level2 ? " / " + item.level2 : ""}${item.level3 ? " / " + item.level3 : ""}</div>
+                <div class="item-meta">${item.time} · 👤 ${item.user}</div>
+                <div class="item-body">${escapeHtml(item.text)}</div>
+              `;
+              listEl.appendChild(div);
+            });
+          }
+        
+        
+          // ----------------- 선택 이벤트 -----------------
+          deptBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+              selected.dept = btn.dataset.dept;
+              if (selected.dept !== "엔진기계") {
+                selected.level2 = null;
+                selected.level3 = null;
+              }
+              savePath();
+              applyPathToUI();
+              render();
+            });
+          });
+        
+          level2Btns.forEach(btn => {
+            btn.addEventListener("click", () => {
+              if (selected.dept !== "엔진기계") return;
+              selected.level2 = btn.dataset.level2;
+              selected.level3 = null;
+              savePath();
+              applyPathToUI();
+              render();
+            });
+          });
+        
+          level3Btns.forEach(btn => {
+            btn.addEventListener("click", () => {
+              if (!selected.level2) return;
+              selected.level3 = btn.dataset.level3;
+              savePath();
+              applyPathToUI();
+              render();
+            });
+          });
+        
+        
+          // ----------------- 입력 이벤트 -----------------
+          form.addEventListener("submit", e => {
+            e.preventDefault();
+        
+            if (!input.value.trim()) return;
+        
+            const items = loadItems();
+        
+            items.push({
+              id: Date.now(),
+              text: input.value.trim(),
+              dept: selected.dept,
+              level2: selected.level2,
+              level3: selected.level3,
+              time: nowString(),
+              user: USER_NICKNAME || "익명"
+            });
+        
+            saveItems(items);
+            input.value = "";
+            render();
+          });
+        
+        
+          // ----------------- 전체 삭제 -----------------
+          clearBtn.addEventListener("click", () => {
+            if (confirm("정말 전체 삭제할까요?")) {
+              saveItems([]);
+              render();
+            }
+          });
+        
+          // ----------------- 초기 실행 -----------------
+          loadPath();
+          applyPathToUI();
+          render();
+        
+        })();
 
 //------------------------------------------------------------------------------------------------------------------------------
     
