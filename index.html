@@ -575,166 +575,191 @@
   </div>
 
   <script>
-          document.addEventListener("DOMContentLoaded", function () {
-        
-          /* ============================
-             1) 상태 및 요소 세팅
-          ============================ */
-          let currentDept = null;
-          let currentMid = null;
-          let currentTeam = null;
-        
-          const deptButtons = document.querySelectorAll(".dept");
-          const midSection = document.getElementById("eg-submenu");
-          const midButtons = document.querySelectorAll(".eg-level2");
-          const teamSection = document.getElementById("eg-level3-wrapper");
-          const teamButtons = document.querySelectorAll(".eg-level3");
-        
-          const inputForm = document.getElementById("daily-form");
-          const inputField = document.getElementById("daily-body");
-          const saveBtn = document.getElementById("daily-saveBtn");
-        
-          const logList = document.getElementById("faq-list");
-        
-        
-          /* ============================
-             2) Key 생성 함수
-          ============================ */
-          function getStorageKey() {
-            if (!currentDept) return null;
-        
-            if (currentDept !== "엔진기계") return currentDept;
-        
-            if (currentDept && currentMid && !currentTeam)
-              return `${currentDept} > ${currentMid}`;
-        
-            if (currentDept && currentMid && currentTeam)
-              return `${currentDept} > ${currentMid} > ${currentTeam}`;
-        
-            return null;
-          }
-        
-        
-          /* ============================
-             3) 기록 Render
-          ============================ */
-          function renderLogs() {
-            const key = getStorageKey();
-            logList.innerHTML = "";
-        
-            if (!key) return;
-        
-            const logs = JSON.parse(localStorage.getItem("dailyLogs") || "{}")[key] || [];
-        
-            logs.forEach(log => {
-              const div = document.createElement("div");
-              div.classList.add("log-item");
-              div.innerHTML = `
-                <span>${log.text}</span>
-                <small>${log.date}</small>
-                <button class="delete-log" data-id="${log.id}">삭제</button>
-              `;
-              logList.appendChild(div);
-            });
-        
-            document.querySelectorAll(".delete-log").forEach(btn => {
-              btn.onclick = () => deleteLog(btn.dataset.id);
-            });
-          }
-        
-        
-          /* ============================
-             4) 삭제 기능
-          ============================ */
-          function deleteLog(id) {
-            const key = getStorageKey();
-            const logs = JSON.parse(localStorage.getItem("dailyLogs") || "{}");
-        
-            logs[key] = logs[key].filter(entry => entry.id != id);
-        
-            localStorage.setItem("dailyLogs", JSON.stringify(logs));
-            renderLogs();
-          }
-        
-        
-          /* ============================
-             5) 저장 기능
-          ============================ */
-          function saveLog() {
-            const key = getStorageKey();
-            if (!key) return;
-        
-            const text = inputField.value.trim();
-            if (!text) return;
-        
-            const logs = JSON.parse(localStorage.getItem("dailyLogs") || "{}");
-            if (!logs[key]) logs[key] = [];
-        
-            logs[key].push({
-              id: Date.now(),
-              date: new Date().toISOString().split("T")[0],
-              text
-            });
-        
-            localStorage.setItem("dailyLogs", JSON.stringify(logs));
-            inputField.value = "";
-            renderLogs();
-          }
-        
-        
-          /* ============================
-             6) UI 이벤트 바인딩
-          ============================ */
-          deptButtons.forEach(btn => {
-            btn.onclick = () => {
-              currentDept = btn.dataset.dept;
-              currentMid = null;
-              currentTeam = null;
-        
-              if (currentDept === "엔진기계") {
-                midSection.style.display = "block";
-                teamSection.style.display = "none";
-                inputForm.style.display = "none";
-              } else {
-                midSection.style.display = "none";
-                teamSection.style.display = "none";
-                inputForm.style.display = "block";
-              }
-        
-              renderLogs();
-            };
-          });
-        
-          midButtons.forEach(btn => {
-            btn.onclick = () => {
-              currentMid = btn.dataset.mid;
-              currentTeam = null;
-        
-              teamSection.style.display = "block";
-              inputForm.style.display = "none";
-              renderLogs();
-            };
-          });
-        
-          teamButtons.forEach(btn => {
-            btn.onclick = () => {
-              currentTeam = btn.dataset.team;
-              inputForm.style.display = "block";
-              renderLogs();
-            };
-          });
-        
-        
-          /* ============================
-             7) 저장 이벤트 연결
-          ============================ */
-          saveBtn.onclick = saveLog;
-        
-          /* ============================
-             8) 초기 실행
-          ============================ */
-          renderLogs();
-        });
+                document.addEventListener("DOMContentLoaded", function () {
+                
+                  /* ============================
+                     1) 상태 저장 변수
+                  ============================ */
+                  let currentDept = null;
+                  let currentMid = null;
+                  let currentTeam = null;
+                
+                
+                  /* ============================
+                     2) DOM 요소 연결
+                  ============================ */
+                  const deptButtons = document.querySelectorAll(".dept");
+                  const midSection = document.getElementById("eg-submenu");
+                  const midButtons = document.querySelectorAll(".eg-level2");
+                  const teamSection = document.getElementById("eg-level3-wrapper");
+                  const teamButtons = document.querySelectorAll(".eg-level3");
+                
+                  const inputForm = document.getElementById("daily-form");
+                  const inputField = document.getElementById("daily-body");
+                  const saveBtn = document.getElementById("daily-saveBtn") || null; // 없으면 null
+                  const logList = document.getElementById("faq-list");
+                  const clearBtn = document.getElementById("daily-clear");
+                
+                
+                  /* ============================
+                     3) 저장 KEY 생성 (HTML 구조 기준)
+                  ============================ */
+                  function getStorageKey() {
+                    if (!currentDept) return null;
+                
+                    // 엔진기계 제외한 부서는 단일 Key
+                    if (currentDept !== "엔진기계") return currentDept;
+                
+                    // 엔진기계 구조
+                    if (currentDept && currentMid && !currentTeam)
+                      return `${currentDept} > ${currentMid}`;
+                
+                    if (currentDept && currentMid && currentTeam)
+                      return `${currentDept} > ${currentMid} > ${currentTeam}`;
+                
+                    return null;
+                  }
+                
+                
+                  /* ============================
+                     4) 목록 렌더링
+                  ============================ */
+                  function renderLogs() {
+                    const key = getStorageKey();
+                    logList.innerHTML = "";
+                
+                    if (!key) return;
+                
+                    const logs = JSON.parse(localStorage.getItem("dailyLogs") || "{}")[key] || [];
+                
+                    logs.forEach(log => {
+                      const div = document.createElement("div");
+                      div.classList.add("log-item");
+                      div.innerHTML = `
+                        <span>${log.text}</span>
+                        <small>${log.date}</small>
+                        <button class="delete-log" data-id="${log.id}">삭제</button>
+                      `;
+                      logList.appendChild(div);
+                    });
+                
+                    // 삭제 연결
+                    document.querySelectorAll(".delete-log").forEach(btn => {
+                      btn.onclick = () => deleteLog(btn.dataset.id);
+                    });
+                  }
+                
+                
+                  /* ============================
+                     5) 삭제 기능
+                  ============================ */
+                  function deleteLog(id) {
+                    const key = getStorageKey();
+                    const logs = JSON.parse(localStorage.getItem("dailyLogs") || "{}");
+                
+                    logs[key] = logs[key].filter(entry => entry.id != id);
+                
+                    localStorage.setItem("dailyLogs", JSON.stringify(logs));
+                    renderLogs();
+                  }
+                
+                
+                  /* ============================
+                     6) 저장 기능
+                  ============================ */
+                  function saveLog() {
+                    const key = getStorageKey();
+                    if (!key) return;
+                
+                    const text = inputField.value.trim();
+                    if (!text) return;
+                
+                    const logs = JSON.parse(localStorage.getItem("dailyLogs") || "{}");
+                    if (!logs[key]) logs[key] = [];
+                
+                    logs[key].push({
+                      id: Date.now(),
+                      date: new Date().toISOString().split("T")[0],
+                      text
+                    });
+                
+                    localStorage.setItem("dailyLogs", JSON.stringify(logs));
+                    inputField.value = "";
+                    renderLogs();
+                  }
+                
+                
+                  /* ============================
+                     7) 이벤트 연결
+                  ============================ */
+                
+                  // 1단계: 부서 버튼
+                  deptButtons.forEach(btn => {
+                    btn.onclick = () => {
+                
+                      currentDept = btn.dataset.dept;
+                      currentMid = null;
+                      currentTeam = null;
+                
+                      if (currentDept === "엔진기계") {
+                        midSection.style.display = "block";
+                        teamSection.style.display = "none";
+                        inputForm.style.display = "none";
+                      } else {
+                        midSection.style.display = "none";
+                        teamSection.style.display = "none";
+                        inputForm.style.display = "block";
+                      }
+                
+                      renderLogs();
+                    };
+                  });
+                
+                  // 2단계: 엔진기계 중분류
+                  midButtons.forEach(btn => {
+                    btn.onclick = () => {
+                      currentMid = btn.dataset.level2;  // ← HTML 그대로 적용
+                      currentTeam = null;
+                
+                      teamSection.style.display = "block";
+                      inputForm.style.display = "none";
+                      renderLogs();
+                    };
+                  });
+                
+                  // 3단계: 엔진기계 세부부서
+                  teamButtons.forEach(btn => {
+                    btn.onclick = () => {
+                      currentTeam = btn.dataset.level3; // ← HTML 그대로 적용
+                
+                      inputForm.style.display = "block";
+                      renderLogs();
+                    };
+                  });
+                
+                
+                  // 기록 저장 버튼 연결
+                  if (saveBtn) saveBtn.onclick = saveLog;
+                
+                  // 전체 삭제 옵션
+                  if (clearBtn) {
+                    clearBtn.onclick = () => {
+                      if (!confirm("정말 전체 삭제할까요?")) return;
+                      const key = getStorageKey();
+                      const logs = JSON.parse(localStorage.getItem("dailyLogs") || "{}");
+                      logs[key] = [];
+                      localStorage.setItem("dailyLogs", JSON.stringify(logs));
+                      renderLogs();
+                    };
+                  }
+                
+                
+                  /* ============================
+                     8) 실행 초기화
+                  ============================ */
+                  renderLogs();
+                });
+
 
    /*기본업무 페이지 필요 내용*/   
 
