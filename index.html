@@ -1179,16 +1179,18 @@
           card.className = "boss-card";
 
           card.innerHTML = `
-            <img src="${item.image}" class="boss-thumb" alt="섬네일 이미지">
+            <img src="${item.imageUrl}" class="boss-thumb" alt="섬네일 이미지">
             <div class="boss-info">
               <div><b>${escapeHtml(item.name)}</b></div>
               <div>${escapeHtml(item.dept)} / ${escapeHtml(item.team)}</div>
               <div style="font-size:12px;">${escapeHtml(item.time)}</div>
             </div>
+          
             <div class="boss-viewer" style="display:none; margin-top:8px;">
-              <img src="${item.image}" alt="전체 이미지">
+               <img src="${item.imageUrl}">
             </div>
           `;
+
 
           // 카드 클릭 시 아래에 전체 이미지 펼치기/접기
           card.addEventListener("click", function () {
@@ -1224,34 +1226,36 @@
             return;
           }
 
-          var reader = new FileReader();
-          reader.onload = function () {
-            var base64 = reader.result;
-            var raw = localStorage.getItem(KEY);
-            var items = [];
-            try {
-              items = raw ? JSON.parse(raw) : [];
-            } catch (e) {
-              items = [];
-            }
-
-            items.push({
-              id: Date.now(),
-              dept: dept,
-              team: team,
-              name: name,
-              image: base64,
+          form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+          
+            const file = document.getElementById("boss-file").files[0];
+            const dept = document.getElementById("boss-dept").value.trim();
+            const team = document.getElementById("boss-team").value.trim();
+            const name = document.getElementById("boss-name").value.trim();
+          
+            if (!file) return alert("JPG 파일을 선택하세요!");
+          
+            const fileRef = ref(storage, `boss_img/${Date.now()}-${file.name}`);
+            await uploadBytes(fileRef, file);
+            
+            const imageUrl = await getDownloadURL(fileRef);
+          
+            await addDoc(collection(db, "bossImages"), {
+              dept,
+              team,
+              name,
+              imageUrl,
               time: nowString(),
               user: USER_NICKNAME
             });
-
-            localStorage.setItem(KEY, JSON.stringify(items));
-
+          
+            alert("📌 Firebase Storage에 업로드 완료!");
+          
             form.reset();
             form.style.display = "none";
-            render();
-          };
-          reader.readAsDataURL(file);
+          });
+
         });
       }
 
@@ -1377,6 +1381,11 @@
         // Firestore database
         import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc } 
         from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+
+        import { getStorage, ref, uploadBytes, getDownloadURL } 
+        from "https://www.gstatic.com/firebasejs/12.6.0/firebase-storage.js";
+
       
         // Your Firebase project config
         const firebaseConfig = {
@@ -1393,6 +1402,8 @@
       
         // Initialize Firestore (🔥 이게 저장소 역할)
         const db = getFirestore(app);
+
+        const storage = getStorage(app);
       
         console.log("🔥 Firebase 연결됨 / Firestore 준비 완료:", db);
   </script>
