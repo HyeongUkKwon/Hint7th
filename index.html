@@ -1160,13 +1160,11 @@
 
       // ▸ localStorage에서 목록 읽어서 섬네일 카드 렌더링
       function render() {
-        var raw = localStorage.getItem(KEY);
-        var items = [];
-        try {
-          items = raw ? JSON.parse(raw) : [];
-        } catch (e) {
-          items = [];
-        }
+        onSnapshot(collection(db, "bossImages"), (snapshot) => {
+          const items = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
 
         if (!items.length) {
           listEl.innerHTML = '<div class="empty">아직 업로드된 백문백답이 없습니다.</div>';
