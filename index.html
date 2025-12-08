@@ -646,14 +646,37 @@
       }
 
     
-    function loadUserNickname() {
-      let stored = localStorage.getItem("intern_user_nickname");
-      if (!stored) {
-        stored = generateRandomNickname();
-        localStorage.setItem("intern_user_nickname", stored);
+      async function loadUserNickname() {
+      
+        // 🔹 브라우저 저장된 사용자 Firebase 문서 ID 체크
+        let userId = localStorage.getItem("intern_user_id");
+      
+        // 🔹 Firestore users 컬렉션 기준
+        const usersRef = collection(db, "users");
+      
+        // 1️⃣ storedId 있으면 → Firestore에서 닉네임 불러오기
+        if (userId) {
+          const snap = await getDoc(doc(db, "users", userId));
+          if (snap.exists()) {
+            return snap.data().nickname;
+          }
+        }
+      
+        // 2️⃣ 없으면 → 새 닉네임 생성
+        const newNick = generateRandomNickname();
+      
+        // Firestore에 저장
+        const newDoc = await addDoc(usersRef, {
+          nickname: newNick,
+          createdAt: nowString()
+        });
+      
+        // 새 Firebase userId 저장 → 다음 방문부터 사용
+        localStorage.setItem("intern_user_id", newDoc.id);
+      
+        return newNick;
       }
-      return stored;
-    }
+
 
   window.USER_NICKNAME = loadUserNickname();
 
@@ -662,16 +685,39 @@
   document.getElementById("nicknameInput").value = USER_NICKNAME;
   
   // ⭐ 저장 버튼 이벤트
-  document.getElementById("saveNickBtn").addEventListener("click", () => {
-    const newNick = document.getElementById("nicknameInput").value.trim();
-    if (!newNick) return alert("닉네임을 입력하세요!");
-  
-    localStorage.setItem("intern_user_nickname", newNick);
-    window.USER_NICKNAME = newNick;
-  
-    document.getElementById("userNick").textContent = newNick;
-    alert("닉네임 저장 완료!");
-  });
+      document.getElementById("saveNickBtn").addEventListener("click", async () => {
+      const newNick = document.getElementById("nicknameInput").value.trim();
+      if (!newNick) return alert("닉네임을 입력하세요!");
+    
+      // 🔹 Firestore 문서 ID 가져오기
+      const userId = localStorage.getItem("intern_user_id");
+    
+      if (!userId) {
+        alert("⚠ 닉네임 로딩 전에 변경이 실행됨. 잠시 후 다시 시도하세요.");
+        return;
+      }
+    
+      try {
+        // 🔹 Firestore 업데이트
+        await updateDoc(doc(db, "users", userId), {
+          nickname: newNick,
+          updatedAt: nowString()
+        });
+    
+        // 🔹 전역 변수 업데이트 (다른 함수 영향 X)
+        window.USER_NICKNAME = newNick;
+    
+        // 🔹 화면 갱신
+        document.getElementById("userNick").textContent = newNick;
+    
+        alert("닉네임이 성공적으로 저장되었습니다!");
+    
+      } catch (err) {
+        console.error("닉네임 저장 오류:", err);
+        alert("⚠ Firebase 저장 실패 — 다시 시도하세요.");
+      }
+    });
+
   /*----------------------------닉네임 제어 끝----------------------------------*/
 
   /*----------------------------공통 함수 저장 같은 기능----------------------------------*/
