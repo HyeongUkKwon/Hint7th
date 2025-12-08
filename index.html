@@ -1239,7 +1239,7 @@
         var body = bodyInput.value.trim();
         if (!title) return;
 
-        var items = loadArray(KEY);
+        loadArray(KEY, (items) => render(items));
         items.push({
           id: Date.now(),
           title: title,
@@ -1426,7 +1426,7 @@
     
         if (!title) return;
     
-        var items = loadArray(KEY);
+       loadArray(KEY, (items) => render(items));
         items.push({ id: Date.now(), title, menu, rating, body, time: nowString() });
         saveArray(KEY, items);
     
