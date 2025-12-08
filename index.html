@@ -1204,9 +1204,44 @@
           listEl.appendChild(card);
         });
       }
-
-
       render();
+
+      // 🔥 여기다가 Firebase 업로드 코드 넣기
+        
+        if (form) {
+          form.addEventListener("submit", async function (e) {
+            e.preventDefault();
+        
+            const file = document.getElementById("boss-file").files[0];
+            const dept = document.getElementById("boss-dept").value.trim();
+            const team = document.getElementById("boss-team").value.trim();
+            const name = document.getElementById("boss-name").value.trim();
+        
+            if (!file) return alert("JPG 파일을 선택하세요!");
+        
+            const fileRef = ref(storage, `boss_img/${Date.now()}-${file.name}`);
+            await uploadBytes(fileRef, file);
+        
+            const imageUrl = await getDownloadURL(fileRef);
+        
+            await addDoc(collection(db, "bossImages"), {
+              dept,
+              team,
+              name,
+              imageUrl,
+              time: nowString(),
+              user: USER_NICKNAME
+            });
+        
+            alert("📌 Firebase Storage 업로드 완료!");
+            form.reset();
+            form.style.display = "none";
+          });
+        }
+        
+        })();
+
+      
     })();
 
     
