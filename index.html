@@ -1205,59 +1205,6 @@
         });
       }
 
-      // ▸ 폼 submit: JPG 읽어서 base64로 저장
-      if (form) {
-        form.addEventListener("submit", function (e) {
-          e.preventDefault();
-
-          var dept = document.getElementById("boss-dept").value.trim();
-          var team = document.getElementById("boss-team").value.trim();
-          var name = document.getElementById("boss-name").value.trim();
-          var fileInput = document.getElementById("boss-file");
-          var file = fileInput.files[0];
-
-          if (!dept || !team || !name || !file) {
-            alert("사업부 / 부서 / 성함 / JPG 파일을 모두 입력해주세요.");
-            return;
-          }
-
-          if (file.type !== "image/jpeg") {
-            alert("JPG 형식의 파일만 업로드 가능합니다.");
-            return;
-          }
-
-          form.addEventListener("submit", async function (e) {
-            e.preventDefault();
-          
-            const file = document.getElementById("boss-file").files[0];
-            const dept = document.getElementById("boss-dept").value.trim();
-            const team = document.getElementById("boss-team").value.trim();
-            const name = document.getElementById("boss-name").value.trim();
-          
-            if (!file) return alert("JPG 파일을 선택하세요!");
-          
-            const fileRef = ref(storage, `boss_img/${Date.now()}-${file.name}`);
-            await uploadBytes(fileRef, file);
-            
-            const imageUrl = await getDownloadURL(fileRef);
-          
-            await addDoc(collection(db, "bossImages"), {
-              dept,
-              team,
-              name,
-              imageUrl,
-              time: nowString(),
-              user: USER_NICKNAME
-            });
-          
-            alert("📌 Firebase Storage에 업로드 완료!");
-          
-            form.reset();
-            form.style.display = "none";
-          });
-
-        });
-      }
 
       render();
     })();
