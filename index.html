@@ -942,17 +942,105 @@
             } catch { }
           }
         
-          function loadItems() {
-            try {
-              return JSON.parse(localStorage.getItem(KEY)) || [];
-            } catch {
-              return [];
+          (function () {
+  
+            const collectionName = "faq"; // Firestore 경로
+            const form = document.getElementById("daily-form");
+            const input = document.getElementById("daily-body");
+            const listEl = document.getElementById("faq-list");
+            const clearBtn = document.getElementById("daily-clear");
+          
+            let items = []; // Firestore에서 가져온 값 저장용
+          
+            // 1️⃣ Firestore에서 실시간 불러오기
+            onSnapshot(collection(db, collectionName), (snapshot) => {
+              items = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+              }));
+              render();
+            });
+          
+            // 2️⃣ 목록 렌더링
+            function render() {
+              const filtered = items
+                .filter(i => i.dept === selected.dept)
+                .filter(i => !selected.level2 || i.level2 === selected.level2)
+                .filter(i => !selected.level3 || i.level3 === selected.level3)
+                .reverse();
+          
+              if (!filtered.length) {
+                listEl.innerHTML = `<div class="empty">해당 카테고리에 기록이 없습니다.</div>`;
+                return;
+              }
+          
+              listEl.innerHTML = "";
+              filtered.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "item";
+          
+                div.innerHTML = `
+                  <div class="item-title">📌 ${item.dept}${item.level2 ? " / " + item.level2 : ""}${item.level3 ? " / " + item.level3 : ""}</div>
+                  <div class="item-meta">${item.time} · 👤 ${item.user}</div>
+                  <div class="item-body">${escapeHtml(item.text)}</div>
+                
+                  <div style="margin-top:10px; display:flex; gap:8px;">
+                    <button class="daily-edit-btn" data-id="${item.id}">✏ 수정</button>
+                    <button class="daily-delete-btn" data-id="${item.id}">🗑 삭제</button>
+                  </div>
+                `;
+                listEl.appendChild(div);
+              });
+          
+              // ✏ 수정 기능
+              listEl.querySelectorAll(".daily-edit-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                  const id = btn.dataset.id;
+                  const target = items.find(i => i.id === id);
+          
+                  openEditModal(target.text, async updated => {
+                    if (!updated.trim()) return;
+                    await updateDoc(doc(db, collectionName, id), { text: updated });
+                  });
+                });
+              });
+          
+              // 🗑 삭제 기능
+              listEl.querySelectorAll(".daily-delete-btn").forEach(btn => {
+                btn.addEventListener("click", async () => {
+                  await deleteDoc(doc(db, collectionName, btn.dataset.id));
+                });
+              });
             }
-          }
-        
-          function saveItems(arr) {
-            localStorage.setItem(KEY, JSON.stringify(arr));
-          }
+          
+            // 3️⃣ 새 항목 저장
+            form.addEventListener("submit", async e => {
+              e.preventDefault();
+          
+              if (!input.value.trim()) return;
+          
+              await addDoc(collection(db, collectionName), {
+                text: input.value.trim(),
+                dept: selected.dept,
+                level2: selected.level2,
+                level3: selected.level3,
+                time: nowString(),
+                user: USER_NICKNAME
+              });
+          
+              input.value = "";
+            });
+          
+            // 4️⃣ 전체 삭제
+            clearBtn.addEventListener("click", async () => {
+              if (!confirm("전체 삭제할까요?")) return;
+          
+              const snapshot = await getDocs(collection(db, collectionName));
+              snapshot.forEach(docSnap => deleteDoc(docSnap.ref));
+            });
+          
+          })();
+
         
 
           // ----------------- UI 적용 -----------------
@@ -1067,19 +1155,6 @@
         
             const items = loadItems();
         
-            items.push({
-              id: Date.now(),
-              text: input.value.trim(),
-              dept: selected.dept,
-              level2: selected.level2,
-              level3: selected.level3,
-              time: nowString(),
-              user: USER_NICKNAME || "익명"
-            });
-        
-            saveItems(items);
-            input.value = "";
-            render();
           });
         
         
