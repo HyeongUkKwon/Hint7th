@@ -678,11 +678,12 @@
       }
 
 
-  window.USER_NICKNAME = loadUserNickname();
+      loadUserNickname().then(nick => {
+        window.USER_NICKNAME = nick;
+        document.getElementById("nicknameInput").value = nick;
+        document.getElementById("userNick").textContent = nick;
+      });
 
-  
-  // ⭐ 닉네임 입력 필드에 기존 저장값 표시
-  document.getElementById("nicknameInput").value = USER_NICKNAME;
   
   // ⭐ 저장 버튼 이벤트
       document.getElementById("saveNickBtn").addEventListener("click", async () => {
@@ -725,20 +726,17 @@
     // ---------- 공통 함수 (삭제되면 전체 기능 멈춤) ----------
     
 
-          function loadArray(key, callback) {
-            try {
-              onSnapshot(collection(db, key), (snapshot) => {
-                const result = snapshot.docs.map(doc => ({
+            function loadArray(collectionName, onChange) {
+              return onSnapshot(collection(db, collectionName), (snapshot) => {
+                const data = snapshot.docs.map(doc => ({
                   id: doc.id,
                   ...doc.data()
                 }));
-                callback(result); // 🧠 localStorage 대신 Firestore 결과를 callback으로 전달
+            
+                onChange(data); // ❗ 데이터 바뀔 때마다 UI 업데이트 실행
               });
-            } catch (e) {
-              console.log("Firestore load error:", e);
-              callback([]);
             }
-          }
+
     
         // 🔥 Firestore 기반 saveArray (localStorage → Firestore 저장 방식 변경)
         async function saveArray(key, item) {
@@ -1184,7 +1182,7 @@
       var clearBtn = document.getElementById("struggle-clear");
 
       function render() {
-        var items = loadArray(KEY);
+        loadArray(KEY, (items) => render(items));
         if (!items.length) {
           listEl.innerHTML = '<div class="empty">아직 기록된 시련이 없습니다. 오늘 있었던 멘붕 한 줄만 써도 OK.</div>';
           return;
@@ -1372,7 +1370,7 @@
       var clearBtn = document.getElementById("food-clear");
     
         function render() {
-          var items = loadArray(KEY);
+          loadArray(KEY, (items) => render(items));
           if (!items.length) {
             listEl.innerHTML = '<div class="empty">아직 맛집이 없습니다.</div>';
             return;
