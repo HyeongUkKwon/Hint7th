@@ -606,7 +606,12 @@
           </div>
           <div>
             <label for="food-rating">평가 (0~5점)</label>
-            <input id="food-rating" type="text" placeholder="예: ⭐⭐⭐⭐☆ / 4.5점" />
+            <input id="food-rating" 
+                   type="number" 
+                   step="1" 
+                   min="0" 
+                   max="5" 
+                   placeholder="0부터 5까지 숫자로 입력해주세요 (예: 4)" />
           </div>
           <div>
             <label for="food-body">코멘트</label>
@@ -1346,26 +1351,67 @@
                         };
                       });
           }
-        
+      
+          // 파일 내의 원래 위치: /* ---------- 맛집 공유 (Firestore 100% 사용) ---------- */ 섹션 내부
+          
+          // ⭐ 별점 숫자를 ⭐⭐⭐⭐⭐ 문자열로 변환하는 함수 추가
+          function convertRatingToStars(numStr) {
+              const ratingNum = parseFloat(numStr);
+              if (isNaN(ratingNum) || ratingNum < 0 || ratingNum > 5) {
+                  return "⭐"; // 기본값
+              }
+              
+              let fullStars = Math.floor(ratingNum);
+              let halfStar = ratingNum - fullStars >= 0.5;
+              
+              let stars = '⭐'.repeat(fullStars);
+              
+              if (halfStar) {
+                  // 반 별은 없으므로, 4.5는 4개 별로 처리하거나 5점 만점을 기준으로 처리
+                  // 여기서는 간단히 반올림하여 처리하거나, 사용자에게 0~5점 입력 그대로 보이게 합니다.
+                  // 현재는 별 갯수로만 표시하도록 'fullStars'만 사용합니다.
+                  
+                  // 4.5를 입력하면 4개 별이 보입니다.
+                  // 만약 소수점을 그대로 보여주고 싶다면 ratingStr 그대로 사용해야 합니다.
+                  
+                  // 사용자가 원한 방식(⭐⭐⭐⭐⭐)에 맞추어, 0.5 단위는 올림하여 처리합니다.
+                  const finalStars = Math.round(ratingNum * 2) / 2; // 0.5 단위로 반올림
+                  
+                  let fullStarCount = Math.floor(finalStars);
+                  let emptyStarCount = 5 - fullStarCount;
+                  
+                  return '⭐'.repeat(fullStarCount) + '☆'.repeat(emptyStarCount);
+              }
+          
+              // ⭐ 만점(5점) 기준으로 별 생성
+              let emptyStars = 5 - fullStars;
+              return '⭐'.repeat(fullStars) + '☆'.repeat(emptyStars);
+          }
+          
+          
           // 3️⃣ 새 항목 저장 (Firestore addDoc 사용)
           form.addEventListener("submit", async function (e) {
             e.preventDefault();
             var title = document.getElementById("food-title").value.trim();
             var menu = document.getElementById("food-menu").value.trim();
-            var rating = document.getElementById("food-rating").value.trim();
+            
+            // ⬅️ 수정: 숫자로 입력받아 별 문자열로 변환
+            var ratingNum = document.getElementById("food-rating").value.trim();
+            var ratingStars = convertRatingToStars(ratingNum); // ⭐ 별 모양 String으로 변환
+            
             var body = document.getElementById("food-body").value.trim();
-        
+          
             if (!title) return;
-        
+          
             await addDoc(collection(db, collectionName), { 
                 title, 
                 menu, 
-                rating, 
+                rating: ratingStars, // ⭐ 변환된 별 문자열 저장
                 body, 
                 time: nowString(),
                 user: USER_NICKNAME
             });
-        
+          
             form.reset();
           });
         
