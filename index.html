@@ -1070,7 +1070,6 @@
         
           // ----------------- render() -----------------
           function render() {
-            const items = loadItems();
         
             // 🔎 선택된 카테고리 기준으로 필터링
             let filtered = items.filter(i => i.dept === selected.dept);
@@ -1107,7 +1106,6 @@
                 listEl.querySelectorAll(".daily-delete-btn").forEach(btn => {
                   btn.addEventListener("click", () => {
                     const id = Number(btn.dataset.id);
-                    const items = loadItems().filter(i => i.id !== id);
                     saveItems(items);
                     render();
                   });
@@ -1116,7 +1114,6 @@
                 listEl.querySelectorAll(".daily-edit-btn").forEach(btn => {
                   btn.addEventListener("click", () => {
                     const id = Number(btn.dataset.id);
-                    const items = loadItems();
                     const target = items.find(i => i.id === id);
               
                     openEditModal(target.text, (updated) => {
