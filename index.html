@@ -1309,20 +1309,42 @@
                 };
               });
             
-              // ✏ 수정 버튼 기능 (Firestore updateDoc 사용)
-              document.querySelectorAll("#food-list .edit-btn").forEach(btn => {
-                btn.onclick = () => {
-                  const id = btn.dataset.id;
-                  const target = items.find(i => i.id === id);
-            
-                  openEditModal(target.body, async (updated) => {
-                  if (!updated) return;
-            
-                  // body 필드만 업데이트
-                  await updateDoc(doc(db, collectionName, id), { body: updated });
-                  });
-                };
-              });
+                // ✏ 수정 버튼 기능 (Firestore updateDoc 사용)
+                      document.querySelectorAll("#food-list .edit-btn").forEach(btn => {
+                        btn.onclick = () => {
+                          const id = btn.dataset.id;
+                          const target = items.find(i => i.id === id);
+                
+                          // ⭐ 1. 별점과 코멘트 내용을 하나의 문자열로 만들어 모달에 전달
+                          const initialText = 
+                            `[별점]: ${target.rating || '별점 입력'}\n` + // 별점 정보를 표시
+                            `[코멘트]:\n${target.body || ''}`; // 코멘트 본문을 표시
+                
+                          // openEditModal 함수는 여전히 하나의 텍스트만 받습니다.
+                          openEditModal(initialText, async (updated) => { 
+                            if (!updated || updated.trim().length < 10) {
+                              alert("수정 내용이 너무 짧거나 비어있습니다.");
+                              return;
+                            }
+                
+                            // ⭐ 2. 모달에서 입력받은 텍스트를 파싱하여 별점과 코멘트 분리
+                            // 첫 번째 줄에서 [별점]: 뒤의 값을 추출
+                            const ratingMatch = updated.match(/\[별점\]:\s*(.*)/i);
+                            
+                            // [코멘트]:\n 이후의 모든 텍스트를 코멘트 본문으로 간주
+                            const bodySplit = updated.split('[코멘트]:\n');
+                
+                            const newRating = ratingMatch ? ratingMatch[1].trim() : target.rating;
+                            const newBody = bodySplit.length > 1 ? bodySplit[1].trim() : target.body;
+                
+                            // ⭐ 3. Firestore에 'rating'과 'body' 두 필드 모두 업데이트
+                            await updateDoc(doc(db, collectionName, id), { 
+                              rating: newRating,
+                              body: newBody 
+                            });
+                          });
+                        };
+                      });
           }
         
           // 3️⃣ 새 항목 저장 (Firestore addDoc 사용)
