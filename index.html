@@ -482,7 +482,7 @@
               <button data-dept="엔진기계" class="dept">엔진기계</button>
               <button data-dept="해양에너지" class="dept">해양에너지</button>
             </div>
-        </p>
+
             <div id="eg-submenu" style="margin-top:12px;">
                 <div class="dept-select" id="eg-level2-wrapper"></div>
                 <div class="dept-select" id="eg-level3-wrapper"></div>
@@ -638,210 +638,214 @@
             </div>
           </div>
           <!-- ⭐ 여기까지 -->
-  <script>
-
-  /*----------------------------닉네임 제어----------------------------------*/
-    function generateRandomNickname() {
-      return "User-" + Math.random().toString(36).substring(2, 10);
-      }
 
     
-      async function loadUserNickname() {
+
+//--------------------------------------------------------------------------------------------------------------------------
+ <script type="module">
+        // Firebase core app
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
       
-        // 🔹 브라우저 저장된 사용자 Firebase 문서 ID 체크
-        let userId = localStorage.getItem("intern_user_id");
+        // Firestore database (필요한 모든 CRUD 및 실시간 함수 import)
+        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, getDocs, getDoc } 
+        from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+        // Firebase Storage
+        import { getStorage, ref, uploadBytes, getDownloadURL } 
+        from "https://www.gstatic.com/firebasejs/12.6.0/firebase-storage.js";
+
+        // Your Firebase project config
+        const firebaseConfig = {
+          apiKey: "AIzaSyApdO9aULmMKCRDj6H1Dri1yTgkcHATpmc",
+          authDomain: "h-int-survival.firebaseapp.com",
+          projectId: "h-int-survival",
+          storageBucket: "h-int-survival.firebasestorage.app",
+          messagingSenderId: "343672530876",
+          appId: "1:343672530876:web:3ea707d33f28c8f58eadb9"
+        };
       
-        // 🔹 Firestore users 컬렉션 기준
-        const usersRef = collection(db, "users");
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
       
-        // 1️⃣ storedId 있으면 → Firestore에서 닉네임 불러오기
-        if (userId) {
-          const snap = await getDoc(doc(db, "users", userId));
-          if (snap.exists()) {
-            return snap.data().nickname;
-          }
+        console.log("🔥 Firebase 연결됨 / Firestore 준비 완료:", db);
+
+
+        // ------------------- 공통 유틸리티 함수 -------------------
+        
+        function nowString() {
+          var d = new Date();
+          var y = String(d.getFullYear()).slice(2);
+          var m = String(d.getMonth() + 1).padStart(2, "0");
+          var day = String(d.getDate()).padStart(2, "0");
+          var hh = String(d.getHours()).padStart(2, "0");
+          var mm = String(d.getMinutes()).padStart(2, "0");
+          return y + "-" + m + "-" + day + " " + hh + ":" + mm;
         }
-      
-        // 2️⃣ 없으면 → 새 닉네임 생성
-        const newNick = generateRandomNickname();
-      
-        // Firestore에 저장
-        const newDoc = await addDoc(usersRef, {
-          nickname: newNick,
-          createdAt: nowString()
-        });
-      
-        // 새 Firebase userId 저장 → 다음 방문부터 사용
-        localStorage.setItem("intern_user_id", newDoc.id);
-      
-        return newNick;
-      }
+        
+        function escapeHtml(str) {
+          if (!str) return "";
+          return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;")
+            .replace(/\n/g, "<br>"); // 줄바꿈을 <br>로 변환
+        }
 
-
-      loadUserNickname().then(nick => {
-        window.USER_NICKNAME = nick;
-        document.getElementById("nicknameInput").value = nick;
-        document.getElementById("userNick").textContent = nick;
-      });
-
-  
-  // ⭐ 저장 버튼 이벤트
-      document.getElementById("saveNickBtn").addEventListener("click", async () => {
-      const newNick = document.getElementById("nicknameInput").value.trim();
-      if (!newNick) return alert("닉네임을 입력하세요!");
-    
-      // 🔹 Firestore 문서 ID 가져오기
-      const userId = localStorage.getItem("intern_user_id");
-    
-      if (!userId) {
-        alert("⚠ 닉네임 로딩 전에 변경이 실행됨. 잠시 후 다시 시도하세요.");
-        return;
-      }
-    
-      try {
-        // 🔹 Firestore 업데이트
-        await updateDoc(doc(db, "users", userId), {
-          nickname: newNick,
-          updatedAt: nowString()
-        });
-    
-        // 🔹 전역 변수 업데이트 (다른 함수 영향 X)
-        window.USER_NICKNAME = newNick;
-    
-        // 🔹 화면 갱신
-        document.getElementById("userNick").textContent = newNick;
-    
-        alert("닉네임이 성공적으로 저장되었습니다!");
-    
-      } catch (err) {
-        console.error("닉네임 저장 오류:", err);
-        alert("⚠ Firebase 저장 실패 — 다시 시도하세요.");
-      }
-    });
-
-  /*----------------------------닉네임 제어 끝----------------------------------*/
-
-  /*----------------------------공통 함수 저장 같은 기능----------------------------------*/
-    
-    // ---------- 공통 함수 (삭제되면 전체 기능 멈춤) ----------
-    
-
-            function loadArray(collectionName, onChange) {
-              return onSnapshot(collection(db, collectionName), (snapshot) => {
-                const data = snapshot.docs.map(doc => ({
-                  id: doc.id,
-                  ...doc.data()
-                }));
-            
-                onChange(data); // ❗ 데이터 바뀔 때마다 UI 업데이트 실행
-              });
+        /* ---------- 공용 수정 모달 로직 (Firestore updateDoc 사용을 위한 콜백 구조) ---------- */
+        const modal = document.getElementById("editModal");
+        const modalInput = document.getElementById("editInput");
+        const cancelBtn = document.getElementById("cancelEdit");
+        const saveBtn = document.getElementById("saveEdit");
+        let onSaveCallback = null; 
+        
+        // 모달 열기 함수
+        function openEditModal(initialText, callback) {
+          if (!modal) return;
+          modalInput.value = initialText; 
+          modal.style.display = "flex";   
+          onSaveCallback = callback;      
+        }
+        
+        // 취소 버튼 클릭 시
+        if (cancelBtn) {
+          cancelBtn.addEventListener("click", () => {
+            modal.style.display = "none";
+            onSaveCallback = null;
+          });
+        }
+        
+        // 저장 버튼 클릭 시 (콜백 함수는 각 섹션의 updateDoc을 실행함)
+        if (saveBtn) {
+          saveBtn.addEventListener("click", () => {
+            if (onSaveCallback && modalInput) {
+              onSaveCallback(modalInput.value); 
             }
-
-    
-        // 🔥 Firestore 기반 saveArray (localStorage → Firestore 저장 방식 변경)
-        async function saveArray(key, item) {
-          try {
-            await addDoc(collection(db, key), item);
-          } catch (e) {
-            console.log("Firestore save error:", e);
-          }
+            modal.style.display = "none"; 
+            onSaveCallback = null;
+          });
         }
-  
-  function nowString() {
-    var d = new Date();
-    var y = String(d.getFullYear()).slice(2);
-    var m = String(d.getMonth() + 1).padStart(2, "0");
-    var day = String(d.getDate()).padStart(2, "0");
-    var hh = String(d.getHours()).padStart(2, "0");
-    var mm = String(d.getMinutes()).padStart(2, "0");
-    return y + "-" + m + "-" + day + " " + hh + ":" + mm;
-  }
-  
-  function escapeHtml(str) {
-    if (!str) return "";
-    return String(str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
-  }
-        /* ---------- 📌 공용 수정 모달 로직 (이게 빠져서 동작 안 함) ---------- */
-      const modal = document.getElementById("editModal");
-      const modalInput = document.getElementById("editInput");
-      const cancelBtn = document.getElementById("cancelEdit");
-      const saveBtn = document.getElementById("saveEdit");
-      let onSaveCallback = null; // 저장 버튼 누를 때 실행할 함수 임시 저장
-    
-      // 모달 열기 함수
-      function openEditModal(initialText, callback) {
-        if (!modal) return;
-        modalInput.value = initialText; // 기존 내용 채우기
-        modal.style.display = "flex";   // 모달 보이게 하기
-        onSaveCallback = callback;      // 저장 후 할 일 기억하기
-      }
-    
-      // 취소 버튼 클릭 시
-      if (cancelBtn) {
-        cancelBtn.addEventListener("click", () => {
-          modal.style.display = "none";
-          onSaveCallback = null;
-        });
-      }
-    
-      // 저장 버튼 클릭 시
-      if (saveBtn) {
-        saveBtn.addEventListener("click", () => {
-          if (onSaveCallback && modalInput) {
-            onSaveCallback(modalInput.value); // 수정된 내용 전달
+
+
+        // ------------------- 탭 전환 -------------------
+        (function() {
+          var navButtons = document.querySelectorAll("nav button");
+          var sections = document.querySelectorAll("main section");
+
+          function showSection(id) {
+            sections.forEach(function(sec) {
+              if (sec.id === id) sec.classList.add("active");
+              else sec.classList.remove("active");
+            });
           }
-          modal.style.display = "none"; // 모달 닫기
-          onSaveCallback = null;
-        });
-      }
-    
- /*----------------------------공통 함수 저장 같은 기능 끝----------------------------------*/
-  // ---------- 탭 전환 ----------
-(function() {
-  var navButtons = document.querySelectorAll("nav button");
-  var sections = document.querySelectorAll("main section");
 
-  function showSection(id) {
-    sections.forEach(function(sec) {
-      if (sec.id === id) sec.classList.add("active");
-      else sec.classList.remove("active");
-    });
-  }
-
-  navButtons.forEach(function(btn) {
-    btn.addEventListener("click", function() {
-      navButtons.forEach(function(b) { b.classList.remove("active"); });
-      btn.classList.add("active");
-      var target = btn.getAttribute("data-target");
-      showSection(target);
-    });
-  });
-})();
-
- /*----------------------------탭 전환----------------------------------*/
-  /* ---------- Daily 기록 (날짜별 + 사업부별 저장) ---------- */
-/* ---------- 기본 업무 / FAQ (사업부/부문/세부부서 + 기록 저장) ---------- */
-        
-        (function () {
-        
-            // 🔹 카테고리 선택 상태 저장 (UI용)
-            const PATH_KEY = "intern_faq_selected";
-        
-        
-          // ----------------- 선택 상태 저장용 객체 -----------------
-            let selected = { dept:"조선", level2:null, level3:null };
+          navButtons.forEach(function(btn) {
+            btn.addEventListener("click", function() {
+              navButtons.forEach(function(b) { b.classList.remove("active"); });
+              btn.classList.add("active");
+              var target = btn.getAttribute("data-target");
+              showSection(target);
+            });
+          });
           
-            const deptBtns = document.querySelectorAll(".dept");
-            const submenu = document.getElementById("eg-submenu");
-            const level2Wrapper = document.getElementById("eg-level2-wrapper");
-            const level3Wrapper = document.getElementById("eg-level3-wrapper");
+          // 초기 섹션 표시 (첫 번째 버튼 활성화)
+          if (navButtons.length > 0) {
+            navButtons[0].click(); 
+          }
+        })();
 
-          // 📌 사업부별 레벨 구조 정의
+
+        /*----------------------------닉네임 제어 (최소한의 localStorage 유지)----------------------------------*/
+    
+        function generateRandomNickname() {
+          return "User-" + Math.random().toString(36).substring(2, 10);
+        }
+
+        async function loadUserNickname() {
+          
+          // 💡 사용자 ID (Firestore 문서 ID)는 브라우저에 저장하여 재방문 시 동일 사용자임을 확인합니다. (최소한의 localStorage 사용)
+          let userId = localStorage.getItem("intern_user_id"); 
+          const usersRef = collection(db, "users");
+        
+          if (userId) {
+            const snap = await getDoc(doc(db, "users", userId));
+            if (snap.exists()) {
+              return snap.data().nickname;
+            }
+          }
+        
+          // 새 사용자 생성
+          const newNick = generateRandomNickname();
+          const newDoc = await addDoc(usersRef, {
+            nickname: newNick,
+            createdAt: nowString()
+          });
+        
+          localStorage.setItem("intern_user_id", newDoc.id); // ID 저장
+        
+          return newNick;
+        }
+
+
+        let USER_NICKNAME = "로딩 중...";
+        
+        loadUserNickname().then(nick => {
+          USER_NICKNAME = nick; // 전역 변수 설정
+          const nickInput = document.getElementById("nicknameInput");
+          const userNickDisplay = document.getElementById("userNick");
+          
+          if (nickInput) nickInput.value = nick;
+          if (userNickDisplay) userNickDisplay.textContent = nick;
+        });
+
+    
+        // ⭐ 저장 버튼 이벤트
+        document.getElementById("saveNickBtn").addEventListener("click", async () => {
+          const newNick = document.getElementById("nicknameInput").value.trim();
+          if (!newNick) return alert("닉네임을 입력하세요!");
+        
+          const userId = localStorage.getItem("intern_user_id");
+        
+          if (!userId) {
+            alert("⚠ 닉네임 로딩 중입니다. 잠시 후 다시 시도하세요.");
+            return;
+          }
+        
+          try {
+            await updateDoc(doc(db, "users", userId), {
+              nickname: newNick,
+              updatedAt: nowString()
+            });
+        
+            USER_NICKNAME = newNick; // 전역 변수 업데이트
+            document.getElementById("userNick").textContent = newNick;
+            alert("닉네임이 성공적으로 저장되었습니다!");
+        
+          } catch (err) {
+            console.error("닉네임 저장 오류:", err);
+            alert("⚠ Firebase 저장 실패 — 다시 시도하세요.");
+          }
+        });
+
+      /*----------------------------닉네임 제어 끝----------------------------------*/
+
+
+      /* ---------- 기본 업무 / FAQ (Firestore 100% 사용) ---------- */
+            
+            (function () {
+            
+              // 📌 선택 상태는 이제 객체에만 저장하고, 페이지 리로드 시 초기값으로 돌아갑니다.
+              let selected = { dept:"조선", level2:null, level3:null };
+              
+              const deptBtns = document.querySelectorAll(".dept");
+              const submenu = document.getElementById("eg-submenu");
+              const level2Wrapper = document.getElementById("eg-level2-wrapper");
+              const level3Wrapper = document.getElementById("eg-level3-wrapper");
+
+              // 📌 사업부별 레벨 구조 정의 (유지)
               const DEPT_STRUCTURE = {
                 조선: {
                   level2: ["설계", "생산", "영업"],
@@ -876,630 +880,482 @@
                   }
                 }
               };
-        
-          const form = document.getElementById("daily-form");
-          const input = document.getElementById("daily-body");
-          const listEl = document.getElementById("faq-list");
-          const clearBtn = document.getElementById("daily-clear");
+            
+              const form = document.getElementById("daily-form");
+              const input = document.getElementById("daily-body");
+              const listEl = document.getElementById("faq-list");
+              const clearBtn = document.getElementById("daily-clear");
 
+              // ----------------- 서브메뉴 렌더링 -----------------
+              function renderSubmenu() {
+                // ... (Level2/3 버튼 생성 및 이벤트 리스너 로직 유지)
+                const structure = DEPT_STRUCTURE[selected.dept];
+            
+                // Level2 생성
+                level2Wrapper.innerHTML = structure.level2
+                  .map(l => `<button class="eg-level2 ${l === selected.level2 ? "active" : ""}" data-level2="${l}">${l}</button>`)
+                  .join("");
+            
+                level2Wrapper.querySelectorAll(".eg-level2").forEach(btn => {
+                  btn.addEventListener("click", () => {
+                    selected.level2 = btn.dataset.level2;
+                    selected.level3 = null;
+                    renderSubmenu();
+                    render();
+                  });
+                });
+            
+                // Level3 생성
+                if (selected.level2) {
+                  level3Wrapper.innerHTML = structure.level3[selected.level2]
+                    .map(l => `<button class="eg-level3 ${l === selected.level3 ? "active" : ""}" data-level2="${selected.level2}" data-level3="${l}">${l}</button>`)
+                    .join("");
 
-                         // 3️⃣ 👉 그리고 JSON 바로 아래에 **이 renderSubmenu() 함수 추가**
-                  function renderSubmenu() {
-                    const structure = DEPT_STRUCTURE[selected.dept];
-                
-                    // Level2 생성
-                    level2Wrapper.innerHTML = structure.level2
-                      .map(l => `<button class="eg-level2 ${l === selected.level2 ? "active" : ""}" data-level2="${l}">${l}</button>`)
-                      .join("");
-                
-                    level2Wrapper.querySelectorAll(".eg-level2").forEach(btn => {
-                      btn.addEventListener("click", () => {
-                        selected.level2 = btn.dataset.level2;
-                        selected.level3 = null;
-                        savePath();
-                        renderSubmenu();
-                        render();
-                      });
+                  level3Wrapper.querySelectorAll(".eg-level3").forEach(btn => {
+                    btn.addEventListener("click", () => {
+                      selected.level3 = btn.dataset.level3;
+                      renderSubmenu();
+                      render();
                     });
-                
-                    // Level3 생성
-                    if (selected.level2) {
-                      level3Wrapper.innerHTML = structure.level3[selected.level2]
-                        .map(l => `<button class="eg-level3 ${l === selected.level3 ? "active" : ""}" data-level2="${selected.level2}" data-level3="${l}">${l}</button>`)
-                        .join("");
+                  });
+            
+                } else {
+                  level3Wrapper.innerHTML = "";
+                }
+              
+                applyPathToUI();
+              }
 
-                
-                      level3Wrapper.querySelectorAll(".eg-level3").forEach(btn => {
-                        btn.addEventListener("click", () => {
-                          selected.level3 = btn.dataset.level3;
-                          savePath();
-                          renderSubmenu();
-                          render();
-                        });
-                      });
-                
-                    } else {
-                      level3Wrapper.innerHTML = "";
+              const collectionName = "faq"; 
+              let items = []; 
+              
+              // 1️⃣ Firestore에서 실시간 불러오기 (loadArray 대체)
+              onSnapshot(collection(db, collectionName), (snapshot) => {
+                items = snapshot.docs.map(doc => ({
+                  id: doc.id,
+                  ...doc.data()
+                }));
+                render();
+              });
+              
+              // 2️⃣ 목록 렌더링 (CRUD 동작 수정)
+              function render() {
+                const filtered = items
+                  .filter(i => i.dept === selected.dept)
+                  .filter(i => !selected.level2 || i.level2 === selected.level2)
+                  .filter(i => !selected.level3 || i.level3 === selected.level3)
+                  .sort((a, b) => new Date(b.time) - new Date(a.time)); 
+              
+                if (!filtered.length) {
+                  listEl.innerHTML = `<div class="empty">해당 카테고리에 기록이 없습니다.</div>`;
+                  return;
+                }
+              
+                listEl.innerHTML = "";
+                filtered.forEach(item => {
+                  const div = document.createElement("div");
+                  div.className = "item";
+              
+                  div.innerHTML = `
+                    <div class="item-title">📌 ${item.dept}${item.level2 ? " / " + item.level2 : ""}${item.level3 ? " / " + item.level3 : ""}</div>
+                    <div class="item-meta">${item.time} · 👤 ${item.user}</div>
+                    <div class="item-body">${escapeHtml(item.text)}</div>
+                    
+                    <div style="margin-top:10px; display:flex; gap:8px;">
+                      <button class="daily-edit-btn" data-id="${item.id}">✏ 수정</button>
+                      <button class="daily-delete-btn" data-id="${item.id}">🗑 삭제</button>
+                    </div>
+                  `;
+                  listEl.appendChild(div);
+                });
+              
+                // ✏ 수정 기능 (Firestore updateDoc 사용)
+                listEl.querySelectorAll(".daily-edit-btn").forEach(btn => {
+                  btn.addEventListener("click", () => {
+                    const id = btn.dataset.id;
+                    const target = items.find(i => i.id === id);
+              
+                    openEditModal(target.text, async updated => {
+                      if (!updated.trim()) return;
+                      // Firestore updateDoc 실행
+                      await updateDoc(doc(db, collectionName, id), { text: updated });
+                    });
+                  });
+                });
+              
+                // 🗑 삭제 기능 (Firestore deleteDoc 사용)
+                listEl.querySelectorAll(".daily-delete-btn").forEach(btn => {
+                  btn.addEventListener("click", async () => {
+                    if (confirm("정말 삭제하시겠습니까?")) {
+                      // Firestore deleteDoc 실행
+                      await deleteDoc(doc(db, collectionName, btn.dataset.id));
                     }
-                  
-                    applyPathToUI();
+                  });
+                });
+              }
+              
+              // 3️⃣ 새 항목 저장 (Firestore addDoc 사용)
+              form.addEventListener("submit", async e => {
+                e.preventDefault();
+              
+                if (!input.value.trim()) return;
+              
+                // Firestore addDoc 실행
+                await addDoc(collection(db, collectionName), {
+                  text: input.value.trim(),
+                  dept: selected.dept,
+                  level2: selected.level2,
+                  level3: selected.level3,
+                  time: nowString(),
+                  user: USER_NICKNAME 
+                });
+              
+                input.value = "";
+              });
+              
+              // 4️⃣ 전체 삭제 (Firestore 모든 문서 삭제)
+              clearBtn.addEventListener("click", async () => {
+                if (!confirm("해당 카테고리의 모든 기록을 정말 삭제할까요?")) return;
+              
+                const snapshot = await getDocs(collection(db, collectionName));
+                snapshot.forEach(docSnap => deleteDoc(docSnap.ref));
+              });
+
+
+              // ----------------- UI 적용 및 이벤트 -----------------
+              function applyPathToUI() {
+                const level2Btns = document.querySelectorAll(".eg-level2");
+                const level3Btns = document.querySelectorAll(".eg-level3");        
+                // 사업부 버튼
+                deptBtns.forEach(btn => {
+                  btn.classList.toggle("active", btn.dataset.dept === selected.dept);
+                });
+
+                submenu.style.display = "block";
+            
+                // level2
+                level2Btns.forEach(btn =>
+                  btn.classList.toggle("active", btn.dataset.level2 === selected.level2)
+                );
+            
+                // level3: 선택된 level2에 해당하는 것만 표시
+                level3Btns.forEach(btn => {
+                  const match = btn.dataset.level2 === selected.level2;
+                  btn.style.display = match ? "block" : "none";
+                  btn.classList.toggle("active", btn.dataset.level3 === selected.level3);
+                });
+              }
+
+              // ----------------- 선택 이벤트 -----------------
+              deptBtns.forEach(btn => {
+                btn.addEventListener("click", () => {
+                  selected.dept = btn.dataset.dept;
+                  selected.level2 = null; 
+                  selected.level3 = null; 
+                  renderSubmenu();
+                  applyPathToUI();
+                  render();
+                      });
+                });
+              
+              // ----------------- 초기 실행 -----------------
+              renderSubmenu();
+              applyPathToUI();
+              // render()는 onSnapshot에서 자동 실행됨
+            
+            })();
+
+        
+        // ---------- 시련 공유 (Firestore 100% 사용) ----------
+        (function() {
+          const collectionName = "struggle";
+          var form = document.getElementById("struggle-form");
+          var listEl = document.getElementById("struggle-list");
+          var clearBtn = document.getElementById("struggle-clear");
+          let items = []; // 데이터 저장용
+
+          // 1️⃣ Firestore 실시간 리스너 (loadArray 대체)
+          onSnapshot(collection(db, collectionName), (snapshot) => {
+            items = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            render(items);
+          });
+
+          // 2️⃣ 렌더링 함수
+          function render(items = []) {
+            if (!items.length) {
+              listEl.innerHTML = '<div class="empty">아직 기록된 시련이 없습니다. 오늘 있었던 멘붕 한 줄만 써도 OK.</div>';
+              return;
+            }
+            listEl.innerHTML = "";
+            items.slice().sort((a, b) => new Date(b.time) - new Date(a.time)).forEach(function(item) {
+              var div = document.createElement("div");
+              div.className = "item";
+             div.innerHTML = `
+              <div class="item-title">${escapeHtml(item.title)}</div>
+              <div class="item-meta">${escapeHtml(item.time)} · 👤 ${escapeHtml(item.user || "익명")}</div>
+              <div class="item-body">${escapeHtml(item.body || "")}</div>
+            
+              <div style="margin-top:10px; display:flex; gap:8px;">
+                <button class="edit-btn" data-id="${item.id}">✏ 수정</button>
+                <button class="delete-btn" data-id="${item.id}" style="background:#b71c1c;color:white;">🗑 삭제</button>
+              </div>
+            `;
+
+              listEl.appendChild(div);
+            });
+
+            // 🗑 삭제 버튼 기능 (Firestore deleteDoc 사용)
+              listEl.querySelectorAll(".delete-btn").forEach(btn => {
+                btn.addEventListener("click", async () => {
+                  if (confirm("정말 삭제하시겠습니까?")) {
+                    await deleteDoc(doc(db, collectionName, btn.dataset.id));
                   }
-        
-        
-          // ----------------- 저장 / 불러오기 -----------------
-          function savePath() {
-            localStorage.setItem(PATH_KEY, JSON.stringify(selected));
+                });
+              });
+            
+              // ✏ 수정 버튼 기능 (Firestore updateDoc 사용)
+              listEl.querySelectorAll(".edit-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                  const id = btn.dataset.id;
+                  const target = items.find(i => i.id === id);
+            
+                  openEditModal(target.body, async (updated) => {
+                  if (!updated) return;
+            
+                  // body 필드만 업데이트
+                  await updateDoc(doc(db, collectionName, id), { body: updated });
+                });
+              }); 
+            });
           }
-        
-          function loadPath() {
-            const raw = localStorage.getItem(PATH_KEY);
-            if (!raw) return;
-            try {
-              selected = JSON.parse(raw);
-            } catch { }
-          }
-        
-          (function () {
-  
-            const collectionName = "faq"; // Firestore 경로
-            const form = document.getElementById("daily-form");
-            const input = document.getElementById("daily-body");
-            const listEl = document.getElementById("faq-list");
-            const clearBtn = document.getElementById("daily-clear");
+
+          // 3️⃣ 새 항목 저장 (Firestore addDoc 사용)
+          form.addEventListener("submit", async function(e) {
+            e.preventDefault();
+            var titleInput = document.getElementById("struggle-title");
+            var bodyInput = document.getElementById("struggle-body");
+            var title = titleInput.value.trim();
+            var body = bodyInput.value.trim();
+            if (!title) return;
+
+            await addDoc(collection(db, collectionName), {
+              title: title,
+              body: body,
+              time: nowString(),
+              user: USER_NICKNAME 
+            });
+
+            titleInput.value = "";
+            bodyInput.value = "";
+          });
+
+          // 4️⃣ 전체 삭제 (Firestore 모든 문서 삭제)
+          clearBtn.addEventListener("click", async function() {
+            var ok = confirm("정말 시련 기록을 모두 삭제할까요?");
+            if (!ok) return;
+            
+            const snapshot = await getDocs(collection(db, collectionName));
+            snapshot.forEach(docSnap => deleteDoc(docSnap.ref));
+          });
           
-            let items = []; // Firestore에서 가져온 값 저장용
-          
-            // 1️⃣ Firestore에서 실시간 불러오기
-            onSnapshot(collection(db, collectionName), (snapshot) => {
-              items = snapshot.docs.map(doc => ({
+        })();
+        
+        /* ---------- 부서장님 백문백답 (로직 유지) ---------- */
+        (function () {
+          // ... (기존 boss 로직 유지)
+          var form = document.getElementById("boss-form");
+          var listEl = document.getElementById("boss-list");
+          var addBtn = document.getElementById("boss-add-btn");
+
+          // ▸ 추가하기 버튼 클릭 시 폼 열기/닫기
+          addBtn.addEventListener("click", function () {
+            if (!form) return;
+            form.style.display = (form.style.display === "none" || !form.style.display)
+              ? "flex"
+              : "none";
+          });
+
+          // ▸ Firestore에서 목록 읽어서 섬네일 카드 렌더링
+          function render() {
+            onSnapshot(collection(db, "bossImages"), (snapshot) => {
+              const items = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
               }));
-              render();
+
+            if (!items.length) {
+              listEl.innerHTML = '<div class="empty">아직 업로드된 백문백답이 없습니다.</div>';
+              return;
+            }
+
+            listEl.innerHTML = "";
+            items.slice().sort((a, b) => new Date(b.time) - new Date(a.time)).forEach(function (item) {
+              var card = document.createElement("div");
+              card.className = "boss-card";
+
+              card.innerHTML = `
+                <img src="${item.imageUrl}" class="boss-thumb" alt="섬네일 이미지">
+                <div class="boss-info">
+                  <div><b>${escapeHtml(item.name)}</b></div>
+                  <div>${escapeHtml(item.dept)} / ${escapeHtml(item.team)}</div>
+                  <div style="font-size:12px;">${escapeHtml(item.time)}</div>
+                </div>
+              
+                <div class="boss-viewer" style="display:none; margin-top:8px;">
+                   <img src="${item.imageUrl}">
+                </div>
+              `;
+
+
+              // 카드 클릭 시 아래에 전체 이미지 펼치기/접기
+              card.addEventListener("click", function () {
+                var viewer = card.querySelector(".boss-viewer");
+                if (!viewer) return;
+                viewer.style.display = (viewer.style.display === "none" || !viewer.style.display)
+                  ? "block"
+                  : "none";
+              });
+
+              listEl.appendChild(card);
             });
-          
-            // 2️⃣ 목록 렌더링
-            function render() {
-              const filtered = items
-                .filter(i => i.dept === selected.dept)
-                .filter(i => !selected.level2 || i.level2 === selected.level2)
-                .filter(i => !selected.level3 || i.level3 === selected.level3)
-                .reverse();
-          
-              if (!filtered.length) {
-                listEl.innerHTML = `<div class="empty">해당 카테고리에 기록이 없습니다.</div>`;
+          });
+        }
+        render();
+
+        // 🔥 Firebase 업로드 코드 (로직 유지)
+            if (form) {
+              form.addEventListener("submit", async function (e) {
+                e.preventDefault();
+            
+                const file = document.getElementById("boss-file").files[0];
+                const dept = document.getElementById("boss-dept").value.trim();
+                const team = document.getElementById("boss-team").value.trim();
+                const name = document.getElementById("boss-name").value.trim();
+            
+                if (!file) return alert("JPG 파일을 선택하세요!");
+            
+                const fileRef = ref(storage, `boss_img/${Date.now()}-${file.name}`);
+                await uploadBytes(fileRef, file);
+            
+                const imageUrl = await getDownloadURL(fileRef);
+            
+                await addDoc(collection(db, "bossImages"), {
+                  dept,
+                  team,
+                  name,
+                  imageUrl,
+                  time: nowString(),
+                  user: USER_NICKNAME
+                });
+            
+                alert("📌 Firebase Storage 업로드 완료!");
+                form.reset();
+                form.style.display = "none";
+              });
+            }
+            
+        })();
+        
+        /* ---------- 맛집 공유 (Firestore 100% 사용) ---------- */
+        (function () {
+          const collectionName = "food";
+          var form = document.getElementById("food-form");
+          var listEl = document.getElementById("food-list");
+          var clearBtn = document.getElementById("food-clear");
+          let items = []; // 데이터 저장용
+        
+          // 1️⃣ Firestore 실시간 리스너 (loadArray 대체)
+          onSnapshot(collection(db, collectionName), (snapshot) => {
+            items = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            render(items);
+          });
+
+          // 2️⃣ 렌더링 함수
+          function render(items = []) {
+              if (!items.length) {
+                listEl.innerHTML = '<div class="empty">아직 맛집이 없습니다.</div>';
                 return;
               }
-          
+            
               listEl.innerHTML = "";
-              filtered.forEach(item => {
-                const div = document.createElement("div");
+              items.slice().sort((a, b) => new Date(b.time) - new Date(a.time)).forEach(item => {
+                var div = document.createElement("div");
                 div.className = "item";
-          
                 div.innerHTML = `
-                  <div class="item-title">📌 ${item.dept}${item.level2 ? " / " + item.level2 : ""}${item.level3 ? " / " + item.level3 : ""}</div>
-                  <div class="item-meta">${item.time} · 👤 ${item.user}</div>
-                  <div class="item-body">${escapeHtml(item.text)}</div>
-                
+                  <div class="item-title">${escapeHtml(item.title)} (${escapeHtml(item.rating || "⭐")})</div>
+                  <div class="item-meta">추천: ${escapeHtml(item.menu || "정보 없음")} · ${escapeHtml(item.time)}</div>
+                  <div class="item-body">${escapeHtml(item.body || "")}</div>
+            
                   <div style="margin-top:10px; display:flex; gap:8px;">
-                    <button class="daily-edit-btn" data-id="${item.id}">✏ 수정</button>
-                    <button class="daily-delete-btn" data-id="${item.id}">🗑 삭제</button>
+                    <button class="edit-btn" data-id="${item.id}">✏ 수정</button>
+                    <button class="delete-btn" data-id="${item.id}" style="background:red;color:white;">🗑 삭제</button>
                   </div>
                 `;
                 listEl.appendChild(div);
               });
-          
-              // ✏ 수정 기능
-              listEl.querySelectorAll(".daily-edit-btn").forEach(btn => {
-                btn.addEventListener("click", () => {
+            
+              // 🗑 삭제 버튼 기능 (Firestore deleteDoc 사용)
+              document.querySelectorAll("#food-list .delete-btn").forEach(btn => {
+                btn.onclick = async () => {
+                  if (confirm("정말 삭제하시겠습니까?")) {
+                    await deleteDoc(doc(db, collectionName, btn.dataset.id));
+                  }
+                };
+              });
+            
+              // ✏ 수정 버튼 기능 (Firestore updateDoc 사용)
+              document.querySelectorAll("#food-list .edit-btn").forEach(btn => {
+                btn.onclick = () => {
                   const id = btn.dataset.id;
                   const target = items.find(i => i.id === id);
-          
-                  openEditModal(target.text, async updated => {
-                    if (!updated.trim()) return;
-                    await updateDoc(doc(db, collectionName, id), { text: updated });
+            
+                  openEditModal(target.body, async (updated) => {
+                  if (!updated) return;
+            
+                  // body 필드만 업데이트
+                  await updateDoc(doc(db, collectionName, id), { body: updated });
                   });
-                });
+                };
               });
-          
-              // 🗑 삭제 기능
-              listEl.querySelectorAll(".daily-delete-btn").forEach(btn => {
-                btn.addEventListener("click", async () => {
-                  await deleteDoc(doc(db, collectionName, btn.dataset.id));
-                });
-              });
-            }
-          
-            // 3️⃣ 새 항목 저장
-            form.addEventListener("submit", async e => {
-              e.preventDefault();
-          
-              if (!input.value.trim()) return;
-          
-              await addDoc(collection(db, collectionName), {
-                text: input.value.trim(),
-                dept: selected.dept,
-                level2: selected.level2,
-                level3: selected.level3,
-                time: nowString(),
-                user: USER_NICKNAME
-              });
-          
-              input.value = "";
-            });
-          
-            // 4️⃣ 전체 삭제
-            clearBtn.addEventListener("click", async () => {
-              if (!confirm("전체 삭제할까요?")) return;
-          
-              const snapshot = await getDocs(collection(db, collectionName));
-              snapshot.forEach(docSnap => deleteDoc(docSnap.ref));
-            });
-          
-          })();
-
-        
-
-          // ----------------- UI 적용 -----------------
-          function applyPathToUI() {
-            const level2Btns = document.querySelectorAll(".eg-level2");
-            const level3Btns = document.querySelectorAll(".eg-level3");        
-            // 사업부 버튼
-            deptBtns.forEach(btn => {
-              btn.classList.toggle("active", btn.dataset.dept === selected.dept);
-            });
-
-            submenu.style.display = "block";
-        
-            // level2
-            level2Btns.forEach(btn =>
-              btn.classList.toggle("active", btn.dataset.level2 === selected.level2)
-            );
-        
-            // level3: 선택된 level2에 해당하는 것만 표시
-            level3Btns.forEach(btn => {
-              const match = btn.dataset.level2 === selected.level2;
-              btn.style.display = match ? "block" : "none";
-              btn.classList.toggle("active", btn.dataset.level3 === selected.level3);
-            });
           }
-
-          applyPathToUI();
-          render();
         
-        
-          // ----------------- render() -----------------
-          function render() {
-        
-            // 🔎 선택된 카테고리 기준으로 필터링
-            let filtered = items.filter(i => i.dept === selected.dept);
-        
-            if (selected.dept === "엔진기계") {
-              if (selected.level2 !== null) filtered = filtered.filter(i => i.level2 === selected.level2);
-              if (selected.level3 !== null) filtered = filtered.filter(i => i.level3 === selected.level3);
-            }
-        
-            if (!filtered.length) {
-              listEl.innerHTML = `<div class="empty">해당 카테고리에 기록이 없습니다.</div>`;
-              return;
-            }
-        
-            listEl.innerHTML = "";
-            filtered.reverse().forEach(item => {
-              const div = document.createElement("div");
-              div.className = "item";
-        
-              div.innerHTML = `
-                <div class="item-title">📌 ${item.dept}${item.level2 ? " / " + item.level2 : ""}${item.level3 ? " / " + item.level3 : ""}</div>
-                <div class="item-meta">${item.time} · 👤 ${item.user}</div>
-                <div class="item-body">${escapeHtml(item.text)}</div>
-              
-                <div style="margin-top:10px; display:flex; gap:8px;">
-                  <button class="daily-edit-btn" data-id="${item.id}">✏ 수정</button>
-                  <button class="daily-delete-btn" data-id="${item.id}">🗑 삭제</button>
-                </div>
-              `;
-              listEl.appendChild(div);
-            });
-
-              // --- 여기부터 추가된 코드 ---
-                listEl.querySelectorAll(".daily-delete-btn").forEach(btn => {
-                  btn.addEventListener("click", () => {
-                    const id = Number(btn.dataset.id);
-                    saveItems(items);
-                    render();
-                  });
-                });
-              
-                listEl.querySelectorAll(".daily-edit-btn").forEach(btn => {
-                  btn.addEventListener("click", () => {
-                    const id = Number(btn.dataset.id);
-                    const target = items.find(i => i.id === id);
-              
-                    openEditModal(target.text, (updated) => {
-                    if (!updated) return;
-              
-                    target.text = updated;
-                    saveItems(items);
-                    render();
-                  });
-              });
-          });
-        }
-        
-          // ----------------- 선택 이벤트 -----------------
-          deptBtns.forEach(btn => {
-            btn.addEventListener("click", () => {
-              selected.dept = btn.dataset.dept;
-              if (selected.dept !== "엔진기계") {
-                selected.level2 = null;
-                selected.level3 = null;
-              }
-              savePath();
-              applyPathToUI();
-              render();
-                  });
-            });
-           
-          // ----------------- 입력 이벤트 -----------------
-          form.addEventListener("submit", e => {
-            e.preventDefault();
-        
-            if (!input.value.trim()) return;
-        
-            const items = loadItems();
-        
-          });
-        
-        
-          // ----------------- 전체 삭제 -----------------
-          clearBtn.addEventListener("click", () => {
-            if (confirm("정말 전체 삭제할까요?")) {
-              saveItems([]);
-              render();
-            }
-          });
-        
-          // ----------------- 초기 실행 -----------------
-          loadPath();
-          renderSubmenu();
-          applyPathToUI();
-          render();
-        
-        })();
-
-//------------------------------------------------------------------------------------------------------------------------------
-    
-    // ---------- 시련 공유 ----------
-    (function() {
-      var KEY = "intern_struggle_list_v1";
-      var form = document.getElementById("struggle-form");
-      var listEl = document.getElementById("struggle-list");
-      var clearBtn = document.getElementById("struggle-clear");
-
-      function render(items = []) {
-        if (!items.length) {
-          listEl.innerHTML = '<div class="empty">아직 기록된 시련이 없습니다. 오늘 있었던 멘붕 한 줄만 써도 OK.</div>';
-          return;
-        }
-        listEl.innerHTML = "";
-        items.slice().reverse().forEach(function(item) {
-          var div = document.createElement("div");
-          div.className = "item";
-         div.innerHTML = `
-          <div class="item-title">${escapeHtml(item.title)}</div>
-          <div class="item-meta">${escapeHtml(item.time)} · 👤 ${escapeHtml(item.user || "익명")}</div>
-          <div class="item-body">${escapeHtml(item.body || "")}</div>
-        
-          <div style="margin-top:10px; display:flex; gap:8px;">
-            <button class="edit-btn" data-id="${item.id}">✏ 수정</button>
-            <button class="delete-btn" data-id="${item.id}" style="background:#b71c1c;color:white;">🗑 삭제</button>
-          </div>
-        `;
-
-          listEl.appendChild(div);
-        });
-        // 삭제 버튼 기능
-          listEl.querySelectorAll(".delete-btn").forEach(btn => {
-            btn.addEventListener("click", () => {
-              const id = Number(btn.dataset.id);
-              const newItems = items.filter(i => i.id !== id);
-              saveArray(KEY, newItems);
-              render();
-            });
-          });
-        
-          // 수정 버튼 기능
-          listEl.querySelectorAll(".edit-btn").forEach(btn => {
-            btn.addEventListener("click", () => {
-              const id = Number(btn.dataset.id);
-              const target = items.find(i => i.id === id);
-        
-              openEditModal(target.text, (updated) => {
-              if (!updated) return;
-        
-              target.body = updated;
-              saveArray(KEY, items);
-              render();
-            });
-          }); 
-        });
-      }
-
-      form.addEventListener("submit", function(e) {
-        e.preventDefault();
-        var titleInput = document.getElementById("struggle-title");
-        var bodyInput = document.getElementById("struggle-body");
-        var title = titleInput.value.trim();
-        var body = bodyInput.value.trim();
-        if (!title) return;
-
-        loadArray(KEY, (items) => render(items));
-        items.push({
-          id: Date.now(),
-          title: title,
-          body: body,
-          time: nowString(),
-          user: USER_NICKNAME  // ⭐ 사용자 닉네임 저장
-        });
-        saveArray(KEY, items);
-        titleInput.value = "";
-        bodyInput.value = "";
-        render();
-      });
-
-      clearBtn.addEventListener("click", function() {
-        var ok = confirm("정말 시련 기록을 모두 삭제할까요?");
-        if (!ok) return;
-        saveArray(KEY, []);
-        render();
-      });
-
-      loadArray(KEY, render);
-    })();
-    /* ---------- 부서장님 백문백답 (JPG + 섬네일) ---------- */
-    (function () {
-      var KEY = "intern_boss_image_v1";
-      var form = document.getElementById("boss-form");
-      var listEl = document.getElementById("boss-list");
-      var addBtn = document.getElementById("boss-add-btn");
-
-      // ▸ 추가하기 버튼 클릭 시 폼 열기/닫기
-      addBtn.addEventListener("click", function () {
-        if (!form) return;
-        form.style.display = (form.style.display === "none" || !form.style.display)
-          ? "flex"
-          : "none";
-      });
-
-      // ▸ localStorage에서 목록 읽어서 섬네일 카드 렌더링
-      function render() {
-        onSnapshot(collection(db, "bossImages"), (snapshot) => {
-          const items = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          }));
-
-        if (!items.length) {
-          listEl.innerHTML = '<div class="empty">아직 업로드된 백문백답이 없습니다.</div>';
-          return;
-        }
-
-        listEl.innerHTML = "";
-        items.slice().reverse().forEach(function (item) {
-          var card = document.createElement("div");
-          card.className = "boss-card";
-
-          card.innerHTML = `
-            <img src="${item.imageUrl}" class="boss-thumb" alt="섬네일 이미지">
-            <div class="boss-info">
-              <div><b>${escapeHtml(item.name)}</b></div>
-              <div>${escapeHtml(item.dept)} / ${escapeHtml(item.team)}</div>
-              <div style="font-size:12px;">${escapeHtml(item.time)}</div>
-            </div>
-          
-            <div class="boss-viewer" style="display:none; margin-top:8px;">
-               <img src="${item.imageUrl}">
-            </div>
-          `;
-
-
-          // 카드 클릭 시 아래에 전체 이미지 펼치기/접기
-          card.addEventListener("click", function () {
-            var viewer = card.querySelector(".boss-viewer");
-            if (!viewer) return;
-            viewer.style.display = (viewer.style.display === "none" || !viewer.style.display)
-              ? "block"
-              : "none";
-          });
-
-          listEl.appendChild(card);
-        });
-      }
-      render();
-
-      // 🔥 여기다가 Firebase 업로드 코드 넣기
-        
-        if (form) {
+          // 3️⃣ 새 항목 저장 (Firestore addDoc 사용)
           form.addEventListener("submit", async function (e) {
             e.preventDefault();
+            var title = document.getElementById("food-title").value.trim();
+            var menu = document.getElementById("food-menu").value.trim();
+            var rating = document.getElementById("food-rating").value.trim();
+            var body = document.getElementById("food-body").value.trim();
         
-            const file = document.getElementById("boss-file").files[0];
-            const dept = document.getElementById("boss-dept").value.trim();
-            const team = document.getElementById("boss-team").value.trim();
-            const name = document.getElementById("boss-name").value.trim();
+            if (!title) return;
         
-            if (!file) return alert("JPG 파일을 선택하세요!");
-        
-            const fileRef = ref(storage, `boss_img/${Date.now()}-${file.name}`);
-            await uploadBytes(fileRef, file);
-        
-            const imageUrl = await getDownloadURL(fileRef);
-        
-            await addDoc(collection(db, "bossImages"), {
-              dept,
-              team,
-              name,
-              imageUrl,
-              time: nowString(),
-              user: USER_NICKNAME
+            await addDoc(collection(db, collectionName), { 
+                title, 
+                menu, 
+                rating, 
+                body, 
+                time: nowString(),
+                user: USER_NICKNAME
             });
         
-            alert("📌 Firebase Storage 업로드 완료!");
             form.reset();
-            form.style.display = "none";
-          });
-        }
-        
-        })();
-
-      
-    })();
-
-    
-    /* ---------- 맛집 공유 ---------- */
-    (function () {
-      var KEY = "intern_food_list";
-      var form = document.getElementById("food-form");
-      var listEl = document.getElementById("food-list");
-      var clearBtn = document.getElementById("food-clear");
-    
-        function render() {
-          loadArray(KEY, (items) => render(items));
-          if (!items.length) {
-            listEl.innerHTML = '<div class="empty">아직 맛집이 없습니다.</div>';
-            return;
-          }
-        
-          listEl.innerHTML = "";
-          items.slice().reverse().forEach(item => {
-            var div = document.createElement("div");
-            div.className = "item";
-            div.innerHTML = `
-              <div class="item-title">${escapeHtml(item.title)} (${escapeHtml(item.rating || "⭐")})</div>
-              <div class="item-meta">추천: ${escapeHtml(item.menu || "정보 없음")} · ${escapeHtml(item.time)}</div>
-              <div class="item-body">${escapeHtml(item.body || "")}</div>
-        
-              <div style="margin-top:10px; display:flex; gap:8px;">
-                <button class="edit-btn" data-id="${item.id}">✏ 수정</button>
-                <button class="delete-btn" data-id="${item.id}" style="background:red;color:white;">🗑 삭제</button>
-              </div>
-            `;
-            listEl.appendChild(div);
           });
         
-          document.querySelectorAll(".delete-btn").forEach(btn => {
-            btn.onclick = () => {
-              const id = Number(btn.dataset.id);
-              saveArray(KEY, items.filter(i => i.id !== id));
-              render();
-            };
-          });
-        
-          document.querySelectorAll(".edit-btn").forEach(btn => {
-            btn.onclick = () => {
-              const id = Number(btn.dataset.id);
-              const target = items.find(i => i.id === id);
-        
-              openEditModal(target.body, (updated) => {
-              if (!updated) return;
-        
-              target.body = updated;
-              saveArray(KEY, items);
-              render();
-              });
-            };
-          });
-      }
-    
-      form.addEventListener("submit", function (e) {
-        e.preventDefault();
-        var title = document.getElementById("food-title").value.trim();
-        var menu = document.getElementById("food-menu").value.trim();
-        var rating = document.getElementById("food-rating").value.trim();
-        var body = document.getElementById("food-body").value.trim();
-    
-        if (!title) return;
-    
-       loadArray(KEY, (items) => render(items));
-        items.push({ id: Date.now(), title, menu, rating, body, time: nowString() });
-        saveArray(KEY, items);
-    
-        form.reset();
-        render();
-      });
-    
-      clearBtn.addEventListener("click", function () {
-        if (confirm("정말 전체 삭제할까요?")) {
-          saveArray(KEY, []);
-          render();
-        }
-      });
-    
-      render();
-    })();
-
-      document.addEventListener("DOMContentLoaded", () => {
-            const nickElement = document.getElementById("userNick");
-            if (nickElement) {
-              nickElement.textContent = USER_NICKNAME;
+          // 4️⃣ 전체 삭제 (Firestore 모든 문서 삭제)
+          clearBtn.addEventListener("click", async function () {
+            if (confirm("정말 전체 삭제할까요?")) {
+              const snapshot = await getDocs(collection(db, collectionName));
+              snapshot.forEach(docSnap => deleteDoc(docSnap.ref));
             }
           });
-    function getPathArray(keys, base) {
-        let ref = base;
-        keys.forEach(k => {
-          if (!ref[k]) ref[k] = {};
-          ref = ref[k];
-        });
-        return ref;
-      }
-      
-      function getLogsRef(store, path) {
-        let target = getPathArray(path, store);
-      
-        if (!Array.isArray(target.entries)) {
-        target.entries = [];
-        }
-      
-    return target;
-    }
-
-
-
-  </script>
-
-  <script type="module">
-        // Firebase core app
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-      
-        // Firestore database
-        import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc } 
-        from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
-
-
-        import { getStorage, ref, uploadBytes, getDownloadURL } 
-        from "https://www.gstatic.com/firebasejs/12.6.0/firebase-storage.js";
-
-      
-        // Your Firebase project config
-        const firebaseConfig = {
-          apiKey: "AIzaSyApdO9aULmMKCRDj6H1Dri1yTgkcHATpmc",
-          authDomain: "h-int-survival.firebaseapp.com",
-          projectId: "h-int-survival",
-          storageBucket: "h-int-survival.firebasestorage.app",
-          messagingSenderId: "343672530876",
-          appId: "1:343672530876:web:3ea707d33f28c8f58eadb9"
-        };
-      
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-      
-        // Initialize Firestore (🔥 이게 저장소 역할)
-        const db = getFirestore(app);
-
-        const storage = getStorage(app);
-      
-        console.log("🔥 Firebase 연결됨 / Firestore 준비 완료:", db);
+        
+        })();
   </script>
    
 </body>
