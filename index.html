@@ -5,7 +5,7 @@
   <title>인턴 생존 가이드</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-
+           @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&display=swap');
           #internMessage {
             font-size: 28px;      /* 더 크게 */
             font-weight: 800;     /* 볼드 강화 */
@@ -16,7 +16,7 @@
             position: relative;
           }
 
-       @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&display=swap');
+      
         :root {
           --bg: #f2f2f7;
           --card: #ffffff;
@@ -473,7 +473,7 @@
         <p class="subtitle">
           “이 업무가 정확히 뭘 의미하는지” 정리해 두는 공간.
           예) 힘센엔진의 4행정 stroke 구조
-
+        </p>
 
           <!-- 📌 사업부 선택 메뉴 -->
             <div class="dept-select" style="margin-bottom:14px;">
@@ -829,9 +829,8 @@
         
         (function () {
         
-          // ----------------- 로컬스토리지 KEY -----------------
-          const KEY = "intern_faq_list_v2";       // 기록 저장
-          const PATH_KEY = "intern_faq_selected"; // 선택된 카테고리 저장
+            // 🔹 카테고리 선택 상태 저장 (UI용)
+            const PATH_KEY = "intern_faq_selected";
         
         
           // ----------------- 선택 상태 저장용 객체 -----------------
