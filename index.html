@@ -1182,7 +1182,6 @@
       var clearBtn = document.getElementById("struggle-clear");
 
       function render() {
-        loadArray(KEY, (items) => render(items));
         if (!items.length) {
           listEl.innerHTML = '<div class="empty">아직 기록된 시련이 없습니다. 오늘 있었던 멘붕 한 줄만 써도 OK.</div>';
           return;
@@ -1260,7 +1259,7 @@
         render();
       });
 
-      render();
+      loadArray(KEY, render);
     })();
     /* ---------- 부서장님 백문백답 (JPG + 섬네일) ---------- */
     (function () {
