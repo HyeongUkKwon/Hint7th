@@ -1181,7 +1181,7 @@
       var listEl = document.getElementById("struggle-list");
       var clearBtn = document.getElementById("struggle-clear");
 
-      function render() {
+      function render(items = []) {
         if (!items.length) {
           listEl.innerHTML = '<div class="empty">아직 기록된 시련이 없습니다. 오늘 있었던 멘붕 한 줄만 써도 OK.</div>';
           return;
