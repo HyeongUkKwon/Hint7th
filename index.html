@@ -1281,7 +1281,7 @@
                 const team = document.getElementById("boss-team").value.trim();
                 const name = document.getElementById("boss-name").value.trim();
             
-                if (!file) return alert("JPG 파일을 선택하세요!");
+                if (!file) return alert("JPG 또는 PNG 파일을 선택하세요!");
             
                 const fileRef = ref(storage, `boss_img/${Date.now()}-${file.name}`);
                 await uploadBytes(fileRef, file);
