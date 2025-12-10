@@ -697,9 +697,6 @@
         import { getFirestore, collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, getDocs, getDoc } 
         from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-        // Firebase Storage
-        import { getStorage, ref, uploadBytes, getDownloadURL } 
-        from "https://www.gstatic.com/firebasejs/12.6.0/firebase-storage.js";
 
         // Your Firebase project config
         const firebaseConfig = {
@@ -714,7 +711,6 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const storage = getStorage(app);
       
         console.log("🔥 Firebase 연결됨 / Firestore 준비 완료:", db);
 
@@ -1211,100 +1207,143 @@
           
         })();
         
-        /* ---------- 부서장님 백문백답 (로직 유지) ---------- */
+        /* ---------- 부서장님 백문백답 (Q&A 및 GitHub 링크 기반으로 수정) ---------- */
         (function () {
-          // ... (기존 boss 로직 유지)
-          var form = document.getElementById("boss-form");
-          var listEl = document.getElementById("boss-list");
-          var addBtn = document.getElementById("boss-add-btn");
-
-          // ▸ 추가하기 버튼 클릭 시 폼 열기/닫기
-          addBtn.addEventListener("click", function () {
-            if (!form) return;
-            form.style.display = (form.style.display === "none" || !form.style.display)
-              ? "flex"
-              : "none";
-          });
-
-          // ▸ Firestore에서 목록 읽어서 섬네일 카드 렌더링
-          function render() {
-            onSnapshot(collection(db, "bossImages"), (snapshot) => {
-              const items = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-              }));
-
-            if (!items.length) {
-              listEl.innerHTML = '<div class="empty">아직 업로드된 백문백답이 없습니다.</div>';
-              return;
-            }
-
-            listEl.innerHTML = "";
-            items.slice().sort((a, b) => new Date(b.time) - new Date(a.time)).forEach(function (item) {
-              var card = document.createElement("div");
-              card.className = "boss-card";
-
-              card.innerHTML = `
-                <img src="${item.imageUrl}" class="boss-thumb" alt="섬네일 이미지">
-                <div class="boss-info">
-                  <div><b>${escapeHtml(item.name)}</b></div>
-                  <div>${escapeHtml(item.dept)} / ${escapeHtml(item.team)}</div>
-                  <div style="font-size:12px;">${escapeHtml(item.time)}</div>
-                </div>
+            const collectionName = "bossQnA"; // Q&A 컬렉션 이름으로 변경
+            var form = document.getElementById("boss-form");
+            var listEl = document.getElementById("boss-list");
+            var addBtn = document.getElementById("boss-add-btn");
+            var githubListEl = document.getElementById("github-pdf-list");
+            let items = [];
+            
+            // ⭐ GitHub에 있는 PDF 파일 목록 (여기에 실제 URL을 넣어주세요)
+            const GITHUB_PDF_FILES = [
+              { 
+                  title: "현대 기술 동향 2025", 
+                  url: "https://raw.githubusercontent.com/your-repo/path/tech_trend.pdf",
+                  description: "조선/엔진 산업 최신 기술 트렌드 정리"
+              },
+              { 
+                  title: "인턴 가이드라인 및 필수 용어집", 
+                  url: "https://raw.githubusercontent.com/your-repo/path/intern_manual.pdf",
+                  description: "인턴 업무 필수 가이드 및 용어 모음"
+              },
+              // 필요에 따라 더 많은 파일 추가
+            ];
+        
+            // ▸ GitHub PDF 링크 목록 렌더링
+            function renderPdfLinks() {
+              if (GITHUB_PDF_FILES.length === 0) {
+                  githubListEl.style.display = 'none';
+                  return;
+              }
+        
+              let html = '<p style="margin: 0 0 10px; font-weight: 600; color:#007aff;">🔗 참고용 PDF 자료 목록</p>';
               
-                <div class="boss-viewer" style="display:none; margin-top:8px;">
-                   <img src="${item.imageUrl}">
-                </div>
-              `;
-
-
-              // 카드 클릭 시 아래에 전체 이미지 펼치기/접기
-              card.addEventListener("click", function () {
-                var viewer = card.querySelector(".boss-viewer");
-                if (!viewer) return;
-                viewer.style.display = (viewer.style.display === "none" || !viewer.style.display)
-                  ? "block"
-                  : "none";
+              GITHUB_PDF_FILES.forEach(file => {
+                  // GitHub의 raw 파일을 새 탭에서 PDF 뷰어로 볼 수 있도록 a 태그 사용
+                  html += `
+                      <div class="item" style="cursor:pointer; background:#fff; margin-bottom: 8px;">
+                          <a href="${file.url}" target="_blank" style="text-decoration:none; color:inherit; display:block; padding:0;">
+                              <div class="item-title" style="color:#333;">📄 ${escapeHtml(file.title)}</div>
+                              <div class="item-meta">${escapeHtml(file.description)}</div>
+                          </a>
+                      </div>
+                  `;
               });
-
-              listEl.appendChild(card);
+              githubListEl.innerHTML = html;
+            }
+        
+        
+            // ▸ 추가하기 버튼 클릭 시 폼 열기/닫기 (유지)
+            addBtn.addEventListener("click", function () {
+                if (!form) return;
+                form.style.display = (form.style.display === "none" || !form.style.display)
+                    ? "flex"
+                    : "none";
             });
-          });
-        }
-        render();
-
-        // 🔥 Firebase 업로드 코드 (로직 유지)
-            if (form) {
-              form.addEventListener("submit", async function (e) {
-                e.preventDefault();
-            
-                const file = document.getElementById("boss-file").files[0];
-                const dept = document.getElementById("boss-dept").value.trim();
-                const team = document.getElementById("boss-team").value.trim();
-                const name = document.getElementById("boss-name").value.trim();
-            
-                if (!file) return alert("JPG 또는 PNG 파일을 선택하세요!");
-            
-                const fileRef = ref(storage, `boss_img/${Date.now()}-${file.name}`);
-                await uploadBytes(fileRef, file);
-            
-                const imageUrl = await getDownloadURL(fileRef);
-            
-                await addDoc(collection(db, "bossImages"), {
-                  dept,
-                  team,
-                  name,
-                  imageUrl,
-                  time: nowString(),
-                  user: USER_NICKNAME
+        
+            // ▸ Firestore에서 Q&A 실시간 목록 읽기
+            function renderQnA() {
+                onSnapshot(collection(db, collectionName), (snapshot) => {
+                    items = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+        
+                    if (!items.length) {
+                        listEl.innerHTML = '<div class="empty">아직 기록된 선배님들의 Q&A가 없습니다.</div>';
+                        return;
+                    }
+        
+                    listEl.innerHTML = "";
+                    items.slice().sort((a, b) => new Date(b.time) - new Date(a.time)).forEach(function (item) {
+                        var card = document.createElement("div");
+                        card.className = "item";
+                        card.style.padding = "20px";
+        
+                        // ⭐ Q&A 렌더링 (클릭 시 답변 토글 가능하도록 구현)
+                        card.innerHTML = `
+                            <div style="font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">
+                                Q. ${escapeHtml(item.question)}
+                            </div>
+                            <div class="item-meta">
+                                👤 ${escapeHtml(item.name)} (${escapeHtml(item.dept)}/${escapeHtml(item.team)}) · ${escapeHtml(item.time)}
+                            </div>
+                            
+                            <div class="item-body answer-body" style="margin-top: 15px; padding: 10px; border-left: 3px solid #6FDB29; background: #f9f9f9; display: none;">
+                                <span style="font-weight:700; color:#6FDB29;">A.</span> ${escapeHtml(item.answer)}
+                            </div>
+                        `;
+        
+                        // Q&A 카드 클릭 시 답변 토글
+                        card.addEventListener("click", function (e) {
+                            // 버튼 클릭이 아닌 경우에만 토글
+                            if (e.target.tagName !== 'BUTTON') {
+                                var answer = card.querySelector(".answer-body");
+                                answer.style.display = answer.style.display === 'none' ? 'block' : 'none';
+                            }
+                        });
+        
+                        listEl.appendChild(card);
+                    });
                 });
-            
-                alert("📌 Firebase Storage 업로드 완료!");
-                form.reset();
-                form.style.display = "none";
-              });
+            }
+        
+            // 🔥 Firestore Q&A 데이터 저장 코드 (Storage 완전히 제거)
+            if (form) {
+                form.addEventListener("submit", async function (e) {
+                    e.preventDefault();
+        
+                    const dept = document.getElementById("boss-dept").value.trim();
+                    const team = document.getElementById("boss-team").value.trim();
+                    const name = document.getElementById("boss-name").value.trim();
+                    const question = document.getElementById("boss-question").value.trim(); 
+                    const answer = document.getElementById("boss-answer").value.trim(); 
+        
+                    if (!question || !answer) return alert("질문과 답변 내용을 모두 입력하세요!");
+        
+                    // Firestore에 텍스트 데이터만 저장
+                    await addDoc(collection(db, collectionName), {
+                        dept,
+                        team,
+                        name,
+                        question, 
+                        answer, 
+                        time: nowString(),
+                        user: USER_NICKNAME
+                    });
+        
+                    alert("📌 선배님 Q&A 기록 완료!");
+                    form.reset();
+                    form.style.display = "none";
+                });
             }
             
+            // 초기 실행
+            renderPdfLinks();
+            renderQnA();
+        
         })();
         
         /* ---------- 맛집 공유 (Firestore 100% 사용) ---------- */
