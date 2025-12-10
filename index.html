@@ -572,24 +572,25 @@
       <section id="boss">
         <h2>😎 선배님들 백문백답</h2>
         <p class="subtitle">
-          선배님들께 들은 명언, 인사이트, 업무 방향성, 꿀팁 등을 저장하는 공간.
+          선배님들께 들은 명언, 인사이트, 업무 방향성, 꿀팁 등을 저장하는 공간. <br>
           A급 인턴이 되기 위해서는 꼭 봐야하는 필수 공간! <br>
-          우리 선배님 이야기 추가하는 방법 : 사업부 / 부서 / 성함 입력 후 업로드!     
+          <b style="color:#007aff;">📄 참고 자료 (PDF)는 아래 링크 목록을 확인하세요.</b>  
         </p>
 
-        <!-- 🔹 위쪽 섬네일 리스트 영역 -->
-        <div id="boss-list" class="boss-grid"></div>
-        
-          <!-- 아래쪽 추가 버튼 -->
-          <button id="boss-add-btn" 
-            style="width:100%; padding:12px; background:#007aff; color:white; border-radius:10px; border:none; font-weight:bold;">
-            ➕ 우리 부서장님 백문백답 추가하기
-          </button>
-
-          <!-- 🔹 숨김 입력 폼 (버튼 클릭 시 열림) -->
-          <form id="boss-form" style="display:none; margin-top:16px; display:flex; flex-direction:column; gap:12px;">
-
-              <!-- 🏭 사업부 선택 -->
+          <div id="github-pdf-list" style="margin-bottom: 20px; padding: 15px; background: #eef7ff; border: 1px solid #cce5ff; border-radius: 10px;">
+              <p style="margin: 0; font-weight: 600; color:#007aff;">🔗 참고용 PDF 자료 목록</p>
+              </div>
+          
+            <div id="boss-list" class="boss-grid" style="grid-template-columns: 1fr;">
+              </div>
+            
+            <button id="boss-add-btn" 
+              style="width:100%; padding:12px; background:#007aff; color:white; border-radius:10px; border:none; font-weight:bold; margin-top: 10px;">
+              ➕ 선배님 Q&A 추가하기
+            </button>
+          
+            <form id="boss-form" style="display:none; margin-top:16px; display:flex; flex-direction:column; gap:12px;">
+          
                 <div>
                   <label>사업부 선택</label>
                   <select id="boss-dept" required>
@@ -600,34 +601,35 @@
                     <option>해양에너지</option>
                   </select>
                 </div>
-
-               <!-- 🏢 부서 직접 입력 -->
-                <div>
+          
+               <div>
                   <label>부서 입력</label>
                   <input id="boss-team" type="text" placeholder="예: 엔진설계부" required />
                 </div>
-
-                <!-- 👤 성함 직접 입력 -->
-                  <div>
+          
+                <div>
                     <label>선배님 성함</label>
                     <input id="boss-name" type="text" placeholder="예: 김OO 선임님" required />
                   </div>
+                  
+                <div>
+                  <label>궁금한 질문 (Q)</label>
+                  <textarea id="boss-question" placeholder="예: 인턴에게 기대하시는 가장 큰 역할은 무엇인가요?" required></textarea>
+                </div>
+          
+                <div>
+                  <label>선배님의 대답 (A)</label>
+                  <textarea id="boss-answer" placeholder="선배님께 들은 답변을 적어주세요." required></textarea>
+                </div>
+          
+                <button type="submit" class="btn-primary" style="border:none;">
+                  Q&A 기록
+                </button>
+            </form>       
+          
+          </section>
 
-                <!-- 🖼 JPG 업로드 -->
-                  <div>
-                    <label>자료 업로드 (JPG 또는 png 파일만 가능)</label>
-                    <input id="boss-file" type="file" accept="image/jpeg", "image/png" required />
-                  </div>
-        
-                  <button type="submit" class="btn-primary" style="border:none;">
-                    업로드
-                  </button>
-                </form>       
-
-      </section>
-      
-      
-      
+       
       <!-- 맛집 공유 -->
       <section id="food">
         <h2>🍜 맛집 공유</h2>
