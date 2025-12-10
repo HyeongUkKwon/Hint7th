@@ -5,6 +5,34 @@
   <title>인턴 생존 가이드</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+
+
+
+        /* index (83).html 파일의 <style> 섹션에 추가 */
+        
+                    /* ---------- 유튜브 임베드 스타일링 ---------- */
+                    .youtube-container {
+                        margin-top: 24px;
+                        border-radius: var(--radius); 
+                        overflow: hidden; 
+                        width: 100%;
+                        /* 16:9 비율 유지를 위한 트릭 */
+                        position: relative;
+                        height: 0;
+                        padding-bottom: 56.25%; /* 9 / 16 = 0.5625 */
+                        border: 1px solid var(--border); 
+                    }
+        
+                    #youtube-bg-video {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        /* (선택 사항) 좌우 검은 여백을 제거하고 배경처럼 보이게 약간 확대 */
+                        transform: scale(1.05); 
+                    }
+    
            @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600&display=swap');
           #internMessage {
             font-size: 28px;      /* 더 크게 */
@@ -465,6 +493,18 @@
           <li><b>😎 부서장님 백문백답</b> 탭: 너무 멀게만 보이는 부서장님의 이야기들</li>
           <li><b>🍜 맛집 공유</b> 탭: 울산 내 맛집에 대한 정보들!</li>
       </ul> 
+
+
+      <div class="youtube-container">
+        <iframe 
+            id="youtube-bg-video"
+            src="https://www.youtube.com/watch?v=5ewcUtbFVNQ" 
+            frameborder="0" 
+            allow="autoplay; encrypted-media; fullscreen"
+            allowfullscreen>
+        </iframe>
+      </div>
+        
       </section>
 
       <!-- 기본 업무 / FAQ -->
